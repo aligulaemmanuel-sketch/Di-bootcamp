@@ -1,0 +1,152 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #111; /* Dark background from Bruce Lee theme */
+    color: #fff;
+}
+
+/* Navigation Bar */
+nav {
+    background: #000;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav h2 {
+    color: #f5c518; /* Gold accent color */
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+nav ul li a:hover, nav ul li a.active {
+    color: #f5c518;
+}
+
+/* Hero Section */
+.hero {
+    height: 100vh;
+    background: linear-gradient(to right, rgba(0,0,0,0.8), rgba(51,51,51,0.8));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 4rem;
+    color: #f5c518;
+    text-transform: uppercase;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Content Sections (About, Achievements, Quotes) */
+.content {
+    padding: 60px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.content h1 {
+    color: #f5c518;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.content h2 {
+    margin-top: 30px;
+    color: #f5c518;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.content p {
+    margin-bottom: 20px;
+}
+
+/* Image Gallery */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 20px;
+}
+
+.gallery-img {
+    width: 250px;
+    height: 200px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #f5c518;
+    transition: transform 0.3s;
+}
+
+.gallery-img:hover {
+    transform: scale(1.05);
+}
+
+/* Footer */
+footer {
+    background: #000;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #777;
+}
+
+/* Modal for Gallery */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    display: block;
+    margin: auto;
+    max-width: 80%;
+}
+
+.close {
+    position: absolute;
+    top: 30px;
+    right: 50px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
