@@ -1,6 +1,6 @@
 import re
 import sys
-from analogram.anagram_checker import AnagramChecker
+from anagram_checker import AnagramChecker
 
 WORD_PATTERN = re.compile(r'^[a-zA-Z]+$')
  
@@ -22,7 +22,11 @@ def ask_word(prompt):
 
 def main():
     print("Anagram Checker CLI")
-    checker = AnagramChecker(file_path="words.txt")
+    try:
+        checker = AnagramChecker(file_path="words.txt")
+    except FileNotFoundError:
+        print("Error: 'words.txt' not found. Please ensure the file exists in the projects folder.")
+        return
 
     while True:
         print("\nChoose an option:")

@@ -17,6 +17,10 @@ def write_humidity_on_bar_chart(bars):
 
 def plot_humidity_forecast(city_name):
     """Generates the bar chart for 3 days of humidity."""
+    if mgr is None:
+        print("Error: Weather manager not initialized. Cannot plot forecast.")
+        return
+
     try:
         # RECTIFIED: forecast_at_place returns a manager, use .forecast.weathers
         forecaster = mgr.forecast_at_place(city_name, '3h')

@@ -3,6 +3,10 @@ from config import mgr, reg
 
 def get_weather_details(location_name):
     """Fetches and displays basic weather info."""
+    if mgr is None:
+        print(f"Error: Weather manager not initialized. Please check your API key in config.py.")
+        return
+
     try:
         observation = mgr.weather_at_place(location_name)
         w = observation.weather
@@ -20,6 +24,10 @@ def get_weather_details(location_name):
 
 def get_city_id(city_name):
     """Retrieves the ID of a city for more precise API calls."""
+    if reg is None:
+        print(f"Error: City registry not initialized. Please check your API key in config.py.")
+        return None
+
     list_of_tuples = reg.ids_for(city_name, matching='exact')
     if list_of_tuples:
         # Returns (ID, Name, Country, Lat, Lon)
