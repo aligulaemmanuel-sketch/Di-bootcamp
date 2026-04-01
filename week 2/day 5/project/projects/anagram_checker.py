@@ -5,13 +5,13 @@ from typing import List, Set
 class AnagramChecker:
     def __init__(self, file_path: str = "words.txt"):
         """Initializes the checker by loading a dictionary and indexing anagrams."""
+        self.word_list: Set[str] = set()
+        self.anagram_map: defaultdict[str, List[str]] = defaultdict(list)
+
         # Resolve the path relative to the directory where this script is located
         if not os.path.isabs(file_path):
             base_dir = os.path.dirname(__file__)
             file_path = os.path.join(base_dir, file_path)
-
-        self.word_list: Set[str] = set()
-        self.anagram_map: defaultdict[str, List[str]] = defaultdict(list)
 
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
