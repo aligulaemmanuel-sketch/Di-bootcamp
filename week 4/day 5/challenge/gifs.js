@@ -1,13 +1,23 @@
 const form = document.querySelector('form');
 const container = document.getElementById('gif-container');
+const searchBtn = document.getElementById('search-btn');
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const searchTerm = document.getElementById('search').value;
+    const input = document.getElementById('search');
+    const searchTerm = input.value.trim();
+    if (!searchTerm) return;
+
+    searchBtn.textContent = 'Searching...';
+    searchBtn.disabled = true;
     
     try {
         const res = await fetch(`https://api.giphy.com/v1/gifs/random?tag=${searchTerm}&api_key=${apiKey}`);
         const { data } = await res.json();
+
+        if (!data || Array.isArray(data) && data.length === 0 || !data.images) {
+            throw new Error("No GIF found for that tag");
+        }
         
         // Create elements
         const div = document.createElement('div');
@@ -26,8 +36,12 @@ form.addEventListener('submit', async (e) => {
         
         div.append(img, btn);
         container.appendChild(div);
+        input.value = '';
     } catch (err) {
-        console.error("Search failed", err);
+        alert(err.message || "Search failed");
+    } finally {
+        searchBtn.textContent = 'Search';
+        searchBtn.disabled = false;
     }
 });
 

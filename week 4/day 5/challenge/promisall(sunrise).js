@@ -15,9 +15,9 @@ async function getSunrises(lat1, lon1, lat2, lon2) {
             })
         ]);
 
-        console.log("Sunrise City 1:", data1.results.sunrise);
-        console.log("Sunrise City 2:", data2.results.sunrise);
+        return [data1.results.sunrise, data2.results.sunrise];
     } catch (error) {
-        console.error("One or both requests failed", error);
+        alert("Error fetching sunrise data. Please check coordinates.");
+        return null;
     }
 }

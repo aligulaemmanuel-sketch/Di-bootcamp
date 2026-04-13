@@ -1,0 +1,32 @@
+body {
+    background: #222;
+    color: #FFE81F; /* Star Wars Yellow */
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+    border: 2px solid #FFE81F;
+    padding: 40px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    min-width: 300px;
+}
+
+button {
+    background: #FFE81F;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: #e5d11c;
+}
