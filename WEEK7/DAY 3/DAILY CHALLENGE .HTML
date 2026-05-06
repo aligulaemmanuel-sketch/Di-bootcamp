@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        .form-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; }
+        button { padding: 10px 20px; cursor: pointer; }
+        button:disabled { background: #eee; cursor: not-allowed; }
+        .message { margin-top: 15px; padding: 10px; border-radius: 4px; }
+        .error { background: #ffdada; color: #a00; }
+        .success { background: #d4ffda; color: #008000; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="registerSection" class="form-container">
+        <h2>Register</h2>
+        <form id="regForm">
+            <input type="text" id="regName" placeholder="Name" required>
+            <input type="text" id="regLastName" placeholder="Last Name" required>
+            <input type="email" id="regEmail" placeholder="Email" required>
+            <input type="text" id="regUser" placeholder="Username" required>
+            <input type="password" id="regPass" placeholder="Password" required>
+            <button type="submit" id="regBtn" disabled>Register</button>
+        </form>
+        <p>Already registered? <a href="#" onclick="toggleForms()">Login here</a></p>
+    </div>
+
+    <div id="loginSection" class="form-container hidden">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="loginUser" placeholder="Username" required>
+            <input type="password" id="loginPass" placeholder="Password" required>
+            <button type="submit" id="loginBtn" disabled>Login</button>
+        </form>
+        <p>New user? <a href="#" onclick="toggleForms()">Register here</a></p>
+    </div>
+
+    <div id="responseMessage" class="message hidden"></div>
+
+    <script>
+        // --- UI LOGIC ---
+        const regForm = document.getElementById('regForm');
+        const loginForm = document.getElementById('loginForm');
+        const regBtn = document.getElementById('regBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const msgDiv = document.getElementById('responseMessage');
+
+        function toggleForms() {
+            document.getElementById('registerSection').classList.toggle('hidden');
+            document.getElementById('loginSection').classList.toggle('hidden');
+            msgDiv.classList.add('hidden');
+        }
+
+        // Disable button if inputs are empty
+        const validate = (form, btn) => {
+            const inputs = Array.from(form.querySelectorAll('input'));
+            btn.disabled = inputs.some(i => !i.value.trim());
+        };
+
+        regForm.addEventListener('input', () => validate(regForm, regBtn));
+        loginForm.addEventListener('input', () => validate(loginForm, loginBtn));
+
+        // --- "API" LOGIC ---
+
+        // Helper to get users from LocalStorage (Simulating users.json)
+        const getUsers = () => JSON.parse(localStorage.getItem('users')) || [];
+
+        const showMessage = (text, isError) => {
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+            msgDiv.classList.remove('hidden');
+        };
+
+        // POST /register logic
+        regForm.onsubmit = (e) => {
+            e.preventDefault();
+            const users = getUsers();
+            const username = document.getElementById('regUser').value;
+            const password = document.getElementById('regPass').value;
+
+            // Requirement: Check if username or password already exist
+            const exists = users.find(u => u.username === username || u.password === password);
+
+            if (exists) {
+                showMessage("Username or password already exists.", true);
+            } else {
+                const newUser = {
+                    name: document.getElementById('regName').value,
+                    lastName: document.getElementById('regLastName').value,
+                    email: document.getElementById('regEmail').value,
+                    username: username,
+                    password: password // In a real app, we'd hash this with Bcrypt
+                };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                showMessage(`User ${username} registered successfully!`, false);
+                regForm.reset();
+                validate(regForm, regBtn);
+            }
+        };
+
+        // POST /login logic
+        loginForm.onsubmit = (e) => {
+            e.preventDefault();
+            const users = getUsers();
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+
+            const foundUser = users.find(u => u.username === user);
+
+            if (!foundUser) {
+                showMessage("User not registered.", true);
+            } else if (foundUser.password !== pass) {
+                showMessage("Incorrect password.", true);
+            } else {
+                showMessage(`Welcome, ${user}! You are now logged in.`, false);
+            }
+        };
+    </script>
+</body>
+</html>

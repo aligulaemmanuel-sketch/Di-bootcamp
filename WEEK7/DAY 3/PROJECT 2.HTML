@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket Chat</title>
+    <link rel="stylesheet" href="PROJECT 2.CSS
+    ">
+</head>
+<body>
+    <div id="login-screen">
+        <form id="login-form">
+            <h2>Join Chat</h2>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="text" id="room" placeholder="Room Name" required>
+            <button type="submit">Enter</button>
+        </form>
+    </div>
+
+    <div id="chat-container" style="display:none;">
+        <aside id="sidebar">
+            <h3>Users</h3>
+            <ul id="users"></ul>
+        </aside>
+        <main id="main-chat">
+            <div id="messages"></div>
+            <form id="message-form">
+                <input type="text" id="msg-input" placeholder="Type a message..." autocomplete="off">
+                <button>Send</button>
+            </form>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="PROJECT 2.JS"></script>
+</body>
+</html>

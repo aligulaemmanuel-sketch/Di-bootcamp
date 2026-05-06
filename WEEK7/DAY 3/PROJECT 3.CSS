@@ -1,0 +1,24 @@
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, 50px);
+    grid-template-rows: repeat(10, 50px);
+    gap: 2px;
+    background-color: #333;
+    width: fit-content;
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.p1 { background-color: #3498db; }
+.p2 { background-color: #e74c3c; }
+.obstacle { background-color: #2c3e50; }
+.base-p1 { border: 4px solid #3498db; box-sizing: border-box; }
+.base-p2 { border: 4px solid #e74c3c; box-sizing: border-box; }
