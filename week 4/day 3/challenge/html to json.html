@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HTML to JSON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">User Information</h1>
+        <form id="userForm" class="flex flex-col gap-4">
+            <label for="firstname" class="font-medium -mb-3">First Name</label>
+            <input type="text" id="firstname" name="firstname" placeholder="John" class="border rounded px-3 py-2 focus:outline-blue-500">
+            
+            <label for="lastname" class="font-medium -mb-3">Last Name</label>
+            <input type="text" id="lastname" name="lastname" placeholder="Doe" class="border rounded px-3 py-2 focus:outline-blue-500">
+            
+            <button type="submit" class="bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition-colors mt-2">Send</button>
+        </form>
+        <div id="output" class="mt-6 p-4 bg-gray-50 border border-dashed border-gray-300 rounded text-sm font-mono break-all min-h-[3rem] flex items-center justify-center text-gray-600">JSON output will appear here...</div>
+    </div>
+
+<script>
+    document.getElementById('userForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Stop the page from refreshing
+
+        // Retrieve data from inputs
+        const fname = document.getElementById('firstname').value;
+        const lname = document.getElementById('lastname').value;
+
+        // Create an object
+        const userData = {
+            name: fname,
+            lastname: lname
+        };
+
+        // Convert to JSON string and append to DOM
+        const jsonString = JSON.stringify(userData);
+        document.getElementById('output').innerText = jsonString;
+        
+        console.log(jsonString);
+    });
+</script>
+</body>
+</html>

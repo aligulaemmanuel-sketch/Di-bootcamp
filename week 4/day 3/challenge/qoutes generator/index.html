@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quote Generator Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="main-card">
+        <h1>My Quotes</h1>
+        <p class="tagline">Motivational, Inspirational and more!</p>
+
+        <div id="display-section" class="display-box">
+            <div id="quote-output">
+                <p class="placeholder-text">Generate or search for a quote to begin...</p>
+            </div>
+            <button onclick="generateRandom()" class="btn-main">Generate Quote</button>
+        </div>
+
+        <div class="analytics-bar">
+            <button onclick="analyze('charS')">Chars (Space)</button>
+            <button onclick="analyze('charNS')">Chars (No Space)</button>
+            <button onclick="analyze('words')">Words</button>
+            <button id="like-btn" class="btn-like" onclick="handleLike()">Like ❤️</button>
+        </div>
+
+        <hr>
+
+        <div class="control-grid">
+            <div class="control-box">
+                <h3>Add New</h3>
+                <form id="quote-form">
+                    <input type="text" id="input-quote" placeholder="Enter quote" required>
+                    <input type="text" id="input-author" placeholder="Author name" required>
+                    <button type="submit">Add to List</button>
+                </form>
+            </div>
+
+            <div class="control-box">
+                <h3>Filter & Browse</h3>
+                <input type="text" id="filter-input" placeholder="Search by author...">
+                <button onclick="filterQuotes()">Search</button>
+                
+                <div class="nav-controls">
+                    <button id="prev-btn" onclick="navFiltered(-1)" disabled>Previous</button>
+                    <button id="next-btn" onclick="navFiltered(1)" disabled>Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

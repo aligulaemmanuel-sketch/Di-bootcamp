@@ -1,0 +1,44 @@
+// Converts the JSON string to an object
+const toJs = () => {
+    return new Promise((resolve, reject) => {
+        const morseObject = JSON.parse(morse);
+        if (Object.keys(morseObject).length === 0) {
+            reject("Error: Morse object is empty");
+        } else {
+            resolve(morseObject);
+        }
+    });
+};
+
+// Translates user input to Morse
+const toMorse = (morseJS) => {
+    const userInput = prompt("Enter a word or sentence:").toLowerCase();
+    return new Promise((resolve, reject) => {
+        const wordsArray = userInput.split("");
+        const result = [];
+
+        for (const char of wordsArray) {
+            if (morseJS[char]) {
+                result.push(morseJS[char]);
+            } else {
+                reject(`Error: Character "${char}" does not exist in Morse.`);
+                return;
+            }
+        }
+        resolve(result);
+    });
+};
+
+// Displays the result on the page
+const joinWords = (morseTranslation) => {
+    const body = document.querySelector("body");
+    const display = document.createElement("p");
+    display.innerText = morseTranslation.join("\n");
+    body.appendChild(display);
+};
+
+// Chaining the functions
+toJs()
+    .then(morseObj => toMorse(morseObj))
+    .then(translation => joinWords(translation))
+    .catch(err => console.error(err));

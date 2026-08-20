@@ -1,0 +1,14 @@
+{
+  "name": "bootcamp-typescript",
+  "version": "1.0.0",
+  "description": "TypeScript bootcamp exercises",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx ../../exercises/uniontypevalidator.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0"
+  }
+}

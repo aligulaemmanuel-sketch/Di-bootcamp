@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Currency Converter</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            font-family: sans-serif;
+        }
+        .converter-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .select-group img { width: 30px; vertical-align: middle; margin-right: 5px; }
+        .result-area { margin-top: 20px; min-height: 1.5em; }
+    </style>
+</head>
+<body>
+    <div class="converter-box">
+        <h2>Currency Converter</h2>
+        <div class="select-group">
+            <img id="from-flag" src="https://flagsapi.com/US/flat/64.png" alt="flag">
+            <select id="from-currency"></select>
+            <button id="switch-btn"><i class="fa-solid fa-right-left"></i></button>
+            <img id="to-flag" src="https://flagsapi.com/IL/flat/64.png" alt="flag">
+            <select id="to-currency"></select>
+        </div>
+        <div class="input-group" style="margin: 20px 0;">
+            <input type="number" id="amount" value="1" min="1">
+        </div>
+        <button id="convert-btn">Convert</button>
+        <div class="result-area">
+            <h3 id="result-text"></h3>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

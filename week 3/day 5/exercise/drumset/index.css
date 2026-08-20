@@ -1,0 +1,51 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.drum-machine {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('../../mood.png') center/cover no-repeat;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keys {
+  display: flex;
+  gap: 15px;
+}
+
+.key {
+  border: 4px solid #ffc600; /* Yellow border from image */
+  border-radius: 5px;
+  padding: 1rem .5rem;
+  transition: all .07s ease;
+  width: 80px;
+  text-align: center;
+  color: white;
+  background: rgba(0,0,0,0.4);
+  box-shadow: 0 0 10px #ffc600; /* Subtle glow */
+}
+
+kbd {
+  display: block;
+  font-size: 40px;
+}
+
+.sound {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .1rem;
+  color: #ffc600;
+}
+
+/* The visual 'pulse' when key is pressed */
+.playing {
+  transform: scale(1.1);
+  border-color: #ffffff;
+  box-shadow: 0 0 30px #ffc600;
+}

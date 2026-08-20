@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercise 1: GET Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center">Exercise 1: HTML Form</h1>
+        <form action="index.html" method="GET" class="flex flex-col">
+            <label for="name" class="font-medium mb-1">Name:</label>
+            <input type="text" id="name" name="name" placeholder="John" class="border rounded px-3 py-2 mb-4 focus:outline-blue-500">
+
+            <label for="comments" class="font-medium mb-1">Comments:</label>
+            <textarea id="comments" name="comments" rows="4" cols="30" class="border rounded px-3 py-2 mb-6 focus:outline-blue-500">Hello this is a comment</textarea>
+
+            <input type="submit" value="Send" class="bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer">
+        </form>
+    </div>
+</body>
+</html>

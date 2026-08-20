@@ -1,0 +1,102 @@
+// Source - https://stackoverflow.com/q/50748695
+// Posted by user1760384, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-04-14, License - CC BY-SA 4.0
+
+{
+"version": "0.2.0",
+"configurations": [
+    
+    {
+        "name": "Launch via NPM",
+        "request": "launch",
+        "runtimeArgs": [
+            "run-script",
+            "debug"
+        ],
+        "runtimeExecutable": "npm",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+
+    {
+        "name": "Launch via NPM",
+        "request": "launch",
+        "runtimeArgs": [
+            "run-script",
+            "debug"
+        ],
+        "runtimeExecutable": "npm",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+    {
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/app.js",
+        "request": "launch",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+    {
+        "name": "Electron Main",
+        "program": "${workspaceFolder}/main.js",
+        "request": "launch",
+        "runtimeExecutable": "electron",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+    {
+        "name": "Attach",
+        "port": 9229,
+        "request": "attach",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+    {
+        "name": "Attach by Process ID",
+        "processId": "${command:PickProcess}",
+        "request": "attach",
+        "skipFiles": [
+            "<node_internals>/**"
+        ],
+        "type": "node"
+    },
+
+    {
+        "name": "Extension",
+        "type": "extensionHost",
+        "request": "launch",
+        "runtimeExecutable": "${execPath}",
+        "args": [
+            "--extensionDevelopmentPath=${workspaceFolder}"
+        ],
+        "outFiles": [
+            "${workspaceFolder}/out/**/*.js"
+        ],
+        "preLaunchTask": "npm: watch"
+    },
+    {
+        "name": "Extension Tests",
+        "type": "extensionHost",
+        "request": "launch",
+        "runtimeExecutable": "${execPath}",
+        "args": [
+            "--extensionDevelopmentPath=${workspaceFolder}",
+            "--extensionTestsPath=${workspaceFolder}/out/test"
+        ],
+        "outFiles": [
+            "${workspaceFolder}/out/test/**/*.js"
+        ],
+        "preLaunchTask": "npm: watch"
+    },
+
+]

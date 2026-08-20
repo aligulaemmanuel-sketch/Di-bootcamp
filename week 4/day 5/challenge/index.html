@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Dashboard - Giphy & Sunrise</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-5xl mx-auto space-y-10">
+        
+        <!-- Giphy Section -->
+        <section class="bg-white p-6 rounded-xl shadow-md">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Giphy Explorer</h1>
+            
+            <form class="flex flex-col sm:flex-row gap-3 mb-6">
+                <input type="text" id="search" placeholder="Enter a search term..." 
+                    class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                <button type="submit" id="search-btn"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+                    Search
+                </button>
+                <button type="button" id="delete-all" 
+                    class="bg-gray-200 hover:bg-red-100 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg font-semibold transition">
+                    Clear All
+                </button>
+            </form>
+
+            <div id="gif-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- GIFs injected here -->
+            </div>
+        </section>
+
+        <!-- Sunrise Section -->
+        <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-400">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Sunrise Comparator</h2>
+            <p class="text-gray-500 mb-6">Check the console for results after fetching.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-gray-700">Location 1</h3>
+                    <input type="number" id="lat1" placeholder="Latitude" value="36.72016" class="w-full p-2 border rounded-lg">
+                    <input type="number" id="lon1" placeholder="Longitude" value="-4.42034" class="w-full p-2 border rounded-lg">
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-semibold text-gray-700">Location 2</h3>
+                    <input type="number" id="lat2" placeholder="Latitude" value="40.71278" class="w-full p-2 border rounded-lg">
+                    <input type="number" id="lon2" placeholder="Longitude" value="-74.0060" class="w-full p-2 border rounded-lg">
+                </div>
+            </div>
+            
+            <button id="fetch-sunrise"
+                class="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold transition">
+                Fetch Sunrise Times
+            </button>
+
+            <div id="sunrise-results" class="hidden mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
+                <div class="p-4 bg-orange-50 rounded-lg border border-orange-100">
+                    <p class="text-sm text-orange-600 font-bold uppercase">City 1 Sunrise</p>
+                    <p id="sunrise-1-val" class="text-2xl font-mono text-gray-800">--:--</p>
+                </div>
+                <div class="p-4 bg-orange-50 rounded-lg border border-orange-100">
+                    <p class="text-sm text-orange-600 font-bold uppercase">City 2 Sunrise</p>
+                    <p id="sunrise-2-val" class="text-2xl font-mono text-gray-800">--:--</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>const apiKey = "hpVzYck2zJ9n5cl6tlwN8BKK4q6dq2Hy";</script>
+    <script src="promisall(sunrise).js"></script>
+    <script src="gifs.js"></script>
+    <script>
+        const sunBtn = document.getElementById('fetch-sunrise');
+        sunBtn.onclick = async () => {
+            sunBtn.textContent = 'Fetching...';
+            sunBtn.disabled = true;
+            const results = await getSunrises(
+                document.getElementById('lat1').value, document.getElementById('lon1').value,
+                document.getElementById('lat2').value, document.getElementById('lon2').value
+            );
+            if (results) {
+                document.getElementById('sunrise-results').classList.remove('hidden');
+                document.getElementById('sunrise-1-val').textContent = results[0];
+                document.getElementById('sunrise-2-val').textContent = results[1];
+            }
+            sunBtn.textContent = 'Fetch Sunrise Times';
+            sunBtn.disabled = false;
+        };
+    </script>
+</body>
+</html>
