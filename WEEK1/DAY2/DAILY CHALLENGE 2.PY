@@ -20,7 +20,7 @@ print(f"List of multiples: {multiples}\n")
 print("--- Challenge 2: Remove Consecutive Duplicates ---")
 
 # 1. Ask the user for a string
-user_word = input("Enter a word with consecutive duplicate letters: ")
+user_word = input("Enter a word with consecutive duplicate let ters: ")
 input("Press Enter to see the modified string...")
 
 # 2. Process the string
