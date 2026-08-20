@@ -15,6 +15,7 @@ for i, char in enumerate(word):
         # Create a new key-value pair with the index in a list
         letter_indices[char] = [i]
 
+
 # 3. Output
 print(f"Result for '{word}': {letter_indices}\n")
 

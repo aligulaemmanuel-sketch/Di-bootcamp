@@ -58,4 +58,8 @@ app.get('/api/leaderboard', (req, res) => {
     res.json(gameState.leaderboard);
 });
 
-app.listen(3000, () => console.log('Game running on http://localhost:3000'));
+module.exports = app;
+
+if (require.main === module) {
+    app.listen(3000, () => console.log('Game running on http://localhost:3000'));
+}

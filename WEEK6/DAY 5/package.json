@@ -1,0 +1,21 @@
+{
+  "name": "daily-challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "DAILY CHALLENGE.JS",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^11.7.5"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "chai": "^6.2.2",
+    "express": "^5.2.1",
+    "supertest": "^7.2.2"
+  }
+}

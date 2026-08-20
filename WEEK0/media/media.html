@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Media Exercise</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100 min-h-screen p-8 flex flex-col items-center">
+
+    <main class="w-full max-w-2xl bg-white rounded-xl shadow-md p-6 space-y-8">
+
+        <!-- Page Title -->
+        <h1 class="text-3xl font-bold text-slate-800 border-b pb-4 text-center">
+            Media Showcase
+        </h1>
+
+
+        <!-- Audio Section -->
+        <section class="space-y-3">
+
+            <h2 class="text-xl font-semibold text-slate-700">
+                Audio Player
+            </h2>
+
+            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+
+                <audio controls class="w-full">
+                    <source
+                        src="https://github.com/mdn/learning-area/raw/refs/heads/main/html/multimedia-and-embedding/tasks/media-embed/media/audio.mp3"
+                        type="audio/mpeg"
+                    >
+
+                    Your browser does not support the audio element.
+                </audio>
+
+            </div>
+
+        </section>
+
+
+        <!-- Video Section -->
+        <section class="space-y-3">
+
+            <h2 class="text-xl font-semibold text-slate-700">
+                Video Player
+            </h2>
+
+            <div class="overflow-hidden rounded-lg border border-slate-200 bg-black">
+
+                <iframe
+                    class="w-full aspect-video"
+                    src="https://www.youtube.com/embed/x4IsAkFX11E"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

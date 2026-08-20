@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golden Crust Bakery</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Materialize CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-amber: #bf360c;
+      --light-amber: #fff3e0;
+      --dark-amber: #3e2723;
+      --accent-amber: #e65100;
+      --warm-cream: #faf8f5;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--warm-cream);
+      color: #3e2723;
+    }
+
+    h1, h2, h3, h4, h5, h6, .brand-logo, .section-title {
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Navbar */
+    nav {
+      background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
+      box-shadow: 0 4px 20px rgba(62, 39, 35, 0.3);
+    }
+    nav .brand-logo {
+      font-weight: 700;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    nav .brand-logo i {
+      font-size: 1.8rem;
+    }
+    nav ul li a {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+    }
+    nav ul li a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    .sidenav {
+      background: linear-gradient(180deg, #3e2723 0%, #4e342e 100%);
+    }
+    .sidenav li > a {
+      color: #ffcc80;
+      font-weight: 500;
+    }
+    .sidenav li > a:hover {
+      background-color: rgba(255, 204, 128, 0.1);
+    }
+    .sidenav .user-view {
+      background: linear-gradient(135deg, #bf360c 0%, #e65100 100%);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 50%, #ffcc80 100%);
+      overflow: hidden;
+    }
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 80%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(191, 54, 12, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(191, 54, 12, 0.1);
+      color: #bf360c;
+      padding: 6px 18px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 700;
+      color: #3e2723;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: #5d4037;
+      line-height: 1.7;
+      margin-bottom: 30px;
+      max-width: 500px;
+    }
+    .hero-img-container {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(62, 39, 35, 0.25);
+    }
+    .hero-img-container img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .hero-img-container:hover img {
+      transform: scale(1.03);
+    }
+    .floating-card {
+      position: absolute;
+      bottom: -25px;
+      left: -25px;
+      background: white;
+      padding: 16px 22px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 10;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .floating-card .icon-circle {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #ffcc80, #ff9800);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn-amber {
+      background: linear-gradient(135deg, #bf360c, #e65100);
+      border-radius: 50px;
+      padding: 0 32px;
+      height: 48px;
+      line-height: 48px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(191, 54, 12, 0.35);
+      transition: all 0.3s ease;
+    }
+    .btn-amber:hover {
+      box-shadow: 0 6px 25px rgba(191, 54, 12, 0.5);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #8d6e63;
+      color: #5d4037;
+      border-radius: 50px;
+      padding: 0 32px;
+      height: 48px;
+      line-height: 44px;
+      font-weight: 600;
+      text-transform: none;
+      transition: all 0.3s ease;
+    }
+    .btn-outline:hover {
+      background: #8d6e63;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #3e2723;
+      margin-bottom: 12px;
+    }
+    .section-subtitle {
+      color: #8d6e63;
+      font-size: 1.05rem;
+      margin-bottom: 40px;
+    }
+
+    /* Menu Cards */
+    .menu-card {
+      border-radius: 20px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 20px rgba(62, 39, 35, 0.08);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(141, 110, 99, 0.1);
+    }
+    .menu-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(62, 39, 35, 0.18);
+    }
+    .menu-card .card-image {
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+    .menu-card .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .menu-card:hover .card-image img {
+      transform: scale(1.08);
+    }
+    .menu-card .card-content {
+      padding: 20px 24px;
+    }
+    .menu-card .card-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #3e2723;
+      margin-bottom: 6px;
+    }
+    .menu-card .price-tag {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: linear-gradient(135deg, #bf360c, #e65100);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(191, 54, 12, 0.3);
+      z-index: 2;
+    }
+    .menu-card .add-btn {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: #3e2723;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+    .menu-card .add-btn:hover {
+      background: #bf360c;
+      transform: scale(1.1);
+    }
+
+    /* Features Section */
+    .features-section {
+      background: linear-gradient(135deg, #3e2723 0%, #4e342e 50%, #5d4037 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .features-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="rgba(255,204,128,0.05)"/></svg>');
+      background-size: 30px 30px;
+    }
+    .feature-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+      border: 1px solid rgba(255, 204, 128, 0.1);
+      transition: all 0.4s ease;
+    }
+    .feature-box:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-5px);
+      border-color: rgba(255, 204, 128, 0.2);
+    }
+    .feature-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .feature-box h4 {
+      color: #ffcc80;
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+    .feature-box p {
+      color: #bcaaa4;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Tabs */
+    .tabs {
+      background: transparent;
+      margin-bottom: 30px;
+    }
+    .tabs .tab a {
+      color: #8d6e63;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: none;
+    }
+    .tabs .tab a:hover, .tabs .tab a.active {
+      color: #bf360c;
+    }
+    .tabs .indicator {
+      background-color: #bf360c;
+      height: 3px;
+      border-radius: 3px;
+    }
+
+    /* Testimonials Carousel */
+    .testimonial-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(62, 39, 35, 0.08);
+      margin: 10px;
+      text-align: center;
+    }
+    .testimonial-card .stars {
+      color: #ff9800;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+    .testimonial-card p {
+      font-style: italic;
+      color: #5d4037;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    .testimonial-card .author {
+      margin-top: 16px;
+      font-weight: 700;
+      color: #3e2723;
+    }
+    .testimonial-card .author-role {
+      color: #8d6e63;
+      font-size: 0.85rem;
+    }
+    .carousel .carousel-item {
+      width: 350px;
+      height: auto;
+    }
+
+    /* Order Modal */
+    .modal {
+      border-radius: 24px;
+      max-width: 500px;
+    }
+    .modal .modal-content {
+      padding: 30px;
+    }
+    .modal .modal-content h4 {
+      font-family: 'Playfair Display', serif;
+      color: #3e2723;
+      margin-bottom: 20px;
+    }
+    .modal .input-field input:focus + label,
+    .modal .input-field textarea:focus + label {
+      color: #bf360c !important;
+    }
+    .modal .input-field input:focus,
+    .modal .input-field textarea:focus {
+      border-bottom: 2px solid #bf360c !important;
+      box-shadow: 0 1px 0 0 #bf360c !important;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, #2d1b18 0%, #3e2723 100%);
+    }
+    footer .footer-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffcc80;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    footer a {
+      color: #bcaaa4;
+      transition: color 0.3s ease;
+    }
+    footer a:hover {
+      color: #ffcc80;
+    }
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 204, 128, 0.1);
+      margin: 0 6px;
+      transition: all 0.3s ease;
+    }
+    .social-icons a:hover {
+      background: #bf360c;
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Parallax */
+    .parallax-container {
+      height: 400px;
+    }
+
+    /* Stats Counter */
+    .stats-section {
+      background: linear-gradient(135deg, #bf360c 0%, #e65100 100%);
+      padding: 60px 0;
+    }
+    .stat-item {
+      text-align: center;
+      color: white;
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Location Section */
+    .location-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(62, 39, 35, 0.08);
+      height: 100%;
+    }
+    .location-card h5 {
+      font-family: 'Playfair Display', serif;
+      color: #3e2723;
+      margin-bottom: 16px;
+    }
+    .location-card .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      color: #5d4037;
+    }
+    .location-card .info-row i {
+      color: #bf360c;
+      margin-top: 2px;
+    }
+
+    /* Toast */
+    .toast {
+      border-radius: 12px;
+      font-weight: 500;
+      background: linear-gradient(135deg, #3e2723, #5d4037);
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero-title { font-size: 2.2rem; }
+      .section-title { font-size: 1.8rem; }
+      .hero-img-container img { height: 300px; }
+      .floating-card { display: none; }
+      .stat-number { font-size: 2rem; }
+    }
+  </style>
+<base target="_blank">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper container">
+        <a href="#" class="brand-logo">
+          <i class="material-icons">bakery_dining</i>
+          Golden Crust
+        </a>
+        <a href="#" data-target="mobile-nav" class="sidenav-trigger">
+          <i class="material-icons">menu</i>
+        </a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="#about" class="scroll-link">Our Story</a></li>
+          <li><a href="#menu" class="scroll-link">Menu</a></li>
+          <li><a href="#specialties" class="scroll-link">Specialties</a></li>
+          <li><a href="#reviews" class="scroll-link">Reviews</a></li>
+          <li>
+            <a href="#order-modal" class="btn btn-amber modal-trigger" style="line-height:36px;height:36px;padding:0 20px;margin-left:10px;">
+              Order Online
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Sidenav -->
+  <ul class="sidenav" id="mobile-nav">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=60" style="opacity:0.3;width:100%;">
+        </div>
+        <a href="#"><span class="white-text name" style="font-family:'Playfair Display',serif;font-size:1.5rem;">Golden Crust</span></a>
+        <a href="#"><span class="white-text email">Baked Fresh Daily</span></a>
+      </div>
+    </li>
+    <li><a href="#about" class="sidenav-close scroll-link"><i class="material-icons">history</i>Our Story</a></li>
+    <li><a href="#menu" class="sidenav-close scroll-link"><i class="material-icons">restaurant_menu</i>Menu</a></li>
+    <li><a href="#specialties" class="sidenav-close scroll-link"><i class="material-icons">star</i>Specialties</a></li>
+    <li><a href="#reviews" class="sidenav-close scroll-link"><i class="material-icons">rate_review</i>Reviews</a></li>
+    <li><div class="divider" style="background:rgba(255,204,128,0.2);"></div></li>
+    <li><a href="#order-modal" class="sidenav-close modal-trigger"><i class="material-icons">shopping_cart</i>Order Online</a></li>
+  </ul>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section" id="about">
+    <div class="container">
+      <div class="row valign-wrapper">
+        <div class="col s12 l6">
+          <div class="reveal">
+            <div class="hero-badge">
+              <i class="material-icons tiny">schedule</i>
+              Baked Fresh Daily Since 1998
+            </div>
+            <h1 class="hero-title">Handcrafted Sourdough & Fresh French Pastries</h1>
+            <p class="hero-subtitle">
+              Made with organic flour, stone-ground grains, and slow fermented dough. 
+              Taste the rich heritage of authentic artisan baking every morning.
+            </p>
+            <div class="hero-buttons">
+              <a href="#menu" class="btn btn-amber scroll-link">View Today's Bake</a>
+              <a href="#location" class="btn btn-outline scroll-link" style="margin-left:12px;">Visit Our Shop</a>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 l6">
+          <div class="reveal" style="transition-delay:0.2s;">
+            <div class="hero-img-container">
+              <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80" alt="Freshly baked artisan bread">
+              <div class="price-tag" style="position:absolute;top:16px;left:16px;background:rgba(255,255,255,0.95);color:#3e2723;padding:6px 14px;border-radius:50px;font-weight:700;font-size:0.85rem;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                <i class="material-icons tiny" style="vertical-align:middle;margin-right:4px;">local_fire_department</i>
+                Fresh from the oven
+              </div>
+            </div>
+            <div class="floating-card hide-on-small-only">
+              <div class="icon-circle">🔥</div>
+              <div>
+                <p style="margin:0;font-weight:700;color:#3e2723;font-size:0.95rem;">Wood-Fired Ovens</p>
+                <p style="margin:0;color:#8d6e63;font-size:0.8rem;">Traditional stone deck baking</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row">
+        <div class="col s6 m3 stat-item reveal">
+          <div class="stat-number" data-target="26">0</div>
+          <div class="stat-label">Years of Baking</div>
+        </div>
+        <div class="col s6 m3 stat-item reveal">
+          <div class="stat-number" data-target="50">0</div>
+          <div class="stat-label">Daily Varieties</div>
+        </div>
+        <div class="col s6 m3 stat-item reveal">
+          <div class="stat-number" data-target="12">0</div>
+          <div class="stat-label">Local Suppliers</div>
+        </div>
+        <div class="col s6 m3 stat-item reveal">
+          <div class="stat-number" data-target="5000">0</div>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU SECTION -->
+  <section id="menu" class="section" style="padding:80px 0;">
+    <div class="container">
+      <div class="center reveal">
+        <h2 class="section-title">Daily Fresh Baked Favorites</h2>
+        <p class="section-subtitle">Baked in small batches using local organic ingredients.</p>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="row">
+        <div class="col s12">
+          <ul class="tabs center reveal">
+            <li class="tab col s3"><a href="#tab-breads" class="active">Breads</a></li>
+            <li class="tab col s3"><a href="#tab-pastries">Pastries</a></li>
+            <li class="tab col s3"><a href="#tab-cakes">Cakes</a></li>
+            <li class="tab col s3"><a href="#tab-drinks">Drinks</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Breads Tab -->
+      <div id="tab-breads" class="col s12">
+        <div class="row">
+          <div class="col s12 m6 l4">
+            <div class="menu-card reveal">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=600&q=80" alt="Country Sourdough">
+                <span class="price-tag">$8.50</span>
+                <div class="add-btn" onclick="addToCart('Artisan Sourdough Boule', 8.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Artisan Sourdough Boule</span>
+                <p style="color:#8d6e63;">36-hour slow fermentation with open crumb and crispy crust.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card reveal" style="transition-delay:0.1s;">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&w=600&q=80" alt="Whole Wheat">
+                <span class="price-tag">$7.00</span>
+                <div class="add-btn" onclick="addToCart('Whole Wheat Loaf', 7.00)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Whole Wheat Loaf</span>
+                <p style="color:#8d6e63;">Stone-ground whole wheat with honey and sunflower seeds.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card reveal" style="transition-delay:0.2s;">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1598373182133-52452f7691ef?auto=format&fit=crop&w=600&q=80" alt="Baguette">
+                <span class="price-tag">$4.50</span>
+                <div class="add-btn" onclick="addToCart('French Baguette', 4.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">French Baguette</span>
+                <p style="color:#8d6e63;">Classic Parisian style with a golden, crackling crust.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pastries Tab -->
+      <div id="tab-pastries" class="col s12">
+        <div class="row">
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=600&q=80" alt="Butter Croissant">
+                <span class="price-tag">$4.25</span>
+                <div class="add-btn" onclick="addToCart('Classic Butter Croissant', 4.25)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Classic Butter Croissant</span>
+                <p style="color:#8d6e63;">Flaky, golden, 100% French butter layers.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1558326432-04c0863d4ef9?auto=format&fit=crop&w=600&q=80" alt="Pain au Chocolat">
+                <span class="price-tag">$4.75</span>
+                <div class="add-btn" onclick="addToCart('Pain au Chocolat', 4.75)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Pain au Chocolat</span>
+                <p style="color:#8d6e63;">Buttery pastry with rich Belgian chocolate batons.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1609126979532-0f88344ed9e0?auto=format&fit=crop&w=600&q=80" alt="Cinnamon Roll">
+                <span class="price-tag">$5.50</span>
+                <div class="add-btn" onclick="addToCart('Cinnamon Roll', 5.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Cinnamon Roll</span>
+                <p style="color:#8d6e63;">Soft, gooey, topped with cream cheese glaze.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cakes Tab -->
+      <div id="tab-cakes" class="col s12">
+        <div class="row">
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=80" alt="Chocolate Cake">
+                <span class="price-tag">$6.75</span>
+                <div class="add-btn" onclick="addToCart('Dark Chocolate Ganache', 6.75)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Dark Chocolate Ganache</span>
+                <p style="color:#8d6e63;">70% Valrhona dark chocolate cake layer.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=600&q=80" alt="Strawberry Cake">
+                <span class="price-tag">$6.50</span>
+                <div class="add-btn" onclick="addToCart('Strawberry Shortcake', 6.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Strawberry Shortcake</span>
+                <p style="color:#8d6e63;">Fresh strawberries with vanilla sponge and whipped cream.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=600&q=80" alt="Cheesecake">
+                <span class="price-tag">$7.00</span>
+                <div class="add-btn" onclick="addToCart('New York Cheesecake', 7.00)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">New York Cheesecake</span>
+                <p style="color:#8d6e63;">Creamy, rich, with a buttery graham cracker crust.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drinks Tab -->
+      <div id="tab-drinks" class="col s12">
+        <div class="row">
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80" alt="Espresso">
+                <span class="price-tag">$3.50</span>
+                <div class="add-btn" onclick="addToCart('Double Espresso', 3.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Double Espresso</span>
+                <p style="color:#8d6e63;">Rich, bold, single-origin Ethiopian beans.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80" alt="Cold Brew">
+                <span class="price-tag">$4.00</span>
+                <div class="add-btn" onclick="addToCart('Cold Brew', 4.00)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Cold Brew</span>
+                <p style="color:#8d6e63;">24-hour steeped, smooth and naturally sweet.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s12 m6 l4">
+            <div class="menu-card">
+              <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=600&q=80" alt="Latte Art">
+                <span class="price-tag">$4.50</span>
+                <div class="add-btn" onclick="addToCart('Caramel Latte', 4.50)">
+                  <i class="material-icons">add</i>
+                </div>
+              </div>
+              <div class="card-content">
+                <span class="card-title">Caramel Latte</span>
+                <p style="color:#8d6e63;">House-made caramel with steamed oat milk.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARALLAX BANNER -->
+  <div class="parallax-container">
+    <div class="parallax">
+      <img src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80" alt="Bakery interior" style="filter:brightness(0.6);">
+    </div>
+    <div class="container" style="position:relative;z-index:2;height:100%;display:flex;align-items:center;justify-content:center;">
+      <div class="center white-text">
+        <h3 class="section-title white-text" style="font-size:2.8rem;text-shadow:0 4px 20px rgba(0,0,0,0.5);">Every Loaf Tells a Story</h3>
+        <p class="white-text" style="font-size:1.2rem;opacity:0.9;text-shadow:0 2px 10px rgba(0,0,0,0.5);">From our hands to your table — baked with passion since 1998</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURES / WHY US -->
+  <section id="specialties" class="features-section section" style="padding:80px 0;">
+    <div class="container" style="position:relative;z-index:1;">
+      <div class="center reveal">
+        <h2 class="section-title" style="color:#ffcc80;">Why Choose Golden Crust?</h2>
+        <p style="color:#bcaaa4;margin-bottom:50px;">The secret is in our process and passion.</p>
+      </div>
+      <div class="row">
+        <div class="col s12 m4 reveal">
+          <div class="feature-box">
+            <span class="feature-icon">🌾</span>
+            <h4>100% Organic Grains</h4>
+            <p>Sourced directly from local sustainable mills with no artificial additives or preservatives.</p>
+          </div>
+        </div>
+        <div class="col s12 m4 reveal" style="transition-delay:0.15s;">
+          <div class="feature-box">
+            <span class="feature-icon">⏱️</span>
+            <h4>Long Fermentation</h4>
+            <p>Natural starter cultures fermented for up to 48 hours for rich flavor and high digestibility.</p>
+          </div>
+        </div>
+        <div class="col s12 m4 reveal" style="transition-delay:0.3s;">
+          <div class="feature-box">
+            <span class="feature-icon">☕</span>
+            <h4>Specialty Coffee Bar</h4>
+            <p>Pair your favorite pastry with expertly crafted espresso drinks and cold brews.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS / TESTIMONIALS -->
+  <section id="reviews" class="section" style="padding:80px 0;background:#faf8f5;">
+    <div class="container">
+      <div class="center reveal">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <p class="section-subtitle">Real reviews from real bread lovers.</p>
+      </div>
+      <div class="carousel reveal" id="testimonial-carousel">
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"The sourdough here is absolutely incredible. You can taste the care that goes into every loaf. Our family's weekend tradition!"</p>
+            <div class="author">Sarah Mitchell</div>
+            <div class="author-role">Local Food Blogger</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Best croissants outside of Paris. The butter layers are perfection, and the chocolate in the pain au chocolat is divine."</p>
+            <div class="author">James Rodriguez</div>
+            <div class="author-role">Regular Customer</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Golden Crust has been our go-to for every celebration. Their custom cakes are works of art and taste even better than they look."</p>
+            <div class="author">Emily Chen</div>
+            <div class="author-role">Event Planner</div>
+          </div>
+        </div>
+        <div class="carousel-item">
+          <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"The cold brew paired with a fresh cinnamon roll is my morning ritual. The staff is always warm and welcoming."</p>
+            <div class="author">Michael Torres</div>
+            <div class="author-role">Coffee Enthusiast</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCATION SECTION -->
+  <section id="location" class="section" style="padding:80px 0;">
+    <div class="container">
+      <div class="center reveal">
+        <h2 class="section-title">Visit Our Shop</h2>
+        <p class="section-subtitle">Come smell the fresh bread and stay for a coffee.</p>
+      </div>
+      <div class="row">
+        <div class="col s12 m6 reveal">
+          <div class="location-card">
+            <h5><i class="material-icons" style="color:#bf360c;vertical-align:middle;margin-right:8px;">location_on</i>Golden Crust Bakery</h5>
+            <div class="info-row">
+              <i class="material-icons tiny">place</i>
+              <span>124 Baker Street, Artisan District<br>Portland, OR 97205</span>
+            </div>
+            <div class="info-row">
+              <i class="material-icons tiny">schedule</i>
+              <span>Mon – Fri: 6:00 AM – 7:00 PM<br>Sat – Sun: 7:00 AM – 5:00 PM</span>
+            </div>
+            <div class="info-row">
+              <i class="material-icons tiny">phone</i>
+              <span>(503) 555-0198</span>
+            </div>
+            <div class="info-row">
+              <i class="material-icons tiny">email</i>
+              <span>hello@goldencrustbakery.com</span>
+            </div>
+            <a href="#" class="btn btn-amber" style="margin-top:10px;" onclick="M.toast({html: 'Directions coming soon!', classes: 'rounded'}); return false;">
+              <i class="material-icons left">directions</i>Get Directions
+            </a>
+          </div>
+        </div>
+        <div class="col s12 m6 reveal" style="transition-delay:0.2s;">
+          <div class="location-card" style="padding:0;overflow:hidden;height:100%;">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2795.226040684089!2d-122.679207084441!3d45.5230621791016!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54950a0516efe13b%3A0x4035b4d36d4f8f0!2sPortland%2C%20OR!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
+              width="100%" 
+              height="100%" 
+              style="border:0;min-height:350px;" 
+              allowfullscreen="" 
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="page-footer" style="padding-top:40px;padding-bottom:20px;">
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m6">
+          <div class="footer-brand">
+            <i class="material-icons">bakery_dining</i>
+            Golden Crust Bakery
+          </div>
+          <p style="color:#bcaaa4;margin-top:12px;max-width:400px;">
+            Handcrafted sourdough and French pastries baked fresh daily with organic ingredients and traditional methods.
+          </p>
+        </div>
+        <div class="col s12 m3">
+          <h5 style="color:#ffcc80;font-size:1.1rem;margin-bottom:16px;">Quick Links</h5>
+          <ul>
+            <li><a href="#about" class="scroll-link">Our Story</a></li>
+            <li><a href="#menu" class="scroll-link">Menu</a></li>
+            <li><a href="#specialties" class="scroll-link">Specialties</a></li>
+            <li><a href="#reviews" class="scroll-link">Reviews</a></li>
+          </ul>
+        </div>
+        <div class="col s12 m3">
+          <h5 style="color:#ffcc80;font-size:1.1rem;margin-bottom:16px;">Follow Us</h5>
+          <div class="social-icons">
+            <a href="#" onclick="M.toast({html: 'Instagram: @goldencrust', classes: 'rounded'}); return false;"><i class="material-icons">photo_camera</i></a>
+            <a href="#" onclick="M.toast({html: 'Facebook: /goldencrustbakery', classes: 'rounded'}); return false;"><i class="material-icons">facebook</i></a>
+            <a href="#" onclick="M.toast({html: 'Twitter: @goldencrust', classes: 'rounded'}); return false;"><i class="material-icons">chat</i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright" style="background:rgba(0,0,0,0.2);margin-top:30px;">
+      <div class="container center" style="color:#bcaaa4;">
+        &copy; 2026 Golden Crust Bakery. Crafted with care and flour.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ORDER MODAL -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <h4><i class="material-icons" style="color:#bf360c;vertical-align:middle;margin-right:8px;">shopping_basket</i>Place Your Order</h4>
+      <p style="color:#8d6e63;margin-bottom:20px;">Fill in your details and we'll have your order ready for pickup!</p>
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="order-name" type="text" class="validate">
+          <label for="order-name">Your Name</label>
+        </div>
+        <div class="input-field col s12">
+          <input id="order-phone" type="tel" class="validate">
+          <label for="order-phone">Phone Number</label>
+        </div>
+        <div class="input-field col s12">
+          <textarea id="order-items" class="materialize-textarea"></textarea>
+          <label for="order-items">What would you like to order?</label>
+        </div>
+        <div class="input-field col s12">
+          <input id="order-time" type="text" class="timepicker">
+          <label for="order-time">Pickup Time</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="padding:0 24px 24px;">
+      <a href="#" class="modal-close btn-flat" style="color:#8d6e63;">Cancel</a>
+      <a href="#" class="btn btn-amber" onclick="submitOrder(); return false;">Place Order</a>
+    </div>
+  </div>
+
+  <!-- Floating Cart Button -->
+  <div class="fixed-action-btn" id="cart-fab" style="display:none;">
+    <a class="btn-floating btn-large" style="background:linear-gradient(135deg,#bf360c,#e65100);">
+      <i class="large material-icons">shopping_cart</i>
+    </a>
+    <ul>
+      <li><a class="btn-floating green" onclick="checkout()" title="Checkout"><i class="material-icons">check</i></a></li>
+      <li><a class="btn-floating red" onclick="clearCart()" title="Clear Cart"><i class="material-icons">delete</i></a></li>
+    </ul>
+  </div>
+
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <script>
+    // Initialize Materialize Components
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sidenav
+      M.Sidenav.init(document.querySelectorAll('.sidenav'));
+
+      // Tabs
+      M.Tabs.init(document.querySelectorAll('.tabs'));
+
+      // Modal
+      M.Modal.init(document.querySelectorAll('.modal'));
+
+      // Parallax
+      M.Parallax.init(document.querySelectorAll('.parallax'));
+
+      // Carousel
+      M.Carousel.init(document.querySelectorAll('.carousel'), {
+        dist: -60,
+        shift: 20,
+        padding: 60,
+        numVisible: 3,
+        indicators: true,
+        duration: 400
+      });
+
+      // Timepicker
+      M.Timepicker.init(document.querySelectorAll('.timepicker'), {
+        twelveHour: true,
+        autoClose: true
+      });
+
+      // Floating Action Button
+      M.FloatingActionButton.init(document.querySelectorAll('.fixed-action-btn'));
+
+      // Scroll Reveal
+      initScrollReveal();
+
+      // Counter Animation
+      initCounters();
+
+      // Smooth Scroll
+      initSmoothScroll();
+    });
+
+    // Cart State
+    let cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      updateCartUI();
+      M.toast({ 
+        html: `<i class="material-icons tiny left">check_circle</i> Added ${name} to cart!`, 
+        classes: 'rounded',
+        displayLength: 2000
+      });
+    }
+
+    function updateCartUI() {
+      const fab = document.getElementById('cart-fab');
+      if (cart.length > 0) {
+        fab.style.display = 'block';
+        // Update badge if you want to add one
+      }
+    }
+
+    function clearCart() {
+      cart = [];
+      document.getElementById('cart-fab').style.display = 'none';
+      M.toast({ html: 'Cart cleared', classes: 'rounded' });
+    }
+
+    function checkout() {
+      if (cart.length === 0) return;
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      const items = cart.map(i => i.name).join(', ');
+      M.toast({ 
+        html: `Order placed! Total: $${total.toFixed(2)}`, 
+        classes: 'rounded',
+        displayLength: 4000
+      });
+      cart = [];
+      document.getElementById('cart-fab').style.display = 'none';
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('order-name').value;
+      const phone = document.getElementById('order-phone').value;
+      const items = document.getElementById('order-items').value;
+
+      if (!name || !phone || !items) {
+        M.toast({ html: 'Please fill in all fields', classes: 'rounded red' });
+        return;
+      }
+
+      M.toast({ 
+        html: `<i class="material-icons tiny left">check_circle</i> Thanks ${name}! We'll call you at ${phone} to confirm.`, 
+        classes: 'rounded',
+        displayLength: 4000
+      });
+
+      // Close modal
+      const modal = M.Modal.getInstance(document.getElementById('order-modal'));
+      modal.close();
+
+      // Clear form
+      document.getElementById('order-name').value = '';
+      document.getElementById('order-phone').value = '';
+      document.getElementById('order-items').value = '';
+      M.updateTextFields();
+    }
+
+    // Scroll Reveal
+    function initScrollReveal() {
+      const reveals = document.querySelectorAll('.reveal');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      reveals.forEach(el => observer.observe(el));
+    }
+
+    // Counter Animation
+    function initCounters() {
+      const counters = document.querySelectorAll('.stat-number');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const target = parseInt(entry.target.getAttribute('data-target'));
+            animateCounter(entry.target, target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      counters.forEach(counter => observer.observe(counter));
+    }
+
+    function animateCounter(element, target) {
+      let current = 0;
+      const increment = target / 60;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          element.textContent = target.toLocaleString() + '+';
+          clearInterval(timer);
+        } else {
+          element.textContent = Math.floor(current).toLocaleString();
+        }
+      }, 25);
+    }
+
+    // Smooth Scroll
+    function initSmoothScroll() {
+      document.querySelectorAll('.scroll-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    }
+
+    // Navbar background on scroll
+    window.addEventListener('scroll', () => {
+      const nav = document.querySelector('nav');
+      if (window.scrollY > 50) {
+        nav.style.boxShadow = '0 4px 20px rgba(62, 39, 35, 0.4)';
+      } else {
+        nav.style.boxShadow = '0 4px 20px rgba(62, 39, 35, 0.3)';
+      }
+    });
+  </script>
+
+</body>
+</html>

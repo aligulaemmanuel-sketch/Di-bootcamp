@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Emmanuel Asuva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; color: white; overflow-x: hidden; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-700">
+    <h1 class="text-3xl font-bold mb-6 tracking-wider">Emmanuel Asuva</h1>
+    <div class="w-72 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+      <div id="progress-bar" class="h-full bg-gradient-to-r from-purple-600 to-purple-400 transition-all duration-300" style="width: 0%"></div>
+    </div>
+    <p id="percent-text" class="mt-3 text-sm text-gray-400 font-mono">0%</p>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 w-full z-40 px-6 py-4 flex justify-between items-center transition-all duration-300 bg-transparent">
+    <div class="text-xl font-bold tracking-tight">EA<span class="text-purple-500">.</span></div>
+    <div class="hidden md:flex gap-8 text-sm text-gray-300">
+      <a href="#home" class="hover:text-purple-400 transition-colors">Home</a>
+      <a href="#about" class="hover:text-purple-400 transition-colors">About</a>
+      <a href="#skills" class="hover:text-purple-400 transition-colors">Skills</a>
+      <a href="#projects" class="hover:text-purple-400 transition-colors">Projects</a>
+      <a href="#contact" class="hover:text-purple-400 transition-colors">Contact</a>
+    </div>
+    <button id="menu-btn" class="md:hidden text-white">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="fixed inset-0 z-30 bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 text-2xl font-semibold hidden">
+    <a href="#home" class="mobile-link hover:text-purple-400 transition-colors">Home</a>
+    <a href="#about" class="mobile-link hover:text-purple-400 transition-colors">About</a>
+    <a href="#skills" class="mobile-link hover:text-purple-400 transition-colors">Skills</a>
+    <a href="#projects" class="mobile-link hover:text-purple-400 transition-colors">Projects</a>
+    <a href="#contact" class="mobile-link hover:text-purple-400 transition-colors">Contact</a>
+  </div>
+
+  <!-- Hero Section -->
+  <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-800/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="relative z-10">
+      <div class="w-52 h-52 md:w-64 md:h-64 rounded-full border-4 border-purple-500/50 overflow-hidden mb-10 mx-auto shadow-[0_0_60px_-10px_rgba(168,85,247,0.5)] hover:shadow-[0_0_80px_-5px_rgba(168,85,247,0.7)] transition-shadow duration-500">
+        <img src="1000068145.jpg" alt="Emmanuel Asuva" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+      </div>
+      
+      <h2 class="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 tracking-tight">
+        Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-600">Emmanuel</span>
+      </h2>
+      
+      <p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+        Full Stack Developer specializing in <span class="text-purple-400">cloud systems</span> and <span class="text-purple-400">high-performance web applications</span>.
+      </p>
+      
+      <div class="flex gap-4 justify-center flex-wrap">
+        <a href="#projects" class="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-semibold transition-all duration-300 hover:scale-105 shadow-lg shadow-purple-600/25">View My Work</a>
+        <a href="#contact" class="px-8 py-3 border border-purple-500/50 hover:border-purple-400 rounded-full font-semibold transition-all duration-300 hover:scale-105">Get In Touch</a>
+      </div>
+    </div>
+    
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+      <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-24 px-6 max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="relative group">
+        <div class="absolute -inset-4 bg-gradient-to-r from-purple-600/20 to-purple-400/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <img src="1000068146.jpg" alt="About Emmanuel" class="relative rounded-3xl w-full object-cover shadow-2xl grayscale hover:grayscale-0 transition-all duration-700">
+      </div>
+      <div>
+        <h3 class="text-purple-400 font-semibold mb-2 tracking-widest text-sm uppercase">About Me</h3>
+        <h2 class="text-4xl md:text-5xl font-bold mb-6">Building digital experiences that matter.</h2>
+        <p class="text-gray-400 text-lg leading-relaxed mb-6">
+          I'm Emmanuel Asuva, a passionate Full Stack Developer with a deep love for creating robust, scalable, and user-centric web applications. My journey in tech is driven by curiosity and a commitment to excellence.
+        </p>
+        <p class="text-gray-400 text-lg leading-relaxed mb-8">
+          From architecting cloud-native solutions to crafting pixel-perfect frontends, I bring a holistic approach to every project. I believe great software is born at the intersection of clean code, intuitive design, and relentless optimization.
+        </p>
+        <div class="grid grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-400">3+</div>
+            <div class="text-sm text-gray-500 mt-1">Years Exp.</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-400">20+</div>
+            <div class="text-sm text-gray-500 mt-1">Projects</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-400">15+</div>
+            <div class="text-sm text-gray-500 mt-1">Happy Clients</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills Section -->
+  <section id="skills" class="py-24 px-6 bg-[#0f0f0f]">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h3 class="text-purple-400 font-semibold mb-2 tracking-widest text-sm uppercase">My Expertise</h3>
+        <h2 class="text-4xl md:text-5xl font-bold">Skills & Technologies</h2>
+      </div>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🐍</div>
+          <p class="font-semibold text-lg">Python</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="95%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">95%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">⚛️</div>
+          <p class="font-semibold text-lg">React</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="90%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">90%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🟨</div>
+          <p class="font-semibold text-lg">JavaScript</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="92%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">92%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">☁️</div>
+          <p class="font-semibold text-lg">AWS / Cloud</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="85%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">85%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🐘</div>
+          <p class="font-semibold text-lg">PostgreSQL</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="88%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">88%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🐳</div>
+          <p class="font-semibold text-lg">Docker</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="82%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">82%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🔥</div>
+          <p class="font-semibold text-lg">Flask</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="93%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">93%</span>
+        </div>
+        
+        <div class="skill-card bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-2xl p-6 flex flex-col items-center hover:border-purple-500/50 hover:bg-white/[0.06] transition-all duration-300 group cursor-pointer">
+          <div class="text-purple-400 text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🎨</div>
+          <p class="font-semibold text-lg">Tailwind CSS</p>
+          <div class="w-full bg-gray-700 h-1.5 mt-4 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full skill-bar" data-width="90%" style="width: 0%"></div>
+          </div>
+          <span class="text-xs text-gray-500 mt-2">90%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects" class="py-24 px-6 max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <h3 class="text-purple-400 font-semibold mb-2 tracking-widest text-sm uppercase">Portfolio</h3>
+      <h2 class="text-4xl md:text-5xl font-bold">Featured Projects</h2>
+    </div>
+    
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Project 1 -->
+      <div class="group bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2">
+        <div class="relative h-64 overflow-hidden bg-gradient-to-br from-purple-900/50 to-gray-900 flex items-center justify-center">
+          <img src="1000068147.jpg" alt="The Tocky Bakery" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700">
+          <div class="relative z-10 text-center">
+            <div class="text-6xl mb-2">🥐</div>
+            <div class="text-2xl font-bold">The Tocky Bakery</div>
+          </div>
+        </div>
+        <div class="p-8">
+          <h4 class="text-2xl font-bold mb-3">The Tocky Bakery</h4>
+          <p class="text-gray-400 mb-6 leading-relaxed">A full-stack Flask application with a modern, responsive UI. Features include online ordering, inventory management, and a real-time dashboard for bakery operations.</p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Flask</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Python</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">PostgreSQL</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Tailwind</span>
+          </div>
+          <div class="flex gap-4">
+            <button class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold text-sm transition-colors">Live Demo</button>
+            <button class="flex-1 py-2.5 border border-white/20 hover:border-purple-400 rounded-xl font-semibold text-sm transition-colors">View Code</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Project 2 -->
+      <div class="group bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2">
+        <div class="relative h-64 overflow-hidden bg-gradient-to-br from-purple-900/50 to-gray-900 flex items-center justify-center">
+          <img src="1000068148.jpg" alt="Cloud Monitor" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700">
+          <div class="relative z-10 text-center">
+            <div class="text-6xl mb-2">☁️</div>
+            <div class="text-2xl font-bold">Cloud Monitor</div>
+          </div>
+        </div>
+        <div class="p-8">
+          <h4 class="text-2xl font-bold mb-3">Cloud Infrastructure Monitor</h4>
+          <p class="text-gray-400 mb-6 leading-relaxed">A real-time cloud resource monitoring dashboard built with React and Python. Tracks server metrics, alerts on anomalies, and visualizes performance data with interactive charts.</p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">React</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">AWS</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Docker</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">WebSocket</span>
+          </div>
+          <div class="flex gap-4">
+            <button class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold text-sm transition-colors">Live Demo</button>
+            <button class="flex-1 py-2.5 border border-white/20 hover:border-purple-400 rounded-xl font-semibold text-sm transition-colors">View Code</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Project 3 -->
+      <div class="group bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2">
+        <div class="relative h-64 overflow-hidden bg-gradient-to-br from-purple-900/50 to-gray-900 flex items-center justify-center">
+          <img src="1000068149.jpg" alt="TaskFlow" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700">
+          <div class="relative z-10 text-center">
+            <div class="text-6xl mb-2">📋</div>
+            <div class="text-2xl font-bold">TaskFlow</div>
+          </div>
+        </div>
+        <div class="p-8">
+          <h4 class="text-2xl font-bold mb-3">TaskFlow — Team Collaboration</h4>
+          <p class="text-gray-400 mb-6 leading-relaxed">A Kanban-style project management tool with real-time collaboration features. Supports drag-and-drop task management, team chat, and automated workflow triggers.</p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">JavaScript</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Node.js</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">MongoDB</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Socket.io</span>
+          </div>
+          <div class="flex gap-4">
+            <button class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold text-sm transition-colors">Live Demo</button>
+            <button class="flex-1 py-2.5 border border-white/20 hover:border-purple-400 rounded-xl font-semibold text-sm transition-colors">View Code</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Project 4 -->
+      <div class="group bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2">
+        <div class="relative h-64 overflow-hidden bg-gradient-to-br from-purple-900/50 to-gray-900 flex items-center justify-center">
+          <img src="1000068150.jpg" alt="DataViz" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700">
+          <div class="relative z-10 text-center">
+            <div class="text-6xl mb-2">📊</div>
+            <div class="text-2xl font-bold">DataViz Pro</div>
+          </div>
+        </div>
+        <div class="p-8">
+          <h4 class="text-2xl font-bold mb-3">DataViz Pro — Analytics Dashboard</h4>
+          <p class="text-gray-400 mb-6 leading-relaxed">An enterprise-grade analytics platform with customizable dashboards, data pipeline integration, and AI-powered insights generation for business intelligence.</p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Python</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">D3.js</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">FastAPI</span>
+            <span class="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium">Redis</span>
+          </div>
+          <div class="flex gap-4">
+            <button class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold text-sm transition-colors">Live Demo</button>
+            <button class="flex-1 py-2.5 border border-white/20 hover:border-purple-400 rounded-xl font-semibold text-sm transition-colors">View Code</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Photo Gallery -->
+  <section class="py-24 px-6 bg-[#0f0f0f]">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h3 class="text-purple-400 font-semibold mb-2 tracking-widest text-sm uppercase">Gallery</h3>
+        <h2 class="text-4xl md:text-5xl font-bold">Behind the Code</h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="relative group overflow-hidden rounded-2xl aspect-[3/4]">
+          <img src="1000068145.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <span class="text-sm font-medium">Professional</span>
+          </div>
+        </div>
+        <div class="relative group overflow-hidden rounded-2xl aspect-[3/4]">
+          <img src="1000068146.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <span class="text-sm font-medium">Confident</span>
+          </div>
+        </div>
+        <div class="relative group overflow-hidden rounded-2xl aspect-[3/4]">
+          <img src="1000068151.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <span class="text-sm font-medium">Approachable</span>
+          </div>
+        </div>
+        <div class="relative group overflow-hidden rounded-2xl aspect-[3/4]">
+          <img src="1000068152.jpg" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+            <span class="text-sm font-medium">Focused</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="py-24 px-6 max-w-4xl mx-auto">
+    <div class="text-center mb-16">
+      <h3 class="text-purple-400 font-semibold mb-2 tracking-widest text-sm uppercase">Get In Touch</h3>
+      <h2 class="text-4xl md:text-5xl font-bold">Let's Work Together</h2>
+      <p class="text-gray-400 mt-4 max-w-xl mx-auto">Have a project in mind? I'd love to hear about it. Drop me a message and let's create something amazing.</p>
+    </div>
+    
+    <div class="bg-white/[0.03] backdrop-blur-sm border border-white/10 rounded-3xl p-8 md:p-12">
+      <form id="contact-form" class="space-y-6">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Name</label>
+            <input type="text" placeholder="Your name" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors">
+          </div>
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Email</label>
+            <input type="email" placeholder="your@email.com" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">Subject</label>
+          <input type="text" placeholder="Project inquiry" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors">
+        </div>
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">Message</label>
+          <textarea rows="5" placeholder="Tell me about your project..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 transition-colors resize-none"></textarea>
+        </div>
+        <button type="submit" class="w-full py-4 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-purple-600/25">
+          Send Message 🚀
+        </button>
+      </form>
+      
+      <div class="mt-10 pt-10 border-t border-white/10 flex flex-wrap justify-center gap-8">
+        <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          LinkedIn
+        </a>
+        <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+          Twitter
+        </a>
+        <a href="#" class="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 px-6 border-t border-white/5 text-center">
+    <p class="text-gray-500 text-sm">© 2026 Emmanuel Asuva. Crafted with 💜 and lots of ☕.</p>
+  </footer>
+
+<script>
+(function() {
+  // Loader
+  let progress = 0;
+  const progressBar = document.getElementById('progress-bar');
+  const percentText = document.getElementById('percent-text');
+  const loader = document.getElementById('loader');
+  
+  const loadInterval = setInterval(() => {
+    progress += Math.floor(Math.random() * 15) + 5;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(loadInterval);
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        setTimeout(() => { loader.style.display = 'none'; }, 700);
+        animateSkillBars();
+      }, 400);
+    }
+    progressBar.style.width = progress + '%';
+    percentText.innerText = progress + '%';
+  }, 80);
+
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      navbar.classList.add('bg-black/80', 'backdrop-blur-md', 'border-b', 'border-white/5');
+      navbar.classList.remove('bg-transparent');
+    } else {
+      navbar.classList.remove('bg-black/80', 'backdrop-blur-md', 'border-b', 'border-white/5');
+      navbar.classList.add('bg-transparent');
+    }
+  });
+
+  // Mobile menu
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  let menuOpen = false;
+  
+  menuBtn.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu.classList.toggle('hidden', !menuOpen);
+  });
+  
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      menuOpen = false;
+      mobileMenu.classList.add('hidden');
+    });
+  });
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Skill bars animation
+  function animateSkillBars() {
+    document.querySelectorAll('.skill-bar').forEach(bar => {
+      bar.style.width = bar.getAttribute('data-width');
+      bar.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+    });
+  }
+
+  // Intersection Observer for skill bars
+  const skillsSection = document.getElementById('skills');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateSkillBars();
+      }
+    });
+  }, { threshold: 0.3 });
+  
+  if (skillsSection) observer.observe(skillsSection);
+
+  // Contact form
+  document.getElementById('contact-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerText;
+    btn.innerText = 'Message Sent! ✨';
+    btn.classList.add('bg-green-600');
+    btn.classList.remove('from-purple-600', 'to-purple-500');
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.classList.remove('bg-green-600');
+      btn.classList.add('from-purple-600', 'to-purple-500');
+      e.target.reset();
+    }, 3000);
+  });
+})();
+</script>
+
+</body>
+</html>

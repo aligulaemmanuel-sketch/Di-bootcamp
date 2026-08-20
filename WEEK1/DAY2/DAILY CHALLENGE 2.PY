@@ -16,11 +16,12 @@ for i in range(1, length + 1):
 print(f"List of multiples: {multiples}\n")
 
 
-# --- CHALLENGE 2: Remove Consecutive Duplicate Letters ---
+# --- CHALLENGE 2: Remove ConsecEutive Duplicate Letters ---
 print("--- Challenge 2: Remove Consecutive Duplicates ---")
 
 # 1. Ask the user for a string
 user_word = input("Enter a word with consecutive duplicate letters: ")
+input("Press Enter to see the modified string...")
 
 # 2. Process the string
 # We start with the first character already in our result
@@ -32,6 +33,7 @@ else:
     # Loop through the string starting from the second character (index 1)
     for i in range(1, len(user_word)):
         # Only add the character if it is NOT the same as the one we just added
+
         if user_word[i] != user_word[i-1]:
             result += user_word[i]
 

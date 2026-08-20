@@ -1,0 +1,142 @@
+/* Reset and General Layout */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f6f8;
+    color: #333;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 30px 10px;
+    background-color: #0d233a;
+    color: #ffffff;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+header .tagline {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+}
+
+/* Image Styling */
+#img-div {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+#image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    border-radius: 4px;
+}
+
+.extra-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto 0;
+    border-radius: 4px;
+}
+
+#img-caption,
+.extra-caption {
+    margin-top: 10px;
+    font-size: 0.95rem;
+    color: #555;
+    font-style: italic;
+}
+
+.gallery {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-top: 20px;
+}
+
+.gallery figure {
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.gallery img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.gallery figcaption {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Timeline Info */
+#tribute-info {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+#tribute-info h2 {
+    text-align: center;
+    color: #0d233a;
+    margin-bottom: 15px;
+}
+
+#tribute-info ul {
+    list-style-type: square;
+    padding-left: 20px;
+}
+
+#tribute-info li {
+    margin-bottom: 10px;
+}
+
+/* Footer & Link */
+.more-info {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+#tribute-link {
+    color: #0284c7;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#tribute-link:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 20px;
+}
