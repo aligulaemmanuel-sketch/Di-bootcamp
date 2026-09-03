@@ -1,13 +1,20 @@
-<article id="myArticle">
-    <h1> Some Facts </h1>
-    <h2> The Chocolate </h2>
-    <h3> History of the chocolate </h3>
-    <p> Chocolate is made from tropical Theobroma cacao tree seeds. 
-    Its earliest use dates back to the Olmec civilization in Mesoamerica.</p>
-    <p id="secondPara"> After the European discovery of the Americas, chocolate became 
-    very popular in the wider world, and its demand exploded. </p>
-    <p> Chocolate has since become a popular food product that millions enjoy every day, 
-    thanks to its unique, rich, and sweet taste.</p> 
-    <p> But what effect does eating chocolate have on our health?</p> 
-</article>
-<button id="boldBtn">Make Paragraphs Bold</button>
+// Exercise 1 - JavaScript Basics
+
+// Select DOM elements
+const h1 = document.querySelector('h1');
+console.log(h1);
+
+const article = document.querySelector('article');
+console.log(article);
+
+// Example: Add event listeners
+const boldBtn = document.getElementById('boldBtn');
+const paragraphs = document.querySelectorAll('p');
+
+boldBtn.addEventListener('click', function() {
+    paragraphs.forEach(p => {
+        p.style.fontWeight = p.style.fontWeight === 'bold' ? 'normal' : 'bold';
+    });
+});
+
+// Your code here...
