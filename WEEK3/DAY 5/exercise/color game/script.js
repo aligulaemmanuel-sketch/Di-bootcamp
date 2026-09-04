@@ -1,22 +1,20 @@
 const grid = document.querySelector('#grid-container');
-let selectedColor = '#000000';
+let selectedColor = '#ef4444';
 let isDrawing = false;
 
 // 1. Generate the Grid (e.g., 20x20)
 for (let i = 0; i < 400; i++) {
     const square = document.createElement('div');
-    // Added Tailwind classes for size and initial color
-    square.className = "square w-6 h-6 bg-white transition-colors duration-100";
+    square.className = 'square';
     grid.appendChild(square);
 }
 
 // 2. Set Color from Palette
 document.querySelector('#palette').addEventListener('click', (e) => {
     if (e.target.classList.contains('color')) {
-        selectedColor = e.target.style.background;
-        // Visual feedback for selected color
-        document.querySelectorAll('.color').forEach(c => c.style.borderColor = 'transparent');
-        e.target.style.borderColor = 'white';
+        selectedColor = e.target.dataset.color;
+        document.querySelectorAll('.color').forEach(color => color.classList.remove('selected'));
+        e.target.classList.add('selected');
     }
 });
 
@@ -34,5 +32,8 @@ grid.addEventListener('mousedown', (e) => {
 });
 grid.addEventListener('mouseover', draw);
 window.addEventListener('mouseup', () => isDrawing = false);
-// Prevent dragging the actual ghost image of the div
 grid.addEventListener('dragstart', (e) => e.preventDefault());
+
+document.querySelector('#clear-btn').addEventListener('click', () => {
+    document.querySelectorAll('.square').forEach(square => square.style.backgroundColor = '#ffffff');
+});
