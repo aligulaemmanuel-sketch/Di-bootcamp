@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emmanuel Asuva | Full-Stack Developer</title>
+    <meta name="description" content="Emmanuel Asuva builds thoughtful web experiences, cloud-ready systems, and visual stories from Nairobi, Kenya.">
+    <title>Emmanuel Asuva | Developer & Visual Storyteller</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -48,7 +53,7 @@
         /* Hero Section */
         .hero { 
             background: linear-gradient(135deg, rgba(26, 35, 126, 0.92) 0%, rgba(40, 53, 147, 0.92) 100%), 
-                      url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80'); 
+                      url('creative-studio.png'); 
             background-size: cover; 
             background-position: center;
             color: white; 
@@ -89,6 +94,25 @@
             opacity: 0.9;
             max-width: 600px;
             margin: 0 auto 2rem;
+        }
+        .hero-kicker {
+            color: #8ce8df;
+            font-size: .78rem !important;
+            font-weight: 700;
+            letter-spacing: .16em;
+            margin-bottom: 1rem !important;
+        }
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 28px 0 8px;
+        }
+        .hero-actions .btn-large { margin: 0; }
+        .hero-contact {
+            border: 1px solid rgba(255,255,255,.65);
+            background: rgba(255,255,255,.12);
         }
         
         /* Social Links Hero */
@@ -134,6 +158,7 @@
         .social-github { background: #333; }
         .social-youtube { background: #ff0000; }
         .social-linkedin { background: #0a66c2; }
+        .social-phone { background: #0f766e; }
 
         /* Photo Gallery */
         #gallery { padding: 60px 0 80px; background: #ffffff; }
@@ -154,7 +179,7 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .photo-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.18); }
-        .photo-card img { display: block; width: 100%; height: 220px; object-fit: cover; }
+        .photo-card img { display: block; width: 100%; height: 280px; object-fit: contain; background: #0b1930; }
         .photo-card span { display: block; padding: 12px 16px; }
         
         /* Custom Skill Tags */
@@ -238,6 +263,25 @@
             max-width: 800px;
             margin: 0 auto;
         }
+        .mission-layout {
+            display: grid;
+            grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.4fr);
+            align-items: center;
+            gap: 48px;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .mission-portrait {
+            width: 100%;
+            max-height: 560px;
+            object-fit: contain;
+            object-position: center;
+            background: #0b1930;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,.65);
+            box-shadow: 0 22px 50px rgba(16,35,63,.2);
+        }
+        .mission-layout .mission-text { text-align: left; }
         .status-badges {
             margin-top: 40px;
             display: flex;
@@ -316,6 +360,38 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.1);
         }
         .project-card .card-content { padding: 24px; }
+        .project-card > img {
+            display: block;
+            width: 100%;
+            height: 190px;
+            object-fit: contain;
+            object-position: center;
+            background: #0b1930;
+        }
+        .project-visual {
+            height: 190px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .project-visual::before {
+            content: '';
+            position: absolute;
+            inset: 14px;
+            border: 1px solid rgba(255,255,255,.32);
+            border-radius: 14px;
+        }
+        .project-visual i { font-size: 2.8rem; position: relative; }
+        .project-visual span { font: 600 1.15rem 'Space Grotesk', sans-serif; position: relative; }
+        .project-bakery { background: linear-gradient(135deg, #8b4513, #d97706 55%, #fbbf24); }
+        .project-tribute { background: linear-gradient(135deg, #18212b, #7f1d1d 58%, #d4a72c); }
+        .project-solon { background: linear-gradient(135deg, #0f3d46, #0f766e 58%, #38bdf8); }
         .project-card .card-title {
             font-weight: 700 !important;
             color: var(--primary-indigo) !important;
@@ -451,6 +527,104 @@
             .hero-social a { width: 45px; height: 45px; font-size: 1.1rem; }
             .status-badges { flex-direction: column; align-items: center; }
             .social-grid { grid-template-columns: 1fr; }
+            .mission-layout { grid-template-columns: 1fr; gap: 28px; }
+            .mission-layout .mission-text { text-align: center; }
+            .mission-portrait { max-width: 360px; margin: 0 auto; }
+        }
+
+        /* Glassmorphism visual layer */
+        :root { --ink: #10233f; --glass: rgba(255,255,255,0.68); --glass-border: rgba(255,255,255,0.78); }
+        html { scroll-behavior: smooth; }
+        body {
+            color: var(--ink);
+            font-family: 'DM Sans', sans-serif;
+            background-color: #10233f;
+            background-image: linear-gradient(rgba(16,35,63,.38), rgba(16,35,63,.38)), url('creative-studio.png');
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+        h1, h2, h3, h4, h5, .brand-logo { font-family: 'Space Grotesk', sans-serif; }
+        .nav-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(16,35,63,.82);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+        }
+        .hero {
+            min-height: 720px;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(16,35,63,.56), rgba(20,105,115,.38)), url('creative-studio.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .hero .container {
+            max-width: 900px;
+            padding: 56px 32px;
+            border: 1px solid rgba(255,255,255,.32);
+            border-radius: 28px;
+            background: rgba(255,255,255,.1);
+            box-shadow: 0 24px 80px rgba(2,18,38,.28);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        .hero h1 { font-size: clamp(2.8rem, 7vw, 5.8rem); letter-spacing: -.03em; }
+        .hero h3 { color: #8ce8df; font-weight: 600; }
+        .hero-social a { border: 1px solid rgba(255,255,255,.4); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
+        #mission, #skills, #projects, #gallery, #social-section { position: relative; }
+        #mission { background: rgba(255,255,255,.2); }
+        #skills { background: rgba(236,245,247,.24); }
+        #projects { background: rgba(245,239,232,.22) !important; }
+        #gallery { background: rgba(255,255,255,.18); }
+        .skill-card, .project-card, .social-card, .photo-card {
+            border: 1px solid var(--glass-border);
+            background: rgba(8, 24, 45, .72);
+            box-shadow: 0 18px 45px rgba(16,35,63,.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .skill-card, .project-card { overflow: hidden; }
+        .skill-card:hover, .project-card:hover, .social-card:hover, .photo-card:hover { box-shadow: 0 22px 55px rgba(16,35,63,.18); }
+        .section-title { color: #ffffff !important; font-size: clamp(1.8rem, 4vw, 2.6rem); text-shadow: 0 2px 14px rgba(0,0,0,.45); }
+        .section-title::after { background: linear-gradient(90deg, #0e7490, #d97706); }
+        .mission-text, .project-card p, .skill-card p,
+        .project-card .card-title, .skill-card h5 { color: #f8fafc !important; }
+        .mission-text { text-shadow: 0 1px 8px rgba(0,0,0,.45); }
+        .status-badge { color: #e0f2fe !important; background: rgba(8,24,45,.74) !important; }
+        .project-card .card-action { background: rgba(8,24,45,.46); }
+        .project-card .card-action a { color: #8ce8df !important; }
+        .project-tag, .skill-tag { text-shadow: none; }
+        .photo-card { background: linear-gradient(135deg, rgba(16,35,63,.86), rgba(14,116,144,.78)); }
+        @keyframes page-enter {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes hero-enter {
+            from { opacity: 0; transform: translateY(24px) scale(.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        main { animation: page-enter .8s ease both; }
+        .hero .container { animation: hero-enter 1s .12s cubic-bezier(.2,.7,.2,1) both; }
+        .skill-card, .project-card, .photo-card, .social-card {
+            animation: page-enter .7s ease both;
+        }
+        .skill-card:nth-child(2), .project-card:nth-child(2), .photo-card:nth-child(2), .social-card:nth-child(2) { animation-delay: .1s; }
+        .skill-card:nth-child(3), .project-card:nth-child(3), .photo-card:nth-child(3), .social-card:nth-child(3) { animation-delay: .2s; }
+        .skill-card:nth-child(4), .project-card:nth-child(4), .photo-card:nth-child(4), .social-card:nth-child(4) { animation-delay: .3s; }
+        .skill-card:hover, .project-card:hover, .photo-card:hover { transform: translateY(-8px); }
+        .hero-social a:hover { transform: translateY(-5px) scale(1.1) rotate(3deg); }
+        #social-section { background: linear-gradient(135deg, #10233f, #0f766e); }
+        footer.page-footer { background: #0b1930; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
 </head>
@@ -499,10 +673,19 @@
         <!-- Hero Section -->
         <div class="hero">
             <div class="container">
-                <h3 class="white-text">Full-Stack Developer</h3>
+                <p class="hero-kicker">FULL-STACK DEVELOPER · VISUAL STORYTELLER</p>
                 <h1 class="white-text">Emmanuel Asuva</h1>
-                <h5 class="light">Cloud Practitioner | Multimedia Engineer | C.E.O</h5>
-                <p>Bridging the gap between technical infrastructure and creative storytelling.</p>
+                <h5 class="light">Building useful digital products with a filmmaker's eye.</h5>
+                <p>I design reliable web experiences, cloud-ready systems, and visual stories that make ideas easier to understand and remember.</p>
+
+                <div class="hero-actions">
+                    <a href="#projects" class="btn-large waves-effect waves-light amber darken-3">
+                        <i class="fas fa-arrow-down left"></i>Explore my work
+                    </a>
+                    <a href="mailto:aligulaemmanuel@gmail.com" class="btn-large hero-contact waves-effect waves-light">
+                        <i class="fas fa-paper-plane left"></i>Start a conversation
+                    </a>
+                </div>
                 
                 <!-- Social Media Links -->
                 <div class="hero-social">
@@ -527,8 +710,11 @@
                     <a href="https://t.me/tocky_manu" target="_blank" class="social-tg tooltipped" data-position="bottom" data-tooltip="Eye Witness TG">
                         <i class="fab fa-telegram-plane"></i>
                     </a>
-                    <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="social-wa tooltipped" data-position="bottom" data-tooltip="WhatsApp">
+                    <a href="https://wa.me/254790197316" target="_blank" class="social-wa tooltipped" data-position="bottom" data-tooltip="WhatsApp">
                         <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="tel:+254790197316" class="social-phone tooltipped" data-position="bottom" data-tooltip="Call +254 790 197316">
+                        <i class="fas fa-phone"></i>
                     </a>
                     <a href="https://github.com/aligulaemmanuel-sketch" target="_blank" class="social-github tooltipped" data-position="bottom" data-tooltip="GitHub">
                         <i class="fab fa-github"></i>
@@ -543,32 +729,32 @@
                     <span class="skill-tag tag-creative"><i class="fas fa-film"></i>Multimedia</span>
                 </div>
                 
-                <br><br>
-                <a href="https://github.com/aligulaemmanuel-sketch/Di-bootcamp" target="_blank" class="btn-large waves-effect waves-light amber darken-3 z-depth-2">
-                    <i class="fab fa-github left"></i>View GitHub
-                </a>
             </div>
         </div>
 
         <!-- Mission Section -->
         <section id="mission">
             <div class="container">
-                <h3 class="section-title center">The Mission</h3>
-                <p class="mission-text">
-                    I am an <strong>AWS Certified Cloud Practitioner</strong> and <strong>Full-Stack Developer</strong> standing at the intersection of robust infrastructure and cinematic storytelling.
-                    <br><br>
-                    As C.E.O and founder of my digital brand, I combine technical foundation in <strong>Python (Flask)</strong> and Cloud Systems with creative expertise in multimedia production. I build scalable web solutions that are as functional as they are secure.
-                    <br><br>
-                    My background as a trained sound engineer and videographer gives me a unique edge: I don't just build the backend; I understand the high-fidelity content that lives on it. Currently deep-diving into <strong>Artificial Intelligence</strong>, integrating LLMs and automated workflows to revolutionize how we edit video and write code.
-                    <br><br>
-                    <em>Efficiency through Innovation.</em>
-                </p>
-                
-                <div class="status-badges">
-                    <div class="status-badge cloud">$ cloud_status: certified</div>
-                    <div class="status-badge multimedia">$ multimedia: production_ready</div>
-                    <div class="status-badge ai">$ ai_learning: active</div>
-                    <div class="status-badge" style="border-color: #25d366; color: #1b5e20; background: rgba(37, 211, 102, 0.05);">$ role: ceo_founder</div>
+                <h3 class="section-title center">Creative Technologist &amp; Multimedia Architect</h3>
+                <div class="mission-layout">
+                    <img class="mission-portrait" src="camera-operator.jpg" alt="Emmanuel filming with a professional camera">
+                    <div>
+                        <p class="mission-text">
+                            I am an <strong>AWS Certified Cloud Practitioner</strong> and <strong>Full-Stack Developer</strong> standing at the intersection of robust cloud infrastructure and cinematic storytelling.
+                            <br><br>
+                            As the <strong>C.E.O. &amp; Founder</strong> of my digital brand, I fuse a technical foundation in Python (Flask) and Cloud Systems with creative expertise in photography, videography, and post-production. I engineer scalable web solutions that are as functional as they are secure.
+                            <br><br>
+                            My multidisciplinary background as a trained <strong>sound engineer, photographer, videographer, and editor</strong> gives me a distinct edge: I don't just build the backend—I understand the high-fidelity content that lives on it. Currently deep-diving into <strong>Artificial Intelligence</strong>, integrating LLMs and automated workflows to revolutionize code generation and video post-production.
+                            <br><br>
+                            <strong>Core Philosophy:</strong> <em>Efficiency through Innovation.</em>
+                        </p>
+                        <div class="status-badges">
+                            <div class="status-badge cloud">$ cloud_status: certified</div>
+                            <div class="status-badge multimedia">$ multimedia: production_ready</div>
+                            <div class="status-badge ai">$ ai_learning: active</div>
+                            <div class="status-badge" style="border-color: #25d366; color: #1b5e20; background: rgba(37, 211, 102, 0.05);">$ role: ceo_founder</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -634,6 +820,10 @@
                         </svg>
                         C.E.O
                     </div>
+                    <div class="branded-tag"><i class="fas fa-camera"></i> Photographer</div>
+                    <div class="branded-tag"><i class="fas fa-video"></i> Videographer</div>
+                    <div class="branded-tag"><i class="fas fa-image"></i> Photo Editor</div>
+                    <div class="branded-tag"><i class="fas fa-film"></i> Video Editor</div>
                 </div>
 
                 <div class="row">
@@ -659,12 +849,12 @@
                                 <div class="skill-icon multimedia">
                                     <i class="fas fa-film"></i>
                                 </div>
-                                <h5 style="font-weight: 600; color: var(--primary-indigo);">Multimedia</h5>
-                                <p style="color: #546e7a; line-height: 1.6;">Adobe Premiere Pro, After Effects, Sound Engineering, & Cinematic Production.</p>
+                                <h5 style="font-weight: 600; color: var(--primary-indigo);">Photo & Video</h5>
+                                <p style="color: #546e7a; line-height: 1.6;">Photography, videography, photo editing, video editing, sound engineering, and cinematic production.</p>
                                 <div style="margin-top: 20px;">
-                                    <span class="skill-tag tag-creative">Premiere Pro</span>
-                                    <span class="skill-tag tag-creative">After Effects</span>
-                                    <span class="skill-tag tag-creative">Audio</span>
+                                    <span class="skill-tag tag-creative">Photography</span>
+                                    <span class="skill-tag tag-creative">Video Editing</span>
+                                    <span class="skill-tag tag-creative">Photo Editing</span>
                                 </div>
                             </div>
                         </div>
@@ -698,6 +888,9 @@
                 <div class="row">
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
+                            <div class="project-visual project-bakery" aria-label="The Tocky Bakery project preview">
+                                <i class="fas fa-bread-slice"></i><span>The Tocky Bakery</span>
+                            </div>
                             <div class="card-content">
                                 <span class="card-title">The Tocky Bakery</span>
                                 <p style="color: #546e7a; margin-bottom: 15px;">An e-commerce platform built with Flask featuring a functional "Add to Cart" system and database storage.</p>
@@ -716,8 +909,11 @@
                     </div>
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
+                            <div class="project-visual project-tribute" aria-label="Raila Tribute project preview">
+                                <i class="fas fa-landmark"></i><span>Raila Tribute</span>
+                            </div>
                             <div class="card-content">
-                                <span class="card-title">Patrice Lumumba Tribute</span>
+                                <span class="card-title">Raila Tribute</span>
                                 <p style="color: #546e7a; margin-bottom: 15px;">A responsive historical archive utilizing advanced CSS Grid and semantic HTML5 structures.</p>
                                 <div class="project-tags">
                                     <span class="project-tag">HTML5</span>
@@ -726,7 +922,7 @@
                                 </div>
                             </div>
                             <div class="card-action" style="border-top: 1px solid rgba(0,0,0,0.05);">
-                                <a href="https://github.com/aligulaemmanuel-sketch/Di-bootcamp" target="_blank" class="waves-effect">
+                                <a href="https://tribute-page-livid.vercel.app" target="_blank" rel="noopener noreferrer" class="waves-effect">
                                     <i class="fas fa-play-circle" style="margin-right: 5px;"></i>Live Demo
                                 </a>
                             </div>
@@ -734,6 +930,9 @@
                     </div>
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
+                            <div class="project-visual project-solon" aria-label="Solon project preview">
+                                <i class="fas fa-layer-group"></i><span>Solon</span>
+                            </div>
                             <div class="card-content">
                                 <span class="card-title">Solon</span>
                                 <p style="color: #546e7a; margin-bottom: 15px;">A software development project focused on building a practical, modern web experience.</p>
@@ -767,21 +966,65 @@
             <div class="container">
                 <h3 class="section-title center">My Gallery</h3>
                 <div class="photo-grid">
-                    <a class="photo-card" href="https://photos.google.com/photo/AF1QipPwBRNkWhRmpVfwYrUHk3hTJS3i_dAC2LOfORsa" target="_blank">
-                        <img src="https://lh3.googleusercontent.com/p/AF1QipPwBRNkWhRmpVfwYrUHk3hTJS3i_dAC2LOfORsa=w800" alt="Gallery photo 1">
-                        <span>Photo 1</span>
+                    <a class="photo-card" href="camera-operator.jpg" target="_blank">
+                        <img src="camera-operator.jpg" alt="Emmanuel filming with a professional camera"><span>Behind the Camera</span>
                     </a>
-                    <a class="photo-card" href="https://photos.google.com/photo/AF1QipNWJD3s-5s7koCEXA-Y9MtYCMs7F1cniZia7AQp" target="_blank">
-                        <img src="https://lh3.googleusercontent.com/p/AF1QipNWJD3s-5s7koCEXA-Y9MtYCMs7F1cniZia7AQp=w800" alt="Gallery photo 2">
-                        <span>Photo 2</span>
+                    <a class="photo-card" href="portrait-formal-yellow.jpg" target="_blank">
+                        <img src="portrait-formal-yellow.jpg" alt="Formal portrait against a yellow backdrop"><span>Golden Portrait</span>
                     </a>
-                    <a class="photo-card" href="https://photos.google.com/photo/AF1QipPJZrvIyTtqd5enr0BVXhLbtGlOI1GX4NpCfu28" target="_blank">
-                        <img src="https://lh3.googleusercontent.com/p/AF1QipPJZrvIyTtqd5enr0BVXhLbtGlOI1GX4NpCfu28=w800" alt="Gallery photo 3">
-                        <span>Photo 3</span>
+                    <a class="photo-card" href="portrait-formal-orange.jpg" target="_blank">
+                        <img src="portrait-formal-orange.jpg" alt="Formal portrait against an orange backdrop"><span>Warm Portrait</span>
                     </a>
-                    <a class="photo-card" href="https://photos.google.com/photo/AF1QipPqRu1EjOP06914gDROOwCoNBnjO9dmYp8nY3b5" target="_blank">
-                        <img src="https://lh3.googleusercontent.com/p/AF1QipPqRu1EjOP06914gDROOwCoNBnjO9dmYp8nY3b5=w800" alt="Gallery photo 4">
-                        <span>Photo 4</span>
+                    <a class="photo-card" href="portrait-formal-golden-hour.jpg" target="_blank">
+                        <img src="portrait-formal-golden-hour.jpg" alt="Formal portrait in warm outdoor light"><span>Golden Hour</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-01.jpg" target="_blank">
+                        <img src="portrait-session-01.jpg" alt="Portrait session image one"><span>Portrait Session I</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-02.jpg" target="_blank">
+                        <img src="portrait-session-02.jpg" alt="Portrait session image two"><span>Portrait Session II</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-03.jpg" target="_blank">
+                        <img src="portrait-session-03.jpg" alt="Portrait session image three"><span>Portrait Session III</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-04.jpg" target="_blank">
+                        <img src="portrait-session-04.jpg" alt="Portrait session image four"><span>Portrait Session IV</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-05.jpg" target="_blank">
+                        <img src="portrait-session-05.jpg" alt="Portrait session image five"><span>Portrait Session V</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-06.jpg" target="_blank">
+                        <img src="portrait-session-06.jpg" alt="Portrait session image six"><span>Portrait Session VI</span>
+                    </a>
+                    <a class="photo-card" href="portrait-session-07.jpg" target="_blank">
+                        <img src="portrait-session-07.jpg" alt="Portrait session image seven"><span>Portrait Session VII</span>
+                    </a>
+                    <a class="photo-card" href="outdoor-character.jpg" target="_blank">
+                        <img src="outdoor-character.jpg" alt="Outdoor character portrait surrounded by greenery"><span>Outdoor Character</span>
+                    </a>
+                    <a class="photo-card" href="evening-portrait.webp" target="_blank">
+                        <img src="evening-portrait.webp" alt="Portrait captured in evening light"><span>Evening Portrait</span>
+                    </a>
+                    <a class="photo-card" href="visual-story.webp" target="_blank">
+                        <img src="visual-story.webp" alt="Outdoor visual storytelling portrait"><span>Visual Story</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-06.jpg" target="_blank">
+                        <img src="editorial-session-06.jpg" alt="Editorial photography session six"><span>Editorial Session VI</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-08.jpg" target="_blank">
+                        <img src="editorial-session-08.jpg" alt="Editorial photography session eight"><span>Editorial Session VIII</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-09.jpg" target="_blank">
+                        <img src="editorial-session-09.jpg" alt="Editorial photography session nine"><span>Editorial Session IX</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-10.jpg" target="_blank">
+                        <img src="editorial-session-10.jpg" alt="Editorial photography session ten"><span>Editorial Session X</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-11.jpg" target="_blank">
+                        <img src="editorial-session-11.jpg" alt="Editorial photography session eleven"><span>Editorial Session XI</span>
+                    </a>
+                    <a class="photo-card" href="editorial-session-12.jpg" target="_blank">
+                        <img src="editorial-session-12.jpg" alt="Editorial photography session twelve"><span>Editorial Session XII</span>
                     </a>
                 </div>
             </div>
@@ -857,12 +1100,17 @@
                         </div>
                     </a>
                     
-                    <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="social-card">
+                    <a href="https://wa.me/254790197316" target="_blank" class="social-card">
                         <i class="fab fa-whatsapp" style="background: #25d366;"></i>
                         <div>
                             <div class="handle">Tocky Manu</div>
                             <div class="platform">WhatsApp Business</div>
                         </div>
+                    </a>
+
+                    <a href="tel:+254790197316" class="social-card">
+                        <i class="fas fa-phone" style="background: #0f766e;"></i>
+                        <div><div class="handle">+254 790 197316</div><div class="platform">Phone calls</div></div>
                     </a>
                     
                     <a href="https://github.com/aligulaemmanuel-sketch" target="_blank" class="social-card">
@@ -886,7 +1134,7 @@
                     <p class="grey-text text-lighten-4" style="line-height: 1.8;">
                         <strong>Full-Stack Developer</strong> | <strong>C.E.O</strong><br>
                         Building digital experiences that merge code with creativity.
-                        Available for freelance cloud architecture, full-stack development, and professional video production.
+                        Available for freelance cloud architecture, full-stack development, photography, videography, photo editing, and video editing.
                     </p>
                     <div class="footer-social">
                         <a href="https://instagram.com/tocky_manu" target="_blank" class="ig-hover tooltipped" data-position="top" data-tooltip="Instagram">
@@ -901,8 +1149,11 @@
                         <a href="https://t.me/tocky_manu" target="_blank" class="tg-hover tooltipped" data-position="top" data-tooltip="Telegram">
                             <i class="fab fa-telegram-plane"></i>
                         </a>
-                        <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="wa-hover tooltipped" data-position="top" data-tooltip="WhatsApp">
+                        <a href="https://wa.me/254790197316" target="_blank" class="wa-hover tooltipped" data-position="top" data-tooltip="WhatsApp">
                             <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="tel:+254790197316" class="tooltipped" data-position="top" data-tooltip="Call +254 790 197316">
+                            <i class="fas fa-phone"></i>
                         </a>
                         <a href="https://github.com/aligulaemmanuel-sketch" target="_blank" class="github-hover tooltipped" data-position="top" data-tooltip="GitHub">
                             <i class="fab fa-github"></i>
