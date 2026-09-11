@@ -40,16 +40,21 @@
                 console.log("Exercise 3 Result:", objectStarWars.result);
                 
                 // Display the result
+                const starship = objectStarWars.result;
                 resultDiv.innerHTML = `
-                    <div class="space-y-3">
-                        <h3 class="font-bold text-lg text-blue-600">${objectStarWars.result.name}</h3>
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div><span class="font-semibold text-gray-700">Model:</span> ${objectStarWars.result.model}</div>
-                            <div><span class="font-semibold text-gray-700">Manufacturer:</span> ${objectStarWars.result.manufacturer}</div>
-                            <div><span class="font-semibold text-gray-700">Class:</span> ${objectStarWars.result.starship_class}</div>
-                            <div><span class="font-semibold text-gray-700">Cost:</span> ${objectStarWars.result.cost_in_credits}</div>
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
+                            <h3 class="font-bold text-lg text-blue-600 mb-3">${starship.name || 'Unknown'}</h3>
+                            <div class="space-y-2">
+                                <p><span class="font-semibold text-gray-700">Model:</span> <span class="text-gray-900">${starship.model || 'N/A'}</span></p>
+                                <p><span class="font-semibold text-gray-700">Manufacturer:</span> <span class="text-gray-900">${starship.manufacturer || 'N/A'}</span></p>
+                                <p><span class="font-semibold text-gray-700">Class:</span> <span class="text-gray-900">${starship.starship_class || 'N/A'}</span></p>
+                                <p><span class="font-semibold text-gray-700">Cost in Credits:</span> <span class="text-gray-900">${starship.cost_in_credits || 'N/A'}</span></p>
+                                <p><span class="font-semibold text-gray-700">Length:</span> <span class="text-gray-900">${starship.length || 'N/A'} meters</span></p>
+                                <p><span class="font-semibold text-gray-700">Crew:</span> <span class="text-gray-900">${starship.crew || 'N/A'}</span></p>
+                            </div>
                         </div>
-                        <pre class="bg-gray-200 p-3 rounded text-xs overflow-auto max-h-48">${JSON.stringify(objectStarWars.result, null, 2)}</pre>
+                        <p class="text-xs text-gray-500 text-center">Data fetched successfully ✓</p>
                     </div>
                 `;
             } catch (error) {
