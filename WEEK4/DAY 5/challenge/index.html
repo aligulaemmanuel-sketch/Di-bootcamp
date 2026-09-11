@@ -3,90 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Dashboard - Giphy & Sunrise</title>
+    <title>Challenge - Sunrise Comparator</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
-    <div class="max-w-5xl mx-auto space-y-10">
-        
-        <!-- Giphy Section -->
-        <section class="bg-white p-6 rounded-xl shadow-md">
-            <h1 class="text-3xl font-bold text-gray-800 mb-6">Giphy Explorer</h1>
+<body class="bg-gradient-to-br from-orange-900 to-orange-800 min-h-screen p-4 md:p-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-orange-600 mb-2">Challenge</h1>
+            <h2 class="text-xl text-gray-600 mb-6">Sunrise Comparator with Promise.all()</h2>
             
-            <form class="flex flex-col sm:flex-row gap-3 mb-6">
-                <input type="text" id="search" placeholder="Enter a search term..." 
-                    class="flex-grow p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                <button type="submit" id="search-btn"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-                    Search
-                </button>
-                <button type="button" id="delete-all" 
-                    class="bg-gray-200 hover:bg-red-100 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg font-semibold transition">
-                    Clear All
-                </button>
-            </form>
-
-            <div id="gif-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- GIFs injected here -->
-            </div>
-        </section>
-
-        <!-- Sunrise Section -->
-        <section class="bg-white p-6 rounded-xl shadow-md border-t-4 border-orange-400">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Sunrise Comparator</h2>
-            <p class="text-gray-500 mb-6">Check the console for results after fetching.</p>
+            <p class="text-gray-600 mb-6">Compare sunrise times between two locations using Promise.all() for concurrent API requests</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700">Location 1</h3>
-                    <input type="number" id="lat1" placeholder="Latitude" value="36.72016" class="w-full p-2 border rounded-lg">
-                    <input type="number" id="lon1" placeholder="Longitude" value="-4.42034" class="w-full p-2 border rounded-lg">
+                    <h3 class="font-semibold text-gray-700 text-lg">Location 1 (Málaga, Spain)</h3>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">Latitude</label>
+                        <input type="number" id="lat1" placeholder="Latitude" value="36.72016" step="0.0001" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">Longitude</label>
+                        <input type="number" id="lon1" placeholder="Longitude" value="-4.42034" step="0.0001" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
                 </div>
+                
                 <div class="space-y-3">
-                    <h3 class="font-semibold text-gray-700">Location 2</h3>
-                    <input type="number" id="lat2" placeholder="Latitude" value="40.71278" class="w-full p-2 border rounded-lg">
-                    <input type="number" id="lon2" placeholder="Longitude" value="-74.0060" class="w-full p-2 border rounded-lg">
+                    <h3 class="font-semibold text-gray-700 text-lg">Location 2 (New York, USA)</h3>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">Latitude</label>
+                        <input type="number" id="lat2" placeholder="Latitude" value="40.71278" step="0.0001" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">Longitude</label>
+                        <input type="number" id="lon2" placeholder="Longitude" value="-74.0060" step="0.0001" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
                 </div>
             </div>
             
-            <button id="fetch-sunrise"
-                class="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold transition">
-                Fetch Sunrise Times
+            <button onclick="compareSunrises()" class="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 rounded-lg font-semibold transition w-full">
+                Compare Sunrises
             </button>
-
-            <div id="sunrise-results" class="hidden mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
-                <div class="p-4 bg-orange-50 rounded-lg border border-orange-100">
-                    <p class="text-sm text-orange-600 font-bold uppercase">City 1 Sunrise</p>
-                    <p id="sunrise-1-val" class="text-2xl font-mono text-gray-800">--:--</p>
-                </div>
-                <div class="p-4 bg-orange-50 rounded-lg border border-orange-100">
-                    <p class="text-sm text-orange-600 font-bold uppercase">City 2 Sunrise</p>
-                    <p id="sunrise-2-val" class="text-2xl font-mono text-gray-800">--:--</p>
-                </div>
+            
+            <div id="result" class="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200 min-h-40">
+                <p class="text-gray-500">Click the button to compare sunrise times...</p>
             </div>
-        </section>
+        </div>
     </div>
 
-    <script>const apiKey = "hpVzYck2zJ9n5cl6tlwN8BKK4q6dq2Hy";</script>
-    <script src="promisall(sunrise).js"></script>
-    <script src="gifs.js"></script>
     <script>
-        const sunBtn = document.getElementById('fetch-sunrise');
-        sunBtn.onclick = async () => {
-            sunBtn.textContent = 'Fetching...';
-            sunBtn.disabled = true;
-            const results = await getSunrises(
-                document.getElementById('lat1').value, document.getElementById('lon1').value,
-                document.getElementById('lat2').value, document.getElementById('lon2').value
-            );
-            if (results) {
-                document.getElementById('sunrise-results').classList.remove('hidden');
-                document.getElementById('sunrise-1-val').textContent = results[0];
-                document.getElementById('sunrise-2-val').textContent = results[1];
+        async function getSunrises(lat1, lon1, lat2, lon2) {
+            const url1 = `https://api.sunrise-sunset.org/json?lat=${lat1}&lng=${lon1}`;
+            const url2 = `https://api.sunrise-sunset.org/json?lat=${lat2}&lng=${lon2}`;
+
+            try {
+                // Both requests start at the same time using Promise.all()
+                const [data1, data2] = await Promise.all([
+                    fetch(url1).then(res => {
+                        if (!res.ok) throw new Error(`Request 1 failed: ${res.status}`);
+                        return res.json();
+                    }),
+                    fetch(url2).then(res => {
+                        if (!res.ok) throw new Error(`Request 2 failed: ${res.status}`);
+                        return res.json();
+                    })
+                ]);
+
+                return [
+                    { sunrise: data1.results.sunrise, sunset: data1.results.sunset, data: data1.results },
+                    { sunrise: data2.results.sunrise, sunset: data2.results.sunset, data: data2.results }
+                ];
+            } catch (error) {
+                throw error;
             }
-            sunBtn.textContent = 'Fetch Sunrise Times';
-            sunBtn.disabled = false;
-        };
+        }
+
+        async function compareSunrises() {
+            const lat1 = parseFloat(document.getElementById("lat1").value);
+            const lon1 = parseFloat(document.getElementById("lon1").value);
+            const lat2 = parseFloat(document.getElementById("lat2").value);
+            const lon2 = parseFloat(document.getElementById("lon2").value);
+
+            const result = document.getElementById("result");
+            result.innerHTML = '<p class="text-gray-600">Loading...</p>';
+
+            try {
+                const sunrises = await getSunrises(lat1, lon1, lat2, lon2);
+                
+                result.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-r from-orange-100 to-orange-50 p-4 rounded-lg border-l-4 border-orange-600">
+                            <p class="text-gray-600 font-semibold mb-2">Location 1 (${lat1}, ${lon1})</p>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold">Sunrise:</span> <span class="text-orange-600 font-bold text-lg">${sunrises[0].sunrise}</span></p>
+                                <p><span class="font-semibold">Sunset:</span> ${sunrises[0].sunset}</p>
+                                <p><span class="font-semibold">Day Length:</span> ${sunrises[0].data.day_length} seconds</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-blue-100 to-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
+                            <p class="text-gray-600 font-semibold mb-2">Location 2 (${lat2}, ${lon2})</p>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="font-semibold">Sunrise:</span> <span class="text-blue-600 font-bold text-lg">${sunrises[1].sunrise}</span></p>
+                                <p><span class="font-semibold">Sunset:</span> ${sunrises[1].sunset}</p>
+                                <p><span class="font-semibold">Day Length:</span> ${sunrises[1].data.day_length} seconds</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                console.log("Sunrise comparison complete:", sunrises);
+            } catch (error) {
+                console.error("Error:", error);
+                result.innerHTML = `<p class="text-red-600 font-semibold">Error: ${error.message}</p>`;
+            }
+        }
     </script>
 </body>
 </html>

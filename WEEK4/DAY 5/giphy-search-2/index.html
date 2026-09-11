@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giphy Search — Exercise 1</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <main class="app">
+    <h1>Giphy Search</h1>
+    <p class="subtitle">Search a category — we'll fetch matching gifs and show you one at random.</p>
+
+    <form id="gif-form">
+      <input
+        type="text"
+        id="gif-search"
+        placeholder="e.g. sun, cats, coding..."
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Search</button>
+    </form>
+
+    <p id="error-message" class="error"></p>
+
+    <div id="gif-container"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
