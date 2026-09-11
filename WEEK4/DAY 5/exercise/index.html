@@ -39,8 +39,8 @@
                 const objectStarWars = await response.json();
                 console.log("Exercise 3 Result:", objectStarWars.result);
                 
-                // Display the result
-                const starship = objectStarWars.result;
+                // Display the result - data is in result.properties
+                const starship = objectStarWars.result.properties;
                 resultDiv.innerHTML = `
                     <div class="space-y-4">
                         <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-600">
