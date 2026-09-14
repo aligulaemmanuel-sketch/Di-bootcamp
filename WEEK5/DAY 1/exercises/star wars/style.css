@@ -1,5 +1,8 @@
 body {
-    background: #222;
+    background: url('https://raw.githubusercontent.com/devtlv/studentsGitHub/master/JS/Week%205/Day%205/Mini%20Projects/Mini-Project%201%20-%20Star%20Wars%20Ajax/loading.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: #FFE81F; /* Star Wars Yellow */
     font-family: 'Arial', sans-serif;
     display: flex;

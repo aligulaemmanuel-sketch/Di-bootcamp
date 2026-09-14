@@ -1,4 +1,4 @@
-const apiKey = 'YOUR_API_KEY'; // Ensure this is a valid key from exchangerate-api.com
+const apiKey = 'a16d5a9765757af44534a2cd'; // Exchange Rate API key
 const fromCurrency = document.getElementById('from-currency');
 const toCurrency = document.getElementById('to-currency');
 const amountInput = document.getElementById('amount');
