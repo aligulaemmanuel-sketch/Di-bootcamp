@@ -7,7 +7,7 @@ function multiplyProperty<T extends HasNumericProperty, K extends keyof T>(
     key: K, 
     factor: number
 ): number {
-    return obj[key] * factor;
+    return obj[key]! * factor;
 }
 
 // Test case

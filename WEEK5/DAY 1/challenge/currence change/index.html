@@ -6,10 +6,24 @@
     <title>Currency Converter</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styie.css">
 </head>
 <body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-6xl grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(420px,1.15fr)] items-center">
+        <!-- Currency photography panel -->
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-1 md:grid-rows-2 h-full min-h-[260px] md:min-h-[560px]">
+            <div class="relative overflow-hidden rounded-3xl shadow-2xl min-h-[220px] md:min-h-0 md:row-span-2">
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=85" alt="Card payment at a checkout" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <p class="absolute bottom-5 left-5 right-5 text-lg font-bold text-white">Move money with confidence</p>
+            </div>
+            <div class="relative overflow-hidden rounded-3xl shadow-2xl min-h-[140px]">
+                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=900&q=85" alt="World currencies and coins" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent"></div>
+                <p class="absolute bottom-4 left-4 text-sm font-bold text-white">Global rates, one place</p>
+            </div>
+        </div>
+
         <div class="bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
             <!-- Header -->
             <div class="text-center mb-8">
