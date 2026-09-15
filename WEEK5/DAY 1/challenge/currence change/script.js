@@ -3,27 +3,76 @@ const fromCurrency = document.getElementById('from-currency');
 const toCurrency = document.getElementById('to-currency');
 const amountInput = document.getElementById('amount');
 const resultText = document.getElementById('result-text');
+const errorMessage = document.getElementById('error-message');
+const loadingSpinner = document.getElementById('loading-spinner');
 const fromFlag = document.getElementById('from-flag');
 const toFlag = document.getElementById('to-flag');
 const convertBtn = document.getElementById('convert-btn');
 const switchBtn = document.getElementById('switch-btn');
+
+let isConverting = false;
 
 function updateFlag(element, currencyCode) {
     // Mapping for common currencies that don't match the 2-letter country code rule
     const customMappings = {
         'EUR': 'EU',
         'BTC': 'US', // Placeholder or generic
-        'ANG': 'NL'
+        'ANG': 'NL',
+        'XAU': 'US', // Gold
+        'XAG': 'US'  // Silver
     };
 
     const countryCode = customMappings[currencyCode] || currencyCode.substring(0, 2);
     element.src = `https://flagsapi.com/${countryCode}/flat/64.png`;
-    element.onerror = () => element.src = 'https://flagsapi.com/US/flat/64.png'; // Fallback flag
+    element.onerror = () => element.src = 'https://flagsapi.com/UN/flat/64.png'; // Fallback flag
 }
 
-// 3. Core Logic
+function clearMessages() {
+    resultText.textContent = '';
+    resultText.classList.remove('success', 'error');
+    errorMessage.textContent = '';
+    errorMessage.style.display = 'none';
+    loadingSpinner.style.display = 'none';
+}
+
+function showLoading() {
+    clearMessages();
+    loadingSpinner.style.display = 'block';
+    convertBtn.disabled = true;
+}
+
+function showError(message) {
+    clearMessages();
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
+    resultText.classList.add('error');
+    convertBtn.disabled = false;
+}
+
+function showResult(result) {
+    clearMessages();
+    resultText.textContent = result;
+    resultText.classList.add('success');
+    convertBtn.disabled = false;
+}
+
+function hideLoading() {
+    loadingSpinner.style.display = 'none';
+    convertBtn.disabled = false;
+}
+
+function validateAmount(amount) {
+    const num = parseFloat(amount);
+    if (isNaN(num) || num <= 0) {
+        return false;
+    }
+    return true;
+}
+
+// Core Logic
 async function loadCurrencies() {
     try {
+        showLoading();
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/codes`);
         if (!response.ok) throw new Error('Failed to fetch currency codes');
         
@@ -31,8 +80,10 @@ async function loadCurrencies() {
         const codes = data.supported_codes;
 
         codes.forEach(([code, name]) => {
-            const option1 = new Option(`${code} - ${name}`, code);
-            const option2 = new Option(`${code} - ${name}`, code);
+            // Format: "Country Name (CURRENCY_CODE)"
+            const displayText = `${name} (${code})`;
+            const option1 = new Option(displayText, code);
+            const option2 = new Option(displayText, code);
             fromCurrency.add(option1);
             toCurrency.add(option2);
         });
@@ -44,28 +95,55 @@ async function loadCurrencies() {
         updateFlag(toFlag, 'ILS');
         
         // Perform initial conversion once currencies are loaded
+        hideLoading();
         handleConvert();
     } catch (error) {
-        resultText.innerText = "Error loading currencies. Check API key.";
+        showError("Error loading currencies. Please check your internet connection.");
+        console.error('Error loading currencies:', error);
     }
 }
 
 async function handleConvert() {
     const from = fromCurrency.value;
     const to = toCurrency.value;
-    const amount = amountInput.value || 1; // Default to 1 if empty
+    const amount = amountInput.value || 1;
 
-    if (!from || !to) return; // Prevent calling if codes aren't loaded yet
+    if (!from || !to) return;
 
-    resultText.innerText = "Converting...";
+    // Validate amount
+    if (!validateAmount(amount)) {
+        showError("Please enter a valid amount greater than 0");
+        return;
+    }
+
+    if (isConverting) return;
+    isConverting = true;
+
+    showLoading();
+    
     try {
         const response = await fetch(`https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}/${amount}`);
-        if (!response.ok) throw new Error('Conversion failed');        
+        
+        if (!response.ok) {
+            if (response.status === 429) {
+                throw new Error('Too many requests. Please wait a moment and try again.');
+            }
+            throw new Error('Conversion failed');
+        }
+        
         const data = await response.json();
         
-        resultText.innerText = `${amount} ${from} = ${data.conversion_result.toFixed(2)} ${to}`;
+        if (data.result === 'error') {
+            throw new Error(data['error-type'] || 'Unknown error occurred');
+        }
+        
+        const result = `${parseFloat(amount)} ${from} = ${data.conversion_result.toFixed(2)} ${to}`;
+        showResult(result);
     } catch (error) {
-        resultText.innerText = "Error fetching rates.";
+        console.error('Conversion error:', error);
+        showError(`Error: ${error.message || 'Unable to fetch conversion rates'}`);
+    } finally {
+        isConverting = false;
     }
 }
 
@@ -76,16 +154,43 @@ function handleSwitch() {
     
     updateFlag(fromFlag, fromCurrency.value);
     updateFlag(toFlag, toCurrency.value);
-    handleConvert(); 
+    
+    // Perform conversion with new currencies
+    if (resultText.textContent) {
+        handleConvert();
+    }
 }
 
-// 4. Event Listeners
+// Event Listeners
 convertBtn.addEventListener('click', handleConvert);
 switchBtn.addEventListener('click', handleSwitch);
-fromCurrency.addEventListener('change', () => updateFlag(fromFlag, fromCurrency.value));
-toCurrency.addEventListener('change', () => updateFlag(toFlag, toCurrency.value));
+fromCurrency.addEventListener('change', () => {
+    updateFlag(fromFlag, fromCurrency.value);
+    if (resultText.textContent) {
+        handleConvert();
+    }
+});
+toCurrency.addEventListener('change', () => {
+    updateFlag(toFlag, toCurrency.value);
+    if (resultText.textContent) {
+        handleConvert();
+    }
+});
 amountInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleConvert();
+    if (e.key === 'Enter') {
+        handleConvert();
+    }
+});
+
+amountInput.addEventListener('input', () => {
+    // Real-time conversion as user types (optional - only if a result is already shown)
+    if (resultText.textContent && !isConverting) {
+        // Debounce the conversion
+        clearTimeout(amountInput.conversionTimeout);
+        amountInput.conversionTimeout = setTimeout(() => {
+            handleConvert();
+        }, 500);
+    }
 });
 
 // Initialize

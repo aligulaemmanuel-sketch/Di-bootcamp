@@ -1,43 +1,64 @@
-.converter-box {
-    background: #f4f4f4;
-    padding: 30px;
-    border-radius: 15px;
-    max-width: 400px;
-    margin: 50px auto;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
-    text-align: center;
+/* Custom animations not in Tailwind by default */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-select, input {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-#switch-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    transition: transform 0.3s;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-#switch-btn:hover {
-    transform: rotate(180deg);
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
 }
 
-#convert-btn {
-    background: #28a745;
-    color: white;
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
-    border: none;
-    margin-top: 15px;
-    cursor: pointer;
+.animate-slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Custom select styling */
+select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+    padding-right: 28px;
+}
+
+/* Remove spinners from number input */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

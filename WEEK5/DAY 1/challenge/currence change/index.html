@@ -2,48 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Currency Converter</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            font-family: sans-serif;
-        }
-        .converter-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .select-group img { width: 30px; vertical-align: middle; margin-right: 5px; }
-        .result-area { margin-top: 20px; min-height: 1.5em; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="converter-box">
-        <h2>Currency Converter</h2>
-        <div class="select-group">
-            <img id="from-flag" src="https://flagsapi.com/US/flat/64.png" alt="flag">
-            <select id="from-currency"></select>
-            <button id="switch-btn"><i class="fa-solid fa-right-left"></i></button>
-            <img id="to-flag" src="https://flagsapi.com/IL/flat/64.png" alt="flag">
-            <select id="to-currency"></select>
-        </div>
-        <div class="input-group" style="margin: 20px 0;">
-            <input type="number" id="amount" value="1" min="1">
-        </div>
-        <button id="convert-btn">Convert</button>
-        <div class="result-area">
-            <h3 id="result-text"></h3>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="text-5xl mb-4 animate-bounce">
+                    <i class="fas fa-money-bill-wave text-indigo-600"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Currency Converter</h1>
+                <p class="text-gray-500 text-sm">Real-time exchange rates</p>
+            </div>
+
+            <!-- Exchange Section -->
+            <div class="mb-6">
+                <!-- Desktop Layout -->
+                <div class="hidden md:grid grid-cols-3 gap-4 items-start">
+                    <!-- From Currency -->
+                    <div>
+                        <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-2">From</label>
+                        <div class="flex items-center border-2 border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-white hover:border-indigo-600 hover:shadow-md transition-all duration-300 focus-within:border-indigo-600 focus-within:shadow-md focus-within:bg-white group">
+                            <img id="from-flag" src="https://flagsapi.com/US/flat/64.png" alt="flag" class="w-8 h-6 rounded mr-2 object-cover group-hover:scale-110 transition-transform">
+                            <select id="from-currency" class="flex-1 bg-transparent font-semibold text-gray-800 outline-none cursor-pointer appearance-none text-sm" aria-label="From currency"></select>
+                        </div>
+                    </div>
+
+                    <!-- Switch Button -->
+                    <div class="flex items-end justify-center h-full pb-0">
+                        <button id="switch-btn" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300" title="Switch currencies" aria-label="Switch currencies">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </button>
+                    </div>
+
+                    <!-- To Currency -->
+                    <div>
+                        <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-2">To</label>
+                        <div class="flex items-center border-2 border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-white hover:border-indigo-600 hover:shadow-md transition-all duration-300 focus-within:border-indigo-600 focus-within:shadow-md focus-within:bg-white group">
+                            <img id="to-flag" src="https://flagsapi.com/IL/flat/64.png" alt="flag" class="w-8 h-6 rounded mr-2 object-cover group-hover:scale-110 transition-transform">
+                            <select id="to-currency" class="flex-1 bg-transparent font-semibold text-gray-800 outline-none cursor-pointer appearance-none text-sm" aria-label="To currency"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Layout -->
+                <div class="md:hidden space-y-4">
+                    <!-- From Currency -->
+                    <div>
+                        <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-2">From</label>
+                        <div class="flex items-center border-2 border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-white hover:border-indigo-600 hover:shadow-md transition-all duration-300 focus-within:border-indigo-600 focus-within:shadow-md focus-within:bg-white group">
+                            <img id="from-flag-mobile" src="https://flagsapi.com/US/flat/64.png" alt="flag" class="w-8 h-6 rounded mr-2 object-cover group-hover:scale-110 transition-transform">
+                            <select id="from-currency" class="flex-1 bg-transparent font-semibold text-gray-800 outline-none cursor-pointer appearance-none text-sm" aria-label="From currency"></select>
+                        </div>
+                    </div>
+
+                    <!-- Switch Button Mobile -->
+                    <div class="flex justify-center">
+                        <button id="switch-btn" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-300" title="Switch currencies" aria-label="Switch currencies">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </button>
+                    </div>
+
+                    <!-- To Currency -->
+                    <div>
+                        <label class="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-2">To</label>
+                        <div class="flex items-center border-2 border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-white hover:border-indigo-600 hover:shadow-md transition-all duration-300 focus-within:border-indigo-600 focus-within:shadow-md focus-within:bg-white group">
+                            <img id="to-flag-mobile" src="https://flagsapi.com/IL/flat/64.png" alt="flag" class="w-8 h-6 rounded mr-2 object-cover group-hover:scale-110 transition-transform">
+                            <select id="to-currency" class="flex-1 bg-transparent font-semibold text-gray-800 outline-none cursor-pointer appearance-none text-sm" aria-label="To currency"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amount Section -->
+            <div class="mb-6">
+                <label for="amount" class="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-2">Amount</label>
+                <div class="flex items-center border-2 border-gray-200 rounded-lg p-3 bg-gray-50 hover:bg-white hover:border-indigo-600 hover:shadow-md transition-all duration-300 focus-within:border-indigo-600 focus-within:shadow-md focus-within:bg-white">
+                    <i class="fas fa-coins text-indigo-600 mr-3"></i>
+                    <input 
+                        type="number" 
+                        id="amount" 
+                        value="1" 
+                        min="0.01" 
+                        step="0.01"
+                        placeholder="Enter amount"
+                        class="flex-1 bg-transparent font-semibold text-gray-800 outline-none"
+                        aria-label="Amount to convert"
+                    >
+                </div>
+            </div>
+
+            <!-- Convert Button -->
+            <button id="convert-btn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 uppercase tracking-wider flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-indigo-300 mb-6 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Convert currency">
+                <i class="fas fa-exchange-alt"></i> Convert
+            </button>
+
+            <!-- Result Area -->
+            <div class="min-h-20 flex items-center justify-center bg-gray-50 rounded-lg p-5 mb-6" role="region" aria-live="polite" aria-atomic="true">
+                <div id="result-text" class="text-2xl font-bold text-indigo-600 text-center animate-fade-in"></div>
+                <div id="loading-spinner" class="text-2xl text-indigo-600 animate-spin" style="display: none;">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                <div id="error-message" class="text-lg text-red-600 text-center" style="display: none;"></div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-l-4 border-indigo-600 p-4 rounded-lg flex gap-3">
+                <i class="fas fa-info-circle text-indigo-600 text-lg flex-shrink-0 mt-1"></i>
+                <p class="text-gray-700 text-sm leading-relaxed">Rates update in real-time from the Exchange Rate API</p>
+            </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
