@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duka-Tech Customer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                900: '#0f3d2e',
+                700: '#1d5f47',
+                500: '#31a66b',
+                200: '#ddf5ea',
+                gold: '#f7b500'
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        --green-900: #0f3d2e;
+        --green-700: #1d5f47;
+        --green-500: #31a66b;
+        --green-200: #ddf5ea;
+        --gold-500: #f7b500;
+        --white: #ffffff;
+        --bg: #ecf3f0;
+        --border: #dfeae6;
+        --muted: #5f6c67;
+        --charcoal: #1f2b27;
+        --danger: #d64a4a;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--charcoal);
+      }
+      a { text-decoration: none; }
+      button, input, select { font: inherit; }
+
+      .topbar {
+        background: var(--green-900);
+        color: var(--white);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--gold-500), #ffd34d);
+        color: var(--green-900);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: rgba(255,255,255,0.8);
+      }
+
+      .nav-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        background: var(--gold-500);
+        color: var(--green-900);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 20px 60px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #0f3d2e 0%, #153f37 40%, #194e46 100%);
+        color: var(--white);
+        padding: 48px 0 40px;
+      }
+
+      .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2.3rem, 4vw, 4rem);
+      }
+
+      .lead {
+        color: rgba(255,255,255,0.8);
+        margin: 0;
+        max-width: 60ch;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 1.5fr 0.9fr;
+        gap: 24px;
+        margin-top: 28px;
+      }
+
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 12px 30px rgba(15, 61, 46, 0.06);
+        padding: 22px;
+      }
+
+      .catalog {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 18px;
+      }
+
+      .product-card {
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        background: #f9fbfa;
+      }
+
+      .product-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+
+      .product-meta {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+      }
+
+      .price {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--green-900);
+        margin-bottom: 16px;
+      }
+
+      .product-card button,
+      .primary-btn,
+      .secondary-btn,
+      input, select {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 12px 14px;
+      }
+
+      .primary-btn {
+        border: none;
+        background: var(--gold-500);
+        color: var(--green-900);
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .secondary-btn {
+        background: var(--green-200);
+        border: none;
+        color: var(--green-900);
+        cursor: pointer;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .mini-label {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+      }
+
+      .receipt-box {
+        background: #f9fbfa;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px;
+      }
+
+      .receipt-lines {
+        display: grid;
+        gap: 8px;
+        margin: 14px 0;
+      }
+
+      .receipt-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--muted);
+      }
+
+      .receipt-total {
+        border-top: 1px dashed var(--border);
+        margin-top: 12px;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+      }
+
+      @media (max-width: 920px) {
+        .content { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bg-brand-900 text-white sticky top-0 z-20 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3 font-bold text-lg">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-gold to-yellow-300 text-brand-900 grid place-items-center">D</div>
+          <span>Duka-Tech Customer</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm text-white/80" aria-label="Customer navigation">
+          <a href="/manager" class="hover:text-white">Manager view</a>
+          <a href="/customer" class="hover:text-white">Customer home</a>
+        </nav>
+        <a class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" href="/manager">Open seller dashboard</a>
+      </div>
+    </header>
+
+    <section class="bg-gradient-to-r from-brand-900 via-brand-700 to-brand-500 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tight">Fresh essentials for your daily shop.</h1>
+        <p class="mt-4 max-w-2xl text-white/80 text-lg">Browse daily products, place a quick order, and share your receipt right from the store dashboard.</p>
+      </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 xl:grid-cols-[1.5fr_0.9fr] gap-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="text-xs uppercase tracking-[0.12em] font-bold text-slate-500">Available products</div>
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4" id="catalogGrid"></div>
+        </div>
+
+        <aside class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="text-xs uppercase tracking-[0.12em] font-bold text-slate-500">Quick purchase</div>
+          <form id="customerSaleForm" class="mt-5 grid gap-3">
+            <select id="customerProduct" class="border border-slate-200 rounded-xl px-3 py-2" required>
+              <option value="">Select product</option>
+            </select>
+            <input id="customerQuantity" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="1" value="1" placeholder="Quantity" required />
+            <input id="customerName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" value="Walk-in customer" placeholder="Customer name" />
+            <button class="rounded-xl bg-brand-gold text-brand-900 px-4 py-3 font-bold" type="submit">Buy now</button>
+          </form>
+
+          <div class="mt-6 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+            <strong id="receiptShopName" class="text-lg">Duka-Tech</strong>
+            <div class="mt-4 space-y-2 text-sm text-slate-600" id="receiptLines"></div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between font-bold text-slate-800">
+              <span>Total</span>
+              <span id="receiptTotal">Ksh 0</span>
+            </div>
+
+            <div class="mt-4 space-y-2">
+              <label class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500" for="smsPhoneNumber">Customer phone for SMS</label>
+              <input id="smsPhoneNumber" type="tel" placeholder="e.g. +254712345678" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm" />
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button class="w-full rounded-xl bg-brand-200 text-brand-900 px-4 py-3 font-bold" id="shareReceiptBtn">💬 WhatsApp</button>
+              <button class="w-full rounded-xl border border-slate-300 bg-white text-slate-700 px-4 py-3 font-bold" id="shareSmsReceiptBtn">✉️ SMS</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const state = {
+        products: [],
+        prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
+      };
+
+      const els = {
+        catalogGrid: document.getElementById('catalogGrid'),
+        customerProduct: document.getElementById('customerProduct'),
+        customerQuantity: document.getElementById('customerQuantity'),
+        customerName: document.getElementById('customerName'),
+        receiptLines: document.getElementById('receiptLines'),
+        receiptTotal: document.getElementById('receiptTotal'),
+        receiptShopName: document.getElementById('receiptShopName'),
+        smsPhoneNumber: document.getElementById('smsPhoneNumber')
+      };
+
+      async function apiRequest(url, options = {}) {
+        const response = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || 'Request failed');
+        return data;
+      }
+
+      async function loadCatalog() {
+        try {
+          const products = await apiRequest('/api/products');
+          state.products = products;
+          renderCatalog();
+          populateProductSelector();
+          applyPrefs();
+        } catch (error) {
+          alert(error.message || 'Unable to load products');
+        }
+      }
+
+      function renderCatalog() {
+        els.catalogGrid.innerHTML = state.products.map((product) => `
+          <div class="product-card">
+            <div class="product-name">${product.name}</div>
+            <div class="product-meta">
+              <span>${product.category}</span>
+              <span>${product.stock} in stock</span>
+            </div>
+            <div class="price">Ksh ${Number(product.price).toLocaleString('en-KE')}</div>
+            <button type="button" data-id="${product.id}">Quick buy</button>
+          </div>
+        `).join('');
+
+        els.catalogGrid.querySelectorAll('button[data-id]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const product = state.products.find((item) => item.id === Number(button.dataset.id));
+            if (!product) return;
+            els.customerProduct.value = product.id;
+            els.customerQuantity.value = 1;
+            showReceiptForSelection();
+          });
+        });
+      }
+
+      function populateProductSelector() {
+        els.customerProduct.innerHTML = '<option value="">Select product</option>' + state.products.map((product) => `
+          <option value="${product.id}">${product.name} - Ksh ${Number(product.price).toLocaleString('en-KE')}</option>
+        `).join('');
+      }
+
+      function applyPrefs() {
+        const shopName = state.prefs.shopName || 'Duka-Tech';
+        els.receiptShopName.textContent = shopName;
+      }
+
+      function showReceiptForSelection() {
+        const productId = Number(els.customerProduct.value);
+        const quantity = Number(els.customerQuantity.value) || 1;
+        const product = state.products.find((item) => item.id === productId);
+        if (!product) {
+          els.receiptLines.innerHTML = '<div class="receipt-line"><span>Select a product</span></div>';
+          els.receiptTotal.textContent = 'Ksh 0';
+          return;
+        }
+
+        const total = product.price * quantity;
+        els.receiptLines.innerHTML = `
+          <div class="receipt-line"><span>Customer</span><span>${(document.getElementById('customerName').value || 'Walk-in customer')}</span></div>
+          <div class="receipt-line"><span>Item</span><span>${product.name}</span></div>
+          <div class="receipt-line"><span>Qty</span><span>${quantity}</span></div>
+          <div class="receipt-line"><span>Unit price</span><span>Ksh ${Number(product.price).toLocaleString('en-KE')}</span></div>
+          <div class="receipt-line"><span>Amount</span><span>Ksh ${Number(total).toLocaleString('en-KE')}</span></div>
+        `;
+        els.receiptTotal.textContent = `Ksh ${Number(total).toLocaleString('en-KE')}`;
+      }
+
+      document.getElementById('customerProduct').addEventListener('change', showReceiptForSelection);
+      document.getElementById('customerQuantity').addEventListener('input', showReceiptForSelection);
+      document.getElementById('customerName').addEventListener('input', showReceiptForSelection);
+
+      document.getElementById('customerSaleForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const productId = Number(els.customerProduct.value);
+        const quantity = Number(els.customerQuantity.value);
+        const customer = document.getElementById('customerName').value.trim() || 'Walk-in customer';
+
+        if (!productId || !quantity || quantity < 1) {
+          alert('Select a valid product and quantity.');
+          return;
+        }
+
+        try {
+          await apiRequest('/api/sales', {
+            method: 'POST',
+            body: JSON.stringify({ productId, quantity, customer })
+          });
+          const product = state.products.find((item) => item.id === productId);
+          const total = Number(product.price) * quantity;
+          const line = [
+            `Customer: ${customer}`,
+            `Item: ${product.name}`,
+            `Qty: ${quantity}`,
+            `Unit price: Ksh ${Number(product.price).toLocaleString('en-KE')}`,
+            `Amount: Ksh ${Number(total).toLocaleString('en-KE')}`
+          ];
+          els.receiptLines.innerHTML = line.map((item) => `<div class="receipt-line"><span>${item}</span></div>`).join('');
+          els.receiptTotal.textContent = `Ksh ${Number(total).toLocaleString('en-KE')}`;
+          await loadCatalog();
+          alert('Sale recorded successfully!');
+        } catch (error) {
+          alert(error.message || 'Unable to process sale');
+        }
+      });
+
+      function getReceiptText() {
+        return `${els.receiptShopName.textContent}\n${Array.from(els.receiptLines.children).map((node) => node.textContent).join('\n')}\nTotal: ${els.receiptTotal.textContent}`;
+      }
+
+      document.getElementById('shareReceiptBtn').addEventListener('click', () => {
+        const receiptText = getReceiptText();
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(receiptText)}`;
+        window.open(whatsappUrl, '_blank');
+      });
+
+      document.getElementById('shareSmsReceiptBtn').addEventListener('click', () => {
+        const receiptText = getReceiptText();
+        const phone = (els.smsPhoneNumber.value || '').trim();
+        const body = encodeURIComponent(receiptText);
+
+        if (!phone) {
+          if (confirm('No phone number entered. Open a generic SMS composer instead?')) {
+            window.location.href = `sms:?&body=${body}`;
+          }
+          return;
+        }
+
+        const cleanPhone = phone.replace(/\s+/g, '').replace(/^0/, '+254');
+        const smsUrl = `sms:${cleanPhone}?body=${body}`;
+        window.location.href = smsUrl;
+      });
+
+      loadCatalog();
+    </script>
+  </body>
+</html>

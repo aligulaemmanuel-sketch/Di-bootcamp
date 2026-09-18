@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duka-Tech Dashboard</title>
+    <style>
+      :root {
+        --green-900: #0f3d2e;
+        --green-700: #1d5f47;
+        --green-500: #31a66b;
+        --green-200: #ddf5ea;
+        --striped: #f5f9f7;
+        --gold-500: #f7b500;
+        --gold-100: #fff2c9;
+        --charcoal: #1f2b27;
+        --muted: #5f6c67;
+        --white: #ffffff;
+        --bg: #ecf3f0;
+        --border: #dfeae6;
+        --danger: #d64a4a;
+        --shadow: 0 18px 40px rgba(11, 31, 27, 0.08);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--charcoal);
+        line-height: 1.5;
+      }
+      a { text-decoration: none; }
+      button, input, select { font: inherit; }
+
+      .container {
+        width: min(1200px, calc(100% - 28px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        background: var(--green-900);
+        color: var(--white);
+        position: sticky;
+        top: 0;
+        z-index: 30;
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--gold-500), #ffd34d);
+        color: var(--green-900);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 22px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: rgba(255,255,255,0.8);
+      }
+
+      .nav-btn {
+        background: var(--gold-500);
+        color: var(--green-900);
+        border: none;
+        border-radius: 999px;
+        padding: 11px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #0f3d2e 0%, #153f37 40%, #194e46 100%);
+        color: var(--white);
+        padding: 56px 0 40px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 0.9fr;
+        gap: 30px;
+        align-items: stretch;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        margin-bottom: 16px;
+      }
+
+      h1 {
+        font-size: clamp(2.2rem, 3vw, 4rem);
+        line-height: 1.08;
+        margin: 0 0 16px;
+        letter-spacing: -0.04em;
+      }
+
+      .lead {
+        color: rgba(255,255,255,0.82);
+        max-width: 60ch;
+        margin-bottom: 25px;
+        font-size: 1.05rem;
+      }
+
+      .cta-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+      }
+
+      .primary-btn, .secondary-btn, .ghost-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        padding: 13px 18px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        background: var(--gold-500);
+        color: var(--green-900);
+      }
+
+      .secondary-btn {
+        background: rgba(255,255,255,0.08);
+        color: var(--white);
+        border: 1px solid rgba(255,255,255,0.18);
+      }
+
+      .mini-stats {
+        display: flex;
+        gap: 22px;
+        flex-wrap: wrap;
+      }
+
+      .mini-stats div {
+        min-width: 120px;
+      }
+
+      .stat-number {
+        display: block;
+        font-size: 1.7rem;
+        font-weight: 800;
+      }
+
+      .stat-label {
+        color: rgba(255,255,255,0.7);
+      }
+
+      .panel {
+        background: var(--white);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .dashboard-panel {
+        padding: 18px;
+        height: 100%;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f6faf8;
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        border: 1px solid var(--border);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #ebfaf1;
+        color: var(--green-700);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green-500);
+      }
+
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        align-items: end;
+        gap: 10px;
+        height: 130px;
+        margin-bottom: 18px;
+      }
+
+      .bar {
+        border-radius: 10px 10px 0 0;
+        background: linear-gradient(180deg, #ffcf5c, #2fba87);
+      }
+
+      .inventory-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .inventory-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f7faf9;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+
+      .medal {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        font-weight: 700;
+      }
+
+      .bread { background: #fff3cf; color: #8a6200; }
+      .milk { background: #dfe9ff; color: #1749a6; }
+      .soap { background: #dff8ea; color: #146d4b; }
+
+      .main {
+        padding: 26px 0 60px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 26px;
+      }
+
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 20px rgba(13, 33, 28, 0.04);
+      }
+
+      .stat-card h3 {
+        margin: 0;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+
+      .stat-card strong {
+        display: block;
+        margin-top: 12px;
+        font-size: clamp(1.6rem, 2vw, 2.3rem);
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 22px;
+      }
+
+      .card {
+        background: var(--white);
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 20px rgba(13, 33, 28, 0.04);
+        padding: 22px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: clamp(1.3rem, 2vw, 1.8rem);
+      }
+
+      .search-input, .form-input, .form-select {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: #fdfefe;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+
+      .status-pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .status-good { background: #e9f9ee; color: #1a6d45; }
+      .status-low { background: #fff0ea; color: #bf5f36; }
+
+      .action-cell {
+        display: flex;
+        gap: 8px;
+      }
+
+      .mini-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 7px 10px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .mini-btn.edit { background: #eef4ff; color: #214da4; }
+      .mini-btn.delete { background: #ffeae8; color: #a13a36; }
+
+      .stack {
+        display: grid;
+        gap: 18px;
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .muted-note {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .receipt-box {
+        background: #f9fbfa;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+      }
+
+      .receipt-box h3 {
+        margin-top: 0;
+        margin-bottom: 12px;
+      }
+
+      .receipt-lines {
+        display: grid;
+        gap: 8px;
+        margin: 12px 0;
+      }
+
+      .receipt-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--muted);
+      }
+
+      .receipt-total {
+        border-top: 1px dashed var(--border);
+        margin-top: 12px;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .ghost-btn {
+        background: var(--green-200);
+        color: var(--green-900);
+      }
+
+      .panel-spaced {
+        margin-top: 22px;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid, .content-grid, .stats-grid, .two-col {
+          grid-template-columns: 1fr;
+        }
+        .nav-links { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container nav">
+        <div class="brand">
+          <div class="brand-mark">D</div>
+          <span>Duka-Tech</span>
+        </div>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="#overview">Overview</a>
+          <a href="#inventory">Inventory</a>
+          <a href="#sales">Sales</a>
+          <a href="#suppliers">Suppliers</a>
+        </nav>
+        <button class="nav-btn" id="savePrefsBtn">Save Settings</button>
+      </div>
+    </header>
+
+    <section class="hero" id="overview">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Offline-first • WhatsApp receipts • Inventory insight</div>
+          <h1>Smarter stock control for Kenya’s informal traders.</h1>
+          <p class="lead">
+            Duka-Tech helps dukas track inventory, record sales, monitor debt, and generate shareable receipts without expensive printers or complicated POS systems.
+          </p>
+          <div class="cta-row">
+            <button class="primary-btn" id="focusProductBtn">Add stock</button>
+            <button class="secondary-btn" id="focusSaleBtn">Record sale</button>
+          </div>
+          <div class="mini-stats">
+            <div>
+              <span class="stat-number" id="statRevenueMini">Ksh 0</span>
+              <span class="stat-label">Today revenue</span>
+            </div>
+            <div>
+              <span class="stat-number" id="statSellerMini">-</span>
+              <span class="stat-label">Best seller</span>
+            </div>
+            <div>
+              <span class="stat-number" id="statLowStockMini">0</span>
+              <span class="stat-label">Low stock</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel dashboard-panel">
+          <div class="panel-header">
+            <div class="pill"><span class="dot"></span> Live sales</div>
+            <strong id="summaryTotalRevenue">Ksh 0</strong>
+          </div>
+          <div class="chart-grid" aria-label="Sales chart preview">
+            <div class="bar" style="height: 24%"></div>
+            <div class="bar" style="height: 38%"></div>
+            <div class="bar" style="height: 52%"></div>
+            <div class="bar" style="height: 48%"></div>
+            <div class="bar" style="height: 68%"></div>
+            <div class="bar" style="height: 80%"></div>
+            <div class="bar" style="height: 94%"></div>
+          </div>
+          <div class="inventory-list">
+            <div class="inventory-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="medal bread">B</span>
+                <strong>Bread</strong>
+              </div>
+              <span id="breadStock">0 left</span>
+            </div>
+            <div class="inventory-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="medal milk">M</span>
+                <strong>Milk</strong>
+              </div>
+              <span id="milkStock">0 left</span>
+            </div>
+            <div class="inventory-row">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span class="medal soap">S</span>
+                <strong>Soap</strong>
+              </div>
+              <span id="soapStock">0 left</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="main">
+      <div class="container">
+        <section class="stats-grid">
+          <div class="stat-card">
+            <h3>Total revenue</h3>
+            <strong id="totalRevenueCard">Ksh 0</strong>
+          </div>
+          <div class="stat-card">
+            <h3>Best seller</h3>
+            <strong id="bestSellerCard">-</strong>
+          </div>
+          <div class="stat-card">
+            <h3>Low stock</h3>
+            <strong id="lowStockCard">0</strong>
+          </div>
+          <div class="stat-card">
+            <h3>Products</h3>
+            <strong id="productCountCard">0</strong>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Inventory</h2>
+              <input id="productSearch" class="search-input" type="text" placeholder="Search products..." />
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Threshold</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-header">
+                <h2>Add product</h2>
+              </div>
+              <form id="productForm">
+                <input id="productName" class="form-input" type="text" placeholder="Product name" required />
+                <select id="productCategory" class="form-select" required>
+                  <option value="">Select category</option>
+                  <option value="Bakery">Bakery</option>
+                  <option value="Dairy">Dairy</option>
+                  <option value="Household">Household</option>
+                  <option value="Staples">Staples</option>
+                  <option value="Drinks">Drinks</option>
+                  <option value="Others">Others</option>
+                </select>
+                <div class="two-col">
+                  <input id="productStock" class="form-input" type="number" min="0" placeholder="Stock" required />
+                  <input id="productPrice" class="form-input" type="number" min="0" placeholder="Price" required />
+                </div>
+                <div class="two-col">
+                  <input id="productThreshold" class="form-input" type="number" min="0" placeholder="Alert threshold" value="5" />
+                  <input id="productUnit" class="form-input" type="text" placeholder="Unit (bag, loaf, pack)" value="unit" />
+                </div>
+                <button type="submit" class="primary-btn">Save product</button>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Supplier ledger</h2>
+              </div>
+              <form id="supplierForm">
+                <input id="supplierName" class="form-input" type="text" placeholder="Supplier name" required />
+                <div class="two-col">
+                  <input id="supplierPhone" class="form-input" type="text" placeholder="Phone" />
+                  <input id="supplierProduct" class="form-input" type="text" placeholder="Product" required />
+                </div>
+                <div class="two-col">
+                  <input id="supplierBalance" class="form-input" type="number" min="0" placeholder="Balance owed" value="0" />
+                  <input id="supplierDate" class="form-input" type="date" />
+                </div>
+                <button type="submit" class="ghost-btn">Add supplier</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-grid panel-spaced">
+          <div class="card">
+            <div class="card-header">
+              <h2>Sales</h2>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Customer</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-header">
+                <h2>Record sale</h2>
+              </div>
+              <form id="saleForm">
+                <select id="saleProduct" class="form-select" required>
+                  <option value="">Select product</option>
+                </select>
+                <div class="two-col">
+                  <input id="saleQuantity" class="form-input" type="number" min="1" placeholder="Quantity" required />
+                  <input id="saleCustomer" class="form-input" type="text" placeholder="Customer" value="Walk-in" />
+                </div>
+                <button type="submit" class="primary-btn">Process sale</button>
+              </form>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>WhatsApp receipt</h2>
+              </div>
+              <div class="receipt-box">
+                <h3 id="receiptShopName">Duka-Tech</h3>
+                <p class="muted-note" id="receiptMeta">Receipt #0001</p>
+                <div class="receipt-lines" id="receiptLines"></div>
+                <div class="receipt-total">
+                  <span>Total</span>
+                  <span id="receiptTotal">Ksh 0</span>
+                </div>
+              </div>
+              <div class="actions" style="margin-top:16px;">
+                <button class="primary-btn" id="generateReceiptBtn">Generate template</button>
+                <button class="ghost-btn" id="shareReceiptBtn">Share on WhatsApp</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card panel-spaced" id="suppliers">
+          <div class="card-header">
+            <h2>Supplier list</h2>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Supplier</th>
+                  <th>Phone</th>
+                  <th>Product</th>
+                  <th>Balance</th>
+                  <th>Last purchase</th>
+                </tr>
+              </thead>
+              <tbody id="supplierTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const state = {
+        products: [],
+        sales: [],
+        suppliers: [],
+        summary: null,
+        prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
+      };
+
+      const els = {
+        productTableBody: document.getElementById('productTableBody'),
+        salesTableBody: document.getElementById('salesTableBody'),
+        supplierTableBody: document.getElementById('supplierTableBody'),
+        productSearch: document.getElementById('productSearch'),
+        productForm: document.getElementById('productForm'),
+        saleForm: document.getElementById('saleForm'),
+        supplierForm: document.getElementById('supplierForm'),
+        saleProduct: document.getElementById('saleProduct'),
+        savePrefsBtn: document.getElementById('savePrefsBtn'),
+        focusProductBtn: document.getElementById('focusProductBtn'),
+        focusSaleBtn: document.getElementById('focusSaleBtn'),
+        generateReceiptBtn: document.getElementById('generateReceiptBtn'),
+        shareReceiptBtn: document.getElementById('shareReceiptBtn'),
+        receiptShopName: document.getElementById('receiptShopName'),
+        receiptMeta: document.getElementById('receiptMeta'),
+        receiptLines: document.getElementById('receiptLines'),
+        receiptTotal: document.getElementById('receiptTotal')
+      };
+
+      async function apiRequest(url, options = {}) {
+        const response = await fetch(url, {
+          headers: { 'Content-Type': 'application/json' },
+          ...options
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Request failed');
+        }
+
+        return data;
+      }
+
+      async function loadDashboard() {
+        try {
+          const [products, sales, suppliers, summary] = await Promise.all([
+            apiRequest('/api/products'),
+            apiRequest('/api/sales'),
+            apiRequest('/api/suppliers'),
+            apiRequest('/api/summary')
+          ]);
+
+          state.products = products;
+          state.sales = sales;
+          state.suppliers = suppliers;
+          state.summary = summary;
+          renderProducts();
+          renderSales();
+          renderSuppliers();
+          renderSummary();
+          populateSaleSelection();
+          applyPrefs();
+        } catch (error) {
+          alert(error.message || 'Failed to load data');
+        }
+      }
+
+      function renderSummary() {
+        const summary = state.summary || {};
+        const totalRevenue = summary.totalRevenue || 0;
+        const bestSeller = summary.bestSeller ? `${summary.bestSeller.name} (${summary.bestSeller.quantity})` : 'N/A';
+        const lowStock = summary.lowStockItems || 0;
+
+        document.getElementById('totalRevenueCard').textContent = `Ksh ${formatMoney(totalRevenue)}`;
+        document.getElementById('bestSellerCard').textContent = bestSeller;
+        document.getElementById('lowStockCard').textContent = lowStock;
+        document.getElementById('productCountCard').textContent = summary.totalProducts || 0;
+        document.getElementById('summaryTotalRevenue').textContent = `Ksh ${formatMoney(totalRevenue)}`;
+        document.getElementById('statRevenueMini').textContent = `Ksh ${formatMoney(totalRevenue)}`;
+        document.getElementById('statSellerMini').textContent = summary.bestSeller ? summary.bestSeller.name : '-';
+        document.getElementById('statLowStockMini').textContent = lowStock;
+
+        const stockByName = {};
+        state.products.forEach((product) => {
+          stockByName[product.name] = product.stock;
+        });
+
+        document.getElementById('breadStock').textContent = `${stockByName.Bread || 0} left`;
+        document.getElementById('milkStock').textContent = `${stockByName.Milk || 0} left`;
+        document.getElementById('soapStock').textContent = `${stockByName.Soap || 0} left`;
+      }
+
+      function renderProducts() {
+        const filter = document.getElementById('productSearch').value.toLowerCase();
+        const filteredProducts = state.products.filter((product) => product.name.toLowerCase().includes(filter));
+
+        els.productTableBody.innerHTML = filteredProducts.map((product) => {
+          const statusClass = product.stock <= product.threshold ? 'status-low' : 'status-good';
+          const statusText = product.stock <= product.threshold ? 'Low stock' : 'Healthy';
+          return `
+            <tr>
+              <td>${product.name}</td>
+              <td>${product.category}</td>
+              <td>${product.stock}</td>
+              <td>Ksh ${formatMoney(product.price)}</td>
+              <td>${product.threshold}</td>
+              <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+              <td class="action-cell">
+                <button class="mini-btn edit" data-action="edit" data-id="${product.id}">Edit</button>
+                <button class="mini-btn delete" data-action="delete" data-id="${product.id}">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('') || '<tr><td colspan="7">No products found.</td></tr>';
+      }
+
+      function renderSales() {
+        els.salesTableBody.innerHTML = state.sales.slice().reverse().slice(0, 8).map((sale) => `
+          <tr>
+            <td>${sale.product_name}</td>
+            <td>${sale.quantity}</td>
+            <td>Ksh ${formatMoney(sale.quantity * sale.unit_price)}</td>
+            <td>${sale.customer}</td>
+            <td>${new Date(sale.timestamp).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No sales yet.</td></tr>';
+      }
+
+      function renderSuppliers() {
+        els.supplierTableBody.innerHTML = state.suppliers.map((supplier) => `
+          <tr>
+            <td>${supplier.name}</td>
+            <td>${supplier.phone}</td>
+            <td>${supplier.product}</td>
+            <td>Ksh ${formatMoney(supplier.balance)}</td>
+            <td>${supplier.last_purchase}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No suppliers added.</td></tr>';
+      }
+
+      function formatMoney(value) {
+        return Number(value || 0).toLocaleString('en-KE');
+      }
+
+      function populateSaleSelection() {
+        els.saleProduct.innerHTML = '<option value="">Select product</option>' +
+          state.products.map((product) => `<option value="${product.id}">${product.name} (${product.stock} in stock)</option>`).join('');
+      }
+
+      function applyPrefs() {
+        const shopName = state.prefs.shopName || 'Duka-Tech';
+        document.getElementById('receiptShopName').textContent = shopName;
+      }
+
+      function savePrefs() {
+        state.prefs.shopName = document.getElementById('receiptShopName').textContent.trim() || 'Duka-Tech';
+        localStorage.setItem('dukaPrefs', JSON.stringify(state.prefs));
+        alert('Settings saved locally');
+      }
+
+      function generateReceipt() {
+        const selectedProductId = Number(document.getElementById('saleProduct').value);
+        const quantity = Number(document.getElementById('saleQuantity').value) || 1;
+        const customer = document.getElementById('saleCustomer').value || 'Walk-in';
+        const product = state.products.find((item) => item.id === selectedProductId);
+
+        if (!product) {
+          alert('Please select a product and quantity first.');
+          return;
+        }
+
+        const itemTotal = product.price * quantity;
+        const shopName = state.prefs.shopName || 'Duka-Tech';
+        const receiptTemplate = [
+          `${shopName}`,
+          `Customer: ${customer}`,
+          `Item: ${product.name}`,
+          `Qty: ${quantity}`,
+          `Unit price: Ksh ${formatMoney(product.price)}`,
+          `Amount: Ksh ${formatMoney(itemTotal)}`
+        ];
+
+        els.receiptMeta.textContent = `Receipt #${Date.now().toString().slice(-5)}`;
+        els.receiptShopName.textContent = shopName;
+        els.receiptLines.innerHTML = receiptTemplate.map((line) => `<div class="receipt-item"><span>${line}</span></div>`).join('');
+        els.receiptTotal.textContent = `Ksh ${formatMoney(itemTotal)}`;
+      }
+
+      function shareReceipt() {
+        const receiptText = `Duka-Tech\n${els.receiptMeta.textContent}\n${Array.from(els.receiptLines.children).map((item) => item.textContent).join('\n')}\nTotal: ${els.receiptTotal.textContent}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(receiptText)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+
+      document.getElementById('productSearch').addEventListener('input', renderProducts);
+
+      document.getElementById('productTableBody').addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        const productId = Number(button.dataset.id);
+        const action = button.dataset.action;
+
+        if (action === 'delete') {
+          if (!confirm('Delete this product?')) return;
+          try {
+            await apiRequest(`/api/products/${productId}`, { method: 'DELETE' });
+            await loadDashboard();
+          } catch (error) {
+            alert(error.message);
+          }
+        }
+
+        if (action === 'edit') {
+          const product = state.products.find((item) => item.id === productId);
+          if (!product) return;
+
+          document.getElementById('productName').value = product.name;
+          document.getElementById('productCategory').value = product.category;
+          document.getElementById('productStock').value = product.stock;
+          document.getElementById('productPrice').value = product.price;
+          document.getElementById('productThreshold').value = product.threshold;
+          document.getElementById('productUnit').value = product.unit;
+
+          const form = document.getElementById('productForm');
+          form.dataset.editId = String(productId);
+          form.querySelector('button[type="submit"]').textContent = 'Update product';
+          document.getElementById('productName').focus();
+        }
+      });
+
+      document.getElementById('productForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          name: document.getElementById('productName').value.trim(),
+          category: document.getElementById('productCategory').value,
+          stock: Number(document.getElementById('productStock').value),
+          price: Number(document.getElementById('productPrice').value),
+          threshold: Number(document.getElementById('productThreshold').value || 5),
+          unit: document.getElementById('productUnit').value.trim() || 'unit'
+        };
+
+        try {
+          const productId = event.target.dataset.editId;
+
+          if (productId) {
+            await apiRequest(`/api/products/${productId}`, {
+              method: 'PUT',
+              body: JSON.stringify(payload)
+            });
+          } else {
+            await apiRequest('/api/products', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+          }
+
+          event.target.reset();
+          delete event.target.dataset.editId;
+          event.target.querySelector('button[type="submit"]').textContent = 'Save product';
+          document.getElementById('productUnit').value = 'unit';
+          document.getElementById('productThreshold').value = 5;
+          await loadDashboard();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('saleForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          productId: Number(document.getElementById('saleProduct').value),
+          quantity: Number(document.getElementById('saleQuantity').value),
+          customer: document.getElementById('saleCustomer').value.trim() || 'Walk-in'
+        };
+
+        try {
+          await apiRequest('/api/sales', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          event.target.reset();
+          await loadDashboard();
+          generateReceipt();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('supplierForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          name: document.getElementById('supplierName').value.trim(),
+          phone: document.getElementById('supplierPhone').value.trim(),
+          product: document.getElementById('supplierProduct').value.trim(),
+          balance: Number(document.getElementById('supplierBalance').value || 0),
+          lastPurchase: document.getElementById('supplierDate').value || new Date().toISOString().slice(0, 10)
+        };
+
+        try {
+          await apiRequest('/api/suppliers', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+          event.target.reset();
+          await loadDashboard();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('savePrefsBtn').addEventListener('click', savePrefs);
+      document.getElementById('focusProductBtn').addEventListener('click', () => document.getElementById('productName').focus());
+      document.getElementById('focusSaleBtn').addEventListener('click', () => document.getElementById('saleProduct').focus());
+      document.getElementById('generateReceiptBtn').addEventListener('click', generateReceipt);
+      document.getElementById('shareReceiptBtn').addEventListener('click', shareReceipt);
+
+      generateReceipt();
+      loadDashboard();
+    </script>
+  </body>
+</html>

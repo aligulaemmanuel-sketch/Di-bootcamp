@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duka-Tech Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                900: '#0f3d2e',
+                700: '#1d5f47',
+                500: '#31a66b',
+                200: '#ddf5ea',
+                gold: '#f7b500'
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      :root {
+        --green-900: #0f3d2e;
+        --green-700: #1d5f47;
+        --green-500: #31a66b;
+        --green-200: #ddf5ea;
+        --gold-500: #f7b500;
+        --bg: #ecf3f0;
+        --white: #ffffff;
+        --border: #dfeae6;
+        --muted: #5f6c67;
+        --charcoal: #1f2b27;
+        --danger: #d64a4a;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: var(--charcoal);
+      }
+      button, input, select { font: inherit; }
+      a { text-decoration: none; }
+
+      .topbar {
+        background: var(--green-900);
+        color: var(--white);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+
+      .nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--gold-500), #ffd34d);
+        color: var(--green-900);
+        display: grid;
+        place-items: center;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: rgba(255,255,255,0.8);
+      }
+
+      .nav-btn {
+        border: none;
+        border-radius: 999px;
+        background: var(--gold-500);
+        color: var(--green-900);
+        padding: 10px 16px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card, .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: 0 12px 30px rgba(15, 61, 46, 0.04);
+      }
+
+      .stat-card {
+        padding: 18px 20px;
+      }
+
+      .stat-card h3 {
+        margin: 0;
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .stat-card strong {
+        display: block;
+        margin-top: 12px;
+        font-size: clamp(1.6rem, 2vw, 2.4rem);
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+      }
+
+      .card {
+        padding: 22px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .card-header h2 {
+        margin: 0;
+      }
+
+      .search-input, .form-input, .form-select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: #fdfefe;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .status-pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .status-good { background: #e9f9ee; color: #1a6d45; }
+      .status-low { background: #fff0ea; color: #bf5f36; }
+
+      .action-cell {
+        display: flex;
+        gap: 8px;
+      }
+
+      .mini-btn, .primary-btn, .ghost-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 9px 12px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .mini-btn.edit { background: #eef4ff; color: #214da4; }
+      .mini-btn.delete { background: #ffeae8; color: #a13a36; }
+      .primary-btn { background: var(--gold-500); color: var(--green-900); }
+      .ghost-btn { background: var(--green-200); color: var(--green-900); }
+
+      .stack {
+        display: grid;
+        gap: 20px;
+      }
+
+      form {
+        display: grid;
+        gap: 14px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 900px) {
+        .stats-grid, .content-grid, .two-col { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bg-brand-900 text-white sticky top-0 z-20 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3 font-bold text-lg">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-gold to-yellow-300 text-brand-900 grid place-items-center">D</div>
+          <span>Duka-Tech Manager</span>
+        </div>
+        <nav class="hidden md:flex items-center gap-6 text-sm text-white/80" aria-label="Manager navigation">
+          <a href="/customer" class="hover:text-white">Customer view</a>
+          <a href="/manager" class="hover:text-white">Manager dashboard</a>
+        </nav>
+        <button class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" id="savePrefsBtn">Save shop name</button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Total revenue</h3>
+          <strong id="totalRevenueCard" class="mt-3 block text-3xl font-bold text-brand-900">Ksh 0</strong>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Best seller</h3>
+          <strong id="bestSellerCard" class="mt-3 block text-3xl font-bold text-brand-900">-</strong>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Low stock</h3>
+          <strong id="lowStockCard" class="mt-3 block text-3xl font-bold text-brand-900">0</strong>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <h3 class="text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Products</h3>
+          <strong id="productCountCard" class="mt-3 block text-3xl font-bold text-brand-900">0</strong>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-5">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <h2 class="text-2xl font-bold">Inventory</h2>
+            <input id="productSearch" class="w-full md:w-64 border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Search products..." />
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Product</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Category</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Stock</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Price</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Threshold</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Status</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <h2 class="text-2xl font-bold mb-4">Add product</h2>
+            <form id="productForm" class="grid gap-3">
+              <input id="productName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Product name" required />
+              <select id="productCategory" class="border border-slate-200 rounded-xl px-3 py-2" required>
+                <option value="">Select category</option>
+                <option value="Bakery">Bakery</option>
+                <option value="Dairy">Dairy</option>
+                <option value="Household">Household</option>
+                <option value="Staples">Staples</option>
+                <option value="Drinks">Drinks</option>
+                <option value="Others">Others</option>
+              </select>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="productStock" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="0" placeholder="Stock" required />
+                <input id="productPrice" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="0" placeholder="Price" required />
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="productThreshold" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="0" value="5" placeholder="Alert threshold" />
+                <input id="productUnit" class="border border-slate-200 rounded-xl px-3 py-2" type="text" value="unit" placeholder="Unit" />
+              </div>
+              <button type="submit" class="rounded-xl bg-brand-gold text-brand-900 px-4 py-3 font-bold">Save product</button>
+            </form>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <h2 class="text-2xl font-bold mb-4">Record sale</h2>
+            <form id="saleForm" class="grid gap-3">
+              <select id="saleProduct" class="border border-slate-200 rounded-xl px-3 py-2" required>
+                <option value="">Select product</option>
+              </select>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="saleQuantity" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="1" placeholder="Quantity" required />
+                <input id="saleCustomer" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Customer" value="Walk-in" />
+              </div>
+              <button type="submit" class="rounded-xl bg-brand-200 text-brand-900 px-4 py-3 font-bold">Process sale</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-5 mt-6">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="mb-4"><h2 class="text-2xl font-bold">Sales</h2></div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Item</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Qty</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Amount</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Customer</th>
+                  <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Time</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="space-y-5">
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+            <h2 class="text-2xl font-bold mb-4">Supplier ledger</h2>
+            <form id="supplierForm" class="grid gap-3">
+              <input id="supplierName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Supplier name" required />
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="supplierPhone" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Phone" />
+                <input id="supplierProduct" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Product" required />
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="supplierBalance" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="0" placeholder="Balance owed" value="0" />
+                <input id="supplierDate" class="border border-slate-200 rounded-xl px-3 py-2" type="date" />
+              </div>
+              <button type="submit" class="rounded-xl bg-brand-gold text-brand-900 px-4 py-3 font-bold">Add supplier</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm mt-6">
+        <div class="mb-4"><h2 class="text-2xl font-bold">Suppliers</h2></div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead>
+              <tr>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Supplier</th>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Phone</th>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Product</th>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Balance</th>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Last purchase</th>
+                <th class="pb-3 text-left text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Options</th>
+              </tr>
+            </thead>
+            <tbody id="supplierTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const state = {
+        products: [],
+        sales: [],
+        suppliers: [],
+        summary: null,
+        prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
+      };
+
+      const els = {
+        productTableBody: document.getElementById('productTableBody'),
+        salesTableBody: document.getElementById('salesTableBody'),
+        supplierTableBody: document.getElementById('supplierTableBody'),
+        productSearch: document.getElementById('productSearch'),
+        saleProduct: document.getElementById('saleProduct')
+      };
+
+      async function apiRequest(url, options = {}) {
+        const response = await fetch(url, {
+          headers: { 'Content-Type': 'application/json' },
+          ...options
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || 'Request failed');
+        return data;
+      }
+
+      async function loadDashboard() {
+        try {
+          const [products, sales, suppliers, summary] = await Promise.all([
+            apiRequest('/api/products'),
+            apiRequest('/api/sales'),
+            apiRequest('/api/suppliers'),
+            apiRequest('/api/summary')
+          ]);
+
+          state.products = products;
+          state.sales = sales;
+          state.suppliers = suppliers;
+          state.summary = summary;
+          renderProducts();
+          renderSales();
+          renderSuppliers();
+          renderSummary();
+          populateSaleSelection();
+        } catch (error) {
+          alert(error.message || 'Failed to load dashboard data');
+        }
+      }
+
+      function renderSummary() {
+        const summary = state.summary || {};
+        document.getElementById('totalRevenueCard').textContent = `Ksh ${Number(summary.totalRevenue || 0).toLocaleString('en-KE')}`;
+        document.getElementById('bestSellerCard').textContent = summary.bestSeller ? `${summary.bestSeller.name} (${summary.bestSeller.quantity})` : '-';
+        document.getElementById('lowStockCard').textContent = summary.lowStockItems || 0;
+        document.getElementById('productCountCard').textContent = summary.totalProducts || 0;
+      }
+
+      function renderProducts() {
+        const filter = els.productSearch.value.toLowerCase();
+        const filteredProducts = state.products.filter((product) => product.name.toLowerCase().includes(filter));
+
+        els.productTableBody.innerHTML = filteredProducts.map((product) => {
+          const statusClass = product.stock <= product.threshold ? 'status-low' : 'status-good';
+          const statusText = product.stock <= product.threshold ? 'Low stock' : 'Healthy';
+          return `
+            <tr>
+              <td>${product.name}</td>
+              <td>${product.category}</td>
+              <td>${product.stock}</td>
+              <td>Ksh ${Number(product.price).toLocaleString('en-KE')}</td>
+              <td>${product.threshold}</td>
+              <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+              <td class="action-cell">
+                <button class="mini-btn edit" data-action="edit" data-id="${product.id}">Edit</button>
+                <button class="mini-btn delete" data-action="delete" data-id="${product.id}">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('') || '<tr><td colspan="7">No products found.</td></tr>';
+      }
+
+      function renderSales() {
+        els.salesTableBody.innerHTML = state.sales.slice().reverse().slice(0, 8).map((sale) => `
+          <tr>
+            <td>${sale.product_name}</td>
+            <td>${sale.quantity}</td>
+            <td>Ksh ${Number(sale.quantity * sale.unit_price).toLocaleString('en-KE')}</td>
+            <td>${sale.customer}</td>
+            <td>${new Date(sale.timestamp).toLocaleString()}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No sales yet.</td></tr>';
+      }
+
+      function renderSuppliers() {
+        els.supplierTableBody.innerHTML = state.suppliers.map((supplier) => `
+          <tr>
+            <td>${supplier.name}</td>
+            <td>${supplier.phone}</td>
+            <td>${supplier.product}</td>
+            <td>Ksh ${Number(supplier.balance).toLocaleString('en-KE')}</td>
+            <td>${supplier.last_purchase}</td>
+            <td class="action-cell">
+              <a class="mini-btn" href="tel:${encodeURIComponent(supplier.phone || '')}" ${!supplier.phone || supplier.phone === 'N/A' ? 'onclick="return false"' : ''}>Call</a>
+              <button class="mini-btn edit" data-action="edit-supplier" data-id="${supplier.id}">Edit</button>
+              <button class="mini-btn delete" data-action="delete-supplier" data-id="${supplier.id}">Delete</button>
+            </td>
+          </tr>
+        `).join('') || '<tr><td colspan="6">No suppliers added.</td></tr>';
+      }
+
+      function populateSaleSelection() {
+        els.saleProduct.innerHTML = '<option value="">Select product</option>' +
+          state.products.map((product) => `<option value="${product.id}">${product.name} (${product.stock} in stock)</option>`).join('');
+      }
+
+      document.getElementById('productSearch').addEventListener('input', renderProducts);
+
+      document.getElementById('productTableBody').addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        const productId = Number(button.dataset.id);
+        if (button.dataset.action === 'delete') {
+          if (!confirm('Delete this product?')) return;
+          try {
+            await apiRequest(`/api/products/${productId}`, { method: 'DELETE' });
+            await loadDashboard();
+          } catch (error) {
+            alert(error.message);
+          }
+          return;
+        }
+
+        if (button.dataset.action === 'edit') {
+          const product = state.products.find((item) => item.id === productId);
+          if (!product) return;
+          document.getElementById('productName').value = product.name;
+          document.getElementById('productCategory').value = product.category;
+          document.getElementById('productStock').value = product.stock;
+          document.getElementById('productPrice').value = product.price;
+          document.getElementById('productThreshold').value = product.threshold;
+          document.getElementById('productUnit').value = product.unit;
+          const form = document.getElementById('productForm');
+          form.dataset.editId = String(productId);
+          form.querySelector('button[type="submit"]').textContent = 'Update product';
+          document.getElementById('productName').focus();
+        }
+      });
+
+      document.getElementById('productForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          name: document.getElementById('productName').value.trim(),
+          category: document.getElementById('productCategory').value,
+          stock: Number(document.getElementById('productStock').value),
+          price: Number(document.getElementById('productPrice').value),
+          threshold: Number(document.getElementById('productThreshold').value || 5),
+          unit: document.getElementById('productUnit').value.trim() || 'unit'
+        };
+
+        try {
+          const productId = event.target.dataset.editId;
+          if (productId) {
+            await apiRequest(`/api/products/${productId}`, { method: 'PUT', body: JSON.stringify(payload) });
+          } else {
+            await apiRequest('/api/products', { method: 'POST', body: JSON.stringify(payload) });
+          }
+          event.target.reset();
+          delete event.target.dataset.editId;
+          event.target.querySelector('button[type="submit"]').textContent = 'Save product';
+          document.getElementById('productThreshold').value = 5;
+          document.getElementById('productUnit').value = 'unit';
+          await loadDashboard();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('saleForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          productId: Number(document.getElementById('saleProduct').value),
+          quantity: Number(document.getElementById('saleQuantity').value),
+          customer: document.getElementById('saleCustomer').value.trim() || 'Walk-in'
+        };
+
+        try {
+          await apiRequest('/api/sales', { method: 'POST', body: JSON.stringify(payload) });
+          event.target.reset();
+          await loadDashboard();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('supplierTableBody').addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        const supplierId = Number(button.dataset.id);
+        const form = document.getElementById('supplierForm');
+
+        if (button.dataset.action === 'delete-supplier') {
+          if (!confirm('Delete this supplier?')) return;
+          try {
+            await apiRequest(`/api/suppliers/${supplierId}`, { method: 'DELETE' });
+            await loadDashboard();
+          } catch (error) {
+            alert(error.message);
+          }
+          return;
+        }
+
+        if (button.dataset.action === 'edit-supplier') {
+          const supplier = state.suppliers.find((item) => item.id === supplierId);
+          if (!supplier) return;
+          document.getElementById('supplierName').value = supplier.name;
+          document.getElementById('supplierPhone').value = supplier.phone;
+          document.getElementById('supplierProduct').value = supplier.product;
+          document.getElementById('supplierBalance').value = supplier.balance;
+          document.getElementById('supplierDate').value = supplier.last_purchase;
+          form.dataset.editSupplierId = String(supplierId);
+          form.querySelector('button[type="submit"]').textContent = 'Update supplier';
+          document.getElementById('supplierName').focus();
+        }
+      });
+
+      document.getElementById('supplierForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const payload = {
+          name: document.getElementById('supplierName').value.trim(),
+          phone: document.getElementById('supplierPhone').value.trim(),
+          product: document.getElementById('supplierProduct').value.trim(),
+          balance: Number(document.getElementById('supplierBalance').value || 0),
+          lastPurchase: document.getElementById('supplierDate').value || new Date().toISOString().slice(0, 10)
+        };
+
+        try {
+          const supplierId = event.target.dataset.editSupplierId;
+          if (supplierId) {
+            await apiRequest(`/api/suppliers/${supplierId}`, { method: 'PUT', body: JSON.stringify(payload) });
+            delete event.target.dataset.editSupplierId;
+            event.target.querySelector('button[type="submit"]').textContent = 'Add supplier';
+          } else {
+            await apiRequest('/api/suppliers', { method: 'POST', body: JSON.stringify(payload) });
+          }
+          event.target.reset();
+          await loadDashboard();
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('savePrefsBtn').addEventListener('click', () => {
+        const shopName = prompt('Shop name', state.prefs.shopName || 'Duka-Tech');
+        if (shopName) {
+          state.prefs.shopName = shopName.trim() || 'Duka-Tech';
+          localStorage.setItem('dukaPrefs', JSON.stringify(state.prefs));
+          alert('Shop name saved.');
+        }
+      });
+
+      loadDashboard();
+    </script>
+  </body>
+</html>

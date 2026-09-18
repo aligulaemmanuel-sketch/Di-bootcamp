@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lamp Login Form</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      height: 100vh;
+      padding: 0;
+      background:
+        radial-gradient(circle at top, rgba(255, 222, 125, 0.12), transparent 25%),
+        linear-gradient(180deg, #0d0f12 0%, #12171d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      transition: background 0.5s ease;
+    }
+
+    .lamp-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      margin-top: 0;
+      flex-shrink: 0;
+    }
+
+    .wire {
+      width: 2px;
+      height: 75px;
+      background: linear-gradient(180deg, #8a8f96, #4a4f58);
+      box-shadow: 0 0 10px rgba(255,255,255,0.08);
+    }
+
+    .shade {
+      width: 90px;
+      height: 52px;
+      background: linear-gradient(180deg, #2d3137, #171b20);
+      border-top-left-radius: 45px;
+      border-top-right-radius: 45px;
+      position: relative;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 -10px 18px rgba(0,0,0,0.35);
+    }
+
+    .bulb {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(180deg, #4a4e54, #2d3137);
+      border-radius: 50%;
+      margin-top: -5px;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.16);
+    }
+
+    .pull-cord {
+      position: absolute;
+      top: 110px;
+      right: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      transform: translateZ(0);
+    }
+
+    .cord-line {
+      width: 2px;
+      height: 50px;
+      background: linear-gradient(180deg, #c9ced6, #8a8f96);
+      transition: height 0.15s ease;
+      box-shadow: 0 0 8px rgba(255,255,255,0.2);
+    }
+
+    .cord-handle {
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(180deg, #f5d9a5, #d9a85f);
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(255, 222, 125, 0.4);
+    }
+
+    .light-beam {
+      position: absolute;
+      top: 90px;
+      width: 0;
+      height: 0;
+      border-left: 180px solid transparent;
+      border-right: 180px solid transparent;
+      border-bottom: 420px solid rgba(255, 222, 125, 0.13);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 1;
+      filter: blur(3px);
+    }
+
+    .login-box {
+      margin-top: 8px;
+      width: min(82vw, 340px);
+      max-height: calc(100vh - 170px);
+      padding: 18px 18px 16px;
+      background: rgba(18, 22, 27, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+      opacity: 0.2;
+      transform: translateY(12px) scale(0.98);
+      transition: all 0.5s ease;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    .login-box h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 18px;
+      font-size: 1.8rem;
+      letter-spacing: 0.02em;
+    }
+
+    .role-selector {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .role-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #f1f5f9;
+      text-align: left;
+    }
+
+    .role-card:hover,
+    .role-card.active {
+      background: rgba(255, 222, 125, 0.08);
+      border-color: rgba(255, 222, 125, 0.32);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(255, 222, 125, 0.08);
+    }
+
+    .role-card strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .role-card small {
+      color: #b7bec8;
+      display: block;
+      line-height: 1.5;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    .input-group input,
+    .input-group select {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .input-group select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, #d7dbe0 50%), linear-gradient(135deg, #d7dbe0 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% - 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: rgba(255, 222, 125, 0.7);
+      box-shadow: 0 0 0 3px rgba(255, 222, 125, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .input-group input::placeholder {
+      color: #8a8f96;
+    }
+
+    .input-group select option {
+      color: #111827;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      background: linear-gradient(135deg, #3a4047, #1d2127);
+      color: #d9dee4;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.02em;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .toggle-container {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      color: #9aa3ac;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .form-group {
+      display: none;
+    }
+
+    .form-group.active {
+      display: block;
+    }
+
+    .social-divider {
+      display: flex;
+      align-items: center;
+      margin: 16px 0 14px;
+      gap: 10px;
+      color: #7f8791;
+      font-size: 12px;
+    }
+
+    .social-divider::before,
+    .social-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .social-login {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+      color: #c5ccd4;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .social-icon {
+      font-size: 16px;
+    }
+
+    body.lamp-on {
+      background:
+        radial-gradient(circle at top, rgba(255, 222, 125, 0.18), transparent 25%),
+        linear-gradient(180deg, #0f1216 0%, #171c23 100%);
+    }
+
+    body.lamp-on .bulb {
+      background: linear-gradient(180deg, #ffe7a0, #f7c96d);
+      box-shadow: 0 0 30px 10px rgba(255, 222, 125, 0.7);
+      transform: scale(1.08);
+    }
+
+    body.lamp-on .light-beam {
+      opacity: 1;
+    }
+
+    body.lamp-on .login-box {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      background: rgba(27, 31, 35, 0.8);
+      box-shadow: 0 28px 60px rgba(250, 195, 83, 0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    body.lamp-on .login-btn {
+      background: linear-gradient(135deg, #ffde7d, #f2c45c);
+      color: #1a1d20;
+      box-shadow: 0 12px 22px rgba(255, 222, 125, 0.2);
+    }
+
+    body.lamp-on .toggle-btn.active {
+      background: rgba(255, 222, 125, 0.08);
+      color: #ffebba;
+    }
+
+    body.lamp-on .social-btn:hover {
+      background: rgba(255, 222, 125, 0.09);
+      color: #ffebba;
+      border-color: rgba(255, 222, 125, 0.3);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding-top: 8px;
+      }
+
+      .login-box {
+        padding: 20px 16px 16px;
+      }
+
+      .social-login {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lamp-container">
+    <div class="wire"></div>
+    <div class="shade"></div>
+    <div class="bulb"></div>
+
+    <div class="pull-cord" id="cord">
+      <div class="cord-line" id="cordLine"></div>
+      <div class="cord-handle"></div>
+    </div>
+  </div>
+
+  <div class="light-beam"></div>
+
+  <div class="login-box">
+    <div id="roleSelector" class="role-selector">
+      <div class="role-card" data-role="customer">
+        <strong>Customer Portal</strong>
+        <small>Browse products and place quick purchases.</small>
+      </div>
+      <div class="role-card" data-role="manager">
+        <strong>Manager Portal</strong>
+        <small>Track stock, sales, suppliers and daily performance.</small>
+      </div>
+    </div>
+
+    <div id="authPanel" class="hidden">
+      <div class="toggle-container">
+        <button class="toggle-btn active" data-form="signin">Sign In</button>
+        <button class="toggle-btn" data-form="signup">Sign Up</button>
+        <button class="toggle-btn" data-form="forgot">Forgot</button>
+      </div>
+
+      <div class="form-group active" id="signin-form">
+        <h2>Sign In</h2>
+        <form id="signinForm">
+          <div class="input-group">
+            <input type="text" id="signinUsername" placeholder="Username or Email" required />
+          </div>
+          <div class="input-group">
+            <input type="password" id="signinPassword" placeholder="Password" required />
+          </div>
+          <div class="input-group">
+            <select id="signinRole">
+              <option value="customer">Customer portal</option>
+              <option value="manager">Manager portal</option>
+            </select>
+          </div>
+          <button type="submit" class="login-btn">Log In</button>
+        </form>
+        <div class="social-divider">or continue with</div>
+        <div class="social-login">
+          <button class="social-btn" title="Sign in with Google">
+            <span class="social-icon"></span>
+            <span>Google</span>
+          </button>
+          <button class="social-btn" title="Sign in with GitHub">
+            <span class="social-icon"></span>
+            <span>GitHub</span>
+          </button>
+          <button class="social-btn" title="Sign in with Facebook">
+            <span class="social-icon"></span>
+            <span>Facebook</span>
+          </button>
+          <button class="social-btn" title="Sign in with Apple">
+            <span class="social-icon"></span>
+            <span>Apple</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" id="signup-form">
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+          <div class="input-group">
+            <input type="text" id="signupName" placeholder="Full Name" required />
+          </div>
+          <div class="input-group">
+            <input type="email" id="signupEmail" placeholder="Email" required />
+          </div>
+          <div class="input-group">
+            <input type="password" id="signupPassword" placeholder="Password" required />
+          </div>
+          <div class="input-group">
+            <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required />
+          </div>
+          <div class="input-group">
+            <select id="signupRole">
+              <option value="customer">Customer account</option>
+              <option value="manager">Manager account</option>
+            </select>
+          </div>
+          <button type="submit" class="login-btn">Create Account</button>
+        </form>
+        <div class="social-divider">or sign up with</div>
+        <div class="social-login">
+          <button class="social-btn" title="Sign up with Google">
+            <span class="social-icon"></span>
+            <span>Google</span>
+          </button>
+          <button class="social-btn" title="Sign up with GitHub">
+            <span class="social-icon"></span>
+            <span>GitHub</span>
+          </button>
+          <button class="social-btn" title="Sign up with Facebook">
+            <span class="social-icon"></span>
+            <span>Facebook</span>
+          </button>
+          <button class="social-btn" title="Sign up with Apple">
+            <span class="social-icon"></span>
+            <span>Apple</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" id="forgot-form">
+        <h2>Reset Password</h2>
+        <form onsubmit="event.preventDefault();">
+          <p style="color: #888; font-size: 13px; margin-bottom: 16px; text-align: center;">Enter your email address and we'll send you a link to reset your password.</p>
+          <div class="input-group">
+            <input type="email" placeholder="Email Address" required />
+          </div>
+          <button type="submit" class="login-btn">Send Reset Link</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cord = document.getElementById('cord');
+    const cordLine = document.getElementById('cordLine');
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    const formGroups = document.querySelectorAll('.form-group');
+    const roleSelector = document.getElementById('roleSelector');
+    const authPanel = document.getElementById('authPanel');
+    const signinRole = document.getElementById('signinRole');
+    const signupRole = document.getElementById('signupRole');
+
+    function setRoleSelection(role) {
+      signinRole.value = role;
+      signupRole.value = role;
+      document.querySelectorAll('.role-card').forEach((card) => {
+        card.classList.toggle('active', card.dataset.role === role);
+      });
+    }
+
+    function showAuthPanel(role) {
+      setRoleSelection(role);
+      roleSelector.classList.add('hidden');
+      authPanel.classList.remove('hidden');
+    }
+
+    function redirectByRole(role) {
+      if (role === 'manager') {
+        window.location.href = '/manager';
+        return;
+      }
+      window.location.href = '/customer';
+    }
+
+    cord.addEventListener('click', () => {
+      cordLine.style.height = '65px';
+
+      setTimeout(() => {
+        cordLine.style.height = '50px';
+      }, 150);
+
+      document.body.classList.toggle('lamp-on');
+    });
+
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const formType = btn.getAttribute('data-form');
+
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        formGroups.forEach(form => form.classList.remove('active'));
+
+        btn.classList.add('active');
+        document.getElementById(formType + '-form').classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.role-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        showAuthPanel(card.dataset.role);
+      });
+    });
+
+    document.getElementById('signinForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const username = document.getElementById('signinUsername').value.trim();
+      const password = document.getElementById('signinPassword').value.trim();
+      const role = document.getElementById('signinRole').value;
+
+      if (!username || !password) {
+        alert('Please enter your username and password.');
+        return;
+      }
+
+      localStorage.setItem('dukaUserRole', role);
+      redirectByRole(role);
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+      const role = document.getElementById('signupRole').value;
+
+      if (!name || !email || !password) {
+        alert('Please complete all sign-up fields.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      localStorage.setItem('dukaUserRole', role);
+      alert('Account created successfully. Redirecting to your dashboard...');
+      redirectByRole(role);
+    });
+
+    const socialBtns = document.querySelectorAll('.social-btn');
+    socialBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const provider = btn.getAttribute('title').split(' ').pop();
+        alert(`${provider} login will be connected here`);
+      });
+    });
+  </script>
+</body>
+</html>

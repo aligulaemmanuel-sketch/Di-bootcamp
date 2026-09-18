@@ -1,0 +1,96 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Bread",
+      "category": "Bakery",
+      "stock": 4,
+      "price": 60.0,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 2,
+      "name": "Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 70.0,
+      "threshold": 8,
+      "unit": "packet"
+    },
+    {
+      "id": 3,
+      "name": "Soap",
+      "category": "Household",
+      "stock": 11,
+      "price": 140.0,
+      "threshold": 6,
+      "unit": "bar"
+    },
+    {
+      "id": 4,
+      "name": "Rice",
+      "category": "Staples",
+      "stock": 30,
+      "price": 260.0,
+      "threshold": 10,
+      "unit": "bag"
+    },
+    {
+      "id": 1789721821692,
+      "name": "maize",
+      "category": "Others",
+      "stock": 90,
+      "price": 9000.0,
+      "threshold": 15,
+      "unit": "kg"
+    }
+  ],
+  "sales": [
+    {
+      "id": 101,
+      "product_id": 1,
+      "product_name": "Bread",
+      "quantity": 2,
+      "unit_price": 60.0,
+      "customer": "Amina",
+      "timestamp": "2026-09-18T08:15:00"
+    },
+    {
+      "id": 102,
+      "product_id": 2,
+      "product_name": "Milk",
+      "quantity": 3,
+      "unit_price": 70.0,
+      "customer": "Kibet",
+      "timestamp": "2026-09-18T10:05:00"
+    },
+    {
+      "id": 103,
+      "product_id": 3,
+      "product_name": "Soap",
+      "quantity": 2,
+      "unit_price": 140.0,
+      "customer": "Walk-in",
+      "timestamp": "2026-09-18T12:40:00"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 201,
+      "name": "Bradford LLC",
+      "phone": "0700-111-222",
+      "product": "Bread",
+      "balance": 2500.0,
+      "last_purchase": "2026-09-12"
+    },
+    {
+      "id": 202,
+      "name": "Barnett, Brandt and Barnes",
+      "phone": "0722-555-111",
+      "product": "Milk",
+      "balance": 1300.0,
+      "last_purchase": "2026-09-15"
+    }
+  ]
+}

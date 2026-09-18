@@ -1,0 +1,87 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Bread",
+      "category": "Bakery",
+      "stock": 4,
+      "price": 60,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 2,
+      "name": "Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 70,
+      "threshold": 8,
+      "unit": "packet"
+    },
+    {
+      "id": 3,
+      "name": "Soap",
+      "category": "Household",
+      "stock": 11,
+      "price": 140,
+      "threshold": 6,
+      "unit": "bar"
+    },
+    {
+      "id": 4,
+      "name": "Rice",
+      "category": "Staples",
+      "stock": 30,
+      "price": 260,
+      "threshold": 10,
+      "unit": "bag"
+    }
+  ],
+  "sales": [
+    {
+      "id": 101,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 2,
+      "unitPrice": 60,
+      "customer": "Amina",
+      "timestamp": "2026-09-18T08:15:00.000Z"
+    },
+    {
+      "id": 102,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 3,
+      "unitPrice": 70,
+      "customer": "Kibet",
+      "timestamp": "2026-09-18T10:05:00.000Z"
+    },
+    {
+      "id": 103,
+      "productId": 3,
+      "productName": "Soap",
+      "quantity": 2,
+      "unitPrice": 140,
+      "customer": "Walk-in",
+      "timestamp": "2026-09-18T12:40:00.000Z"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 201,
+      "name": "Nairobi Bulk Foods",
+      "phone": "0700-111-222",
+      "product": "Bread",
+      "balance": 2500,
+      "lastPurchase": "2026-09-12"
+    },
+    {
+      "id": 202,
+      "name": "Mombasa Dairy Co.",
+      "phone": "0722-555-111",
+      "product": "Milk",
+      "balance": 1300,
+      "lastPurchase": "2026-09-15"
+    }
+  ]
+}
