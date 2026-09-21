@@ -13,17 +13,17 @@
 
     body {
       min-height: 100vh;
-      height: 100vh;
-      padding: 0;
+      padding: 32px 0 40px;
       background:
         radial-gradient(circle at top, rgba(255, 222, 125, 0.12), transparent 25%),
         linear-gradient(180deg, #0d0f12 0%, #12171d 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       transition: background 0.5s ease;
     }
 
@@ -191,6 +191,46 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     }
 
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap input {
+      padding-right: 42px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: #d7dbe0;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .password-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .password-toggle:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
     .input-group select {
       appearance: none;
       background-image: linear-gradient(45deg, transparent 50%, #d7dbe0 50%), linear-gradient(135deg, #d7dbe0 50%, transparent 50%);
@@ -327,6 +367,24 @@
         linear-gradient(180deg, #0f1216 0%, #171c23 100%);
     }
 
+    body:not(.lamp-on) .login-box,
+    body:not(.lamp-on) .role-card,
+    body:not(.lamp-on) .toggle-btn,
+    body:not(.lamp-on) .form-group,
+    body:not(.lamp-on) .login-btn,
+    body:not(.lamp-on) .social-btn,
+    body:not(.lamp-on) .input-group input,
+    body:not(.lamp-on) .input-group select,
+    body:not(.lamp-on) .password-toggle {
+      pointer-events: none;
+      filter: grayscale(0.8);
+      opacity: 0.45;
+    }
+
+    body:not(.lamp-on) .login-box {
+      opacity: 0.25;
+    }
+
     body.lamp-on .bulb {
       background: linear-gradient(180deg, #ffe7a0, #f7c96d);
       box-shadow: 0 0 30px 10px rgba(255, 222, 125, 0.7);
@@ -416,7 +474,10 @@
             <input type="text" id="signinUsername" placeholder="Username or Email" required />
           </div>
           <div class="input-group">
-            <input type="password" id="signinPassword" placeholder="Password" required />
+            <div class="password-wrap">
+              <input type="password" id="signinPassword" placeholder="Password" required />
+              <button type="button" class="password-toggle" data-target="signinPassword" aria-label="Show password">�</button>
+            </div>
           </div>
           <div class="input-group">
             <select id="signinRole">
@@ -457,10 +518,16 @@
             <input type="email" id="signupEmail" placeholder="Email" required />
           </div>
           <div class="input-group">
-            <input type="password" id="signupPassword" placeholder="Password" required />
+            <div class="password-wrap">
+              <input type="password" id="signupPassword" placeholder="Password" required />
+              <button type="button" class="password-toggle" data-target="signupPassword" aria-label="Show password">�</button>
+            </div>
           </div>
           <div class="input-group">
-            <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required />
+            <div class="password-wrap">
+              <input type="password" id="signupConfirmPassword" placeholder="Confirm Password" required />
+              <button type="button" class="password-toggle" data-target="signupConfirmPassword" aria-label="Show password">�</button>
+            </div>
           </div>
           <div class="input-group">
             <select id="signupRole">
@@ -536,6 +603,14 @@
       window.location.href = '/customer';
     }
 
+    function ensureLampOn() {
+      if (!document.body.classList.contains('lamp-on')) {
+        alert('Turn on the lamp before using the login page.');
+        return false;
+      }
+      return true;
+    }
+
     cord.addEventListener('click', () => {
       cordLine.style.height = '65px';
 
@@ -543,11 +618,17 @@
         cordLine.style.height = '50px';
       }, 150);
 
-      document.body.classList.toggle('lamp-on');
+      const lampOn = document.body.classList.toggle('lamp-on');
+      if (!lampOn) {
+        roleSelector.classList.remove('hidden');
+        authPanel.classList.add('hidden');
+      }
     });
 
     toggleBtns.forEach(btn => {
       btn.addEventListener('click', () => {
+        if (!ensureLampOn()) return;
+
         const formType = btn.getAttribute('data-form');
 
         toggleBtns.forEach(b => b.classList.remove('active'));
@@ -560,12 +641,15 @@
 
     document.querySelectorAll('.role-card').forEach((card) => {
       card.addEventListener('click', () => {
+        if (!ensureLampOn()) return;
         showAuthPanel(card.dataset.role);
       });
     });
 
     document.getElementById('signinForm').addEventListener('submit', (event) => {
       event.preventDefault();
+      if (!ensureLampOn()) return;
+
       const username = document.getElementById('signinUsername').value.trim();
       const password = document.getElementById('signinPassword').value.trim();
       const role = document.getElementById('signinRole').value;
@@ -581,6 +665,8 @@
 
     document.getElementById('signupForm').addEventListener('submit', (event) => {
       event.preventDefault();
+      if (!ensureLampOn()) return;
+
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
@@ -602,10 +688,30 @@
       redirectByRole(role);
     });
 
+    const eyeClosedIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.8"></circle><path d="M4 4l16 16"></path></svg>';
+    const eyeOpenIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.8"></circle></svg>';
+
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach((toggle) => {
+      toggle.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (!ensureLampOn()) return;
+
+        const input = document.getElementById(toggle.dataset.target);
+        if (!input) return;
+
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        toggle.innerHTML = isHidden ? eyeOpenIcon : eyeClosedIcon;
+        toggle.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+      });
+    });
+
     const socialBtns = document.querySelectorAll('.social-btn');
     socialBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
+        if (!ensureLampOn()) return;
         const provider = btn.getAttribute('title').split(' ').pop();
         alert(`${provider} login will be connected here`);
       });

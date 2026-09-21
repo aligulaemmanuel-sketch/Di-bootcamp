@@ -481,9 +481,9 @@
       function renderSales() {
         els.salesTableBody.innerHTML = state.sales.slice().reverse().slice(0, 8).map((sale) => `
           <tr>
-            <td>${sale.product_name}</td>
+            <td>${sale.productName}</td>
             <td>${sale.quantity}</td>
-            <td>Ksh ${Number(sale.quantity * sale.unit_price).toLocaleString('en-KE')}</td>
+            <td>Ksh ${Number(sale.quantity * sale.unitPrice).toLocaleString('en-KE')}</td>
             <td>${sale.customer}</td>
             <td>${new Date(sale.timestamp).toLocaleString()}</td>
           </tr>
@@ -497,7 +497,7 @@
             <td>${supplier.phone}</td>
             <td>${supplier.product}</td>
             <td>Ksh ${Number(supplier.balance).toLocaleString('en-KE')}</td>
-            <td>${supplier.last_purchase}</td>
+            <td>${supplier.lastPurchase}</td>
             <td class="action-cell">
               <a class="mini-btn" href="tel:${encodeURIComponent(supplier.phone || '')}" ${!supplier.phone || supplier.phone === 'N/A' ? 'onclick="return false"' : ''}>Call</a>
               <button class="mini-btn edit" data-action="edit-supplier" data-id="${supplier.id}">Edit</button>

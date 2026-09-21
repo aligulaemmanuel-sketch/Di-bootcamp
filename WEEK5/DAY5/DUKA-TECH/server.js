@@ -212,8 +212,30 @@ app.get('/api/summary', async (req, res) => {
   res.json(calculateSummary(database));
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/manager', (req, res) => {
+  res.sendFile(path.join(__dirname, 'manager.html'));
+});
+
+app.get('/customer', (req, res) => {
+  res.sendFile(path.join(__dirname, 'customer.html'));
+});
+
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'DUKA-TECH.html'));
+  const requestedPath = req.path.toLowerCase();
+  if (requestedPath.endsWith('.html') || requestedPath.endsWith('.css') || requestedPath.endsWith('.js')) {
+    const staticPath = path.join(__dirname, requestedPath.replace(/^\//, ''));
+    res.sendFile(staticPath);
+    return;
+  }
+  res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 app.listen(PORT, () => {
