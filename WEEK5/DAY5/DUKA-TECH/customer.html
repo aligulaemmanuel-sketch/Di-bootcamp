@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Duka-Tech Customer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -40,7 +43,7 @@
       * { box-sizing: border-box; }
       body {
         margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: 'DM Sans', sans-serif;
         background: var(--bg);
         color: var(--charcoal);
       }
@@ -122,12 +125,63 @@
       h1 {
         margin: 0 0 12px;
         font-size: clamp(2.3rem, 4vw, 4rem);
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: -0.04em;
+      }
+
+      h2, h3, .brand, .product-name, .price, .receipt-total {
+        font-family: 'Space Grotesk', sans-serif;
       }
 
       .lead {
         color: rgba(255,255,255,0.8);
         margin: 0;
         max-width: 60ch;
+      }
+
+      .hero-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 7px 11px;
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.08);
+        color: #fbe4a0;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .hero-note::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #71e0a4;
+        box-shadow: 0 0 0 4px rgba(113,224,164,0.14);
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        color: var(--green-900);
+        font-size: 1.35rem;
+      }
+
+      .section-heading p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.85rem;
       }
 
       .content {
@@ -153,15 +207,36 @@
 
       .product-card {
         border: 1px solid var(--border);
-        border-radius: 18px;
+        border-radius: 20px;
         padding: 18px;
-        background: #f9fbfa;
+        background: linear-gradient(180deg, #ffffff 0%, #f8faf9 100%);
+        box-shadow: 0 8px 18px rgba(15, 61, 46, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        min-height: 220px;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 142px;
+        object-fit: cover;
+        border-radius: 14px;
+        margin-bottom: 16px;
+        background: #e8f0ec;
+      }
+
+      .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(15, 61, 46, 0.08);
+        border-color: rgba(31, 95, 71, 0.25);
       }
 
       .product-name {
         font-size: 1.25rem;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        color: var(--green-900);
       }
 
       .product-meta {
@@ -170,6 +245,7 @@
         color: var(--muted);
         font-size: 0.9rem;
         margin-bottom: 12px;
+        gap: 8px;
       }
 
       .price {
@@ -179,7 +255,25 @@
         margin-bottom: 16px;
       }
 
-      .product-card button,
+      .product-card button {
+        margin-top: auto;
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        padding: 12px 14px;
+        background: linear-gradient(135deg, var(--gold-500), #ffd34d);
+        border: none;
+        color: var(--green-900);
+        font-weight: 800;
+        cursor: pointer;
+        transition: filter 0.2s ease, transform 0.2s ease;
+      }
+
+      .product-card button:hover {
+        filter: brightness(0.98);
+        transform: translateY(-1px);
+      }
+
       .primary-btn,
       .secondary-btn,
       input, select {
@@ -246,9 +340,105 @@
         font-weight: 800;
       }
 
+      .bulk-order-card {
+        margin-top: 24px;
+        border: 1px solid #c9e7d9;
+        border-radius: 24px;
+        padding: 24px;
+        background: linear-gradient(135deg, #f4fbf7 0%, #fffaf0 100%);
+      }
+
+      .bulk-order-copy {
+        max-width: 58ch;
+      }
+
+      .bulk-order-copy h2 {
+        margin: 0 0 6px;
+        color: var(--green-900);
+        font-size: 1.5rem;
+      }
+
+      .bulk-order-copy p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .bulk-order-form {
+        display: grid;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .bulk-order-form input,
+      .bulk-order-form select,
+      .bulk-order-form textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.9);
+        padding: 12px 14px;
+      }
+
+      .bulk-order-form textarea {
+        min-height: 88px;
+        resize: vertical;
+      }
+
+      .bulk-order-status {
+        min-height: 20px;
+        color: var(--green-700);
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      .category-tab {
+        border: 1px solid #dfeae6;
+        background: #f8faf9;
+        color: #214a3d;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .category-tab.active {
+        background: #0f3d2e;
+        border-color: #0f3d2e;
+        color: #fff;
+      }
+
       @media (max-width: 920px) {
         .content { grid-template-columns: 1fr; }
         .nav-links { display: none; }
+      }
+
+      @media (max-width: 640px) {
+        .product-card {
+          min-height: unset;
+        }
+
+        header > div {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+
+        header > div > div:first-child {
+          flex: 1 1 100%;
+        }
+
+        .category-tab {
+          flex: 1 1 calc(50% - 8px);
+          text-align: center;
+        }
+
+        .section-heading {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 5px;
+        }
       }
     </style>
   </head>
@@ -263,12 +453,16 @@
           <a href="/manager" class="hover:text-white">Manager view</a>
           <a href="/customer" class="hover:text-white">Customer home</a>
         </nav>
-        <a class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" href="/manager">Open seller dashboard</a>
+        <div class="flex items-center gap-3">
+          <a class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" href="/manager">Open seller dashboard</a>
+          <button id="logoutBtn" type="button" class="rounded-full border border-white/40 bg-white/5 px-4 py-2 font-bold text-white hover:bg-white/10">Log out</button>
+        </div>
       </div>
     </header>
 
     <section class="bg-gradient-to-r from-brand-900 via-brand-700 to-brand-500 text-white py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="hero-note">Open today · Fresh stock</div>
         <h1 class="text-4xl md:text-6xl font-bold tracking-tight">Fresh essentials for your daily shop.</h1>
         <p class="mt-4 max-w-2xl text-white/80 text-lg">Browse daily products, place a quick order, and share your receipt right from the store dashboard.</p>
       </div>
@@ -277,17 +471,32 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="grid grid-cols-1 xl:grid-cols-[1.5fr_0.9fr] gap-6">
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div class="text-xs uppercase tracking-[0.12em] font-bold text-slate-500">Available products</div>
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div class="section-heading">
+              <div>
+                <h2>Shop the essentials</h2>
+                <p>Choose what you need, then build one order.</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2" id="categoryTabs">
+              <button type="button" class="category-tab active" data-category="All">All</button>
+            </div>
+          </div>
           <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4" id="catalogGrid"></div>
         </div>
 
         <aside class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <div class="text-xs uppercase tracking-[0.12em] font-bold text-slate-500">Quick purchase</div>
           <form id="customerSaleForm" class="mt-5 grid gap-3">
+            <label class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500" for="customerProduct">Choose products</label>
             <select id="customerProduct" class="border border-slate-200 rounded-xl px-3 py-2" required>
               <option value="">Select product</option>
             </select>
-            <input id="customerQuantity" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="1" value="1" placeholder="Quantity" required />
+            <div class="grid grid-cols-[1fr_auto] gap-2">
+              <input id="customerQuantity" class="border border-slate-200 rounded-xl px-3 py-2" type="number" min="1" value="1" placeholder="Quantity" required />
+              <button id="addToBasketBtn" type="button" class="rounded-xl border border-brand-700 bg-brand-200 text-brand-900 px-4 py-3 font-bold">Add item</button>
+            </div>
+            <div id="basketItems" class="grid gap-2"></div>
             <input id="customerName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" value="Walk-in customer" placeholder="Customer name" />
             <button class="rounded-xl bg-brand-gold text-brand-900 px-4 py-3 font-bold" type="submit">Buy now</button>
           </form>
@@ -312,23 +521,168 @@
           </div>
         </aside>
       </div>
+
+      <section class="bulk-order-card" aria-labelledby="bulkOrderTitle">
+        <div class="bulk-order-copy">
+          <div class="mini-label">Planning a distant delivery?</div>
+          <h2 id="bulkOrderTitle">Request a bulk order</h2>
+          <p>Tell us what you need and where it should go. This is ideal for families, shops, events, and customers ordering 10 or more items from far away.</p>
+        </div>
+        <form id="bulkOrderForm" class="bulk-order-form">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input id="bulkName" type="text" placeholder="Full name" aria-label="Full name" required />
+            <input id="bulkPhone" type="tel" placeholder="Phone number" aria-label="Phone number" required />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input id="bulkEmail" type="email" placeholder="Email address (optional)" aria-label="Email address" />
+            <input id="bulkLocation" type="text" placeholder="Delivery town / location" aria-label="Delivery location" required />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <select id="bulkProduct" aria-label="Bulk product" required>
+              <option value="">Choose product</option>
+            </select>
+            <input id="bulkQuantity" type="number" min="10" value="10" placeholder="Quantity (min 10)" aria-label="Bulk quantity" required />
+            <input id="bulkDeliveryDate" type="date" aria-label="Preferred delivery date" />
+          </div>
+          <textarea id="bulkNotes" placeholder="Extra delivery details (optional)" aria-label="Extra delivery details"></textarea>
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <button class="rounded-xl bg-brand-gold text-brand-900 px-5 py-3 font-bold" type="submit">Send bulk request</button>
+            <div id="bulkOrderStatus" class="bulk-order-status" role="status" aria-live="polite"></div>
+          </div>
+        </form>
+      </section>
     </main>
 
+    <footer class="bg-brand-900 text-white mt-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div class="text-lg font-bold">Duka-Tech</div>
+            <p class="mt-1 text-sm text-white/70">Fresh essentials for home, family, and everyday life.</p>
+          </div>
+          <div class="text-sm text-white/70">© 2026 Duka-Tech. All rights reserved.</div>
+        </div>
+      </div>
+    </footer>
+
     <script>
+      const expectedRole = 'customer';
+      const currentRole = localStorage.getItem('dukaUserRole');
+
+      if (!currentRole) {
+        window.location.href = '/login';
+      } else if (currentRole !== expectedRole) {
+        window.location.href = currentRole === 'manager' ? '/manager' : '/login';
+      }
+
       const state = {
         products: [],
+        basket: [],
+        activeCategory: 'All',
         prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
       };
 
+      const productImages = {
+        cooking: [
+          '/assets/cooking-oil-1.jpg',
+          '/assets/cooking-oil-2.jpg'
+        ],
+        household: [
+          '/assets/soap-cleaning.jpg'
+        ],
+        dairy: [
+          '/assets/milk.jpg'
+        ],
+        grocery: [
+          '/assets/grocery.jpg'
+        ],
+        general: [
+          '/assets/shop-display.jpg'
+        ]
+      };
+
+      const productPhotoMap = {
+        'White Bread': '/assets/white-bread.jpg',
+        'Brown Bread': productImages.general[0],
+        'Sourdough Bread': productImages.general[0],
+        'Festive Bread': productImages.general[0],
+        'Broadways Bread': productImages.general[0],
+        'Eliot Bread': productImages.general[0],
+        'Superloaf Bread': productImages.general[0],
+        'Fresh Milk': productImages.dairy[0],
+        'Skim Milk': productImages.dairy[0],
+        'Brookside Milk': productImages.dairy[0],
+        'Daima Milk': productImages.dairy[0],
+        'Longlife Milk': productImages.dairy[0],
+        'Tuzo Milk': productImages.dairy[0],
+        'Ilara Milk': productImages.dairy[0],
+        'Bath Soap': '/assets/bath-soap.jpg',
+        'Liquid Soap': '/assets/liquid-soap.jpg',
+        'Menengai Soap': productImages.household[0],
+        'Geisha Soap': productImages.household[0],
+        'Sunlight Soap': productImages.household[0],
+        'Whitewash Soap': productImages.household[0],
+        'Msafi Soap': productImages.household[0],
+        'Flamingo Soap': productImages.household[0],
+        'Imperial Soap': productImages.household[0],
+        'Rice': productImages.grocery[0],
+        'Pishori Rice': productImages.grocery[0],
+        'Jogoo Maize Flour': productImages.grocery[0],
+        'Unga Maize Flour': productImages.grocery[0],
+        'Mumias Sugar': productImages.grocery[0],
+        'Coca-Cola': productImages.grocery[0],
+        'Fanta': productImages.grocery[0],
+        'Sprite': productImages.grocery[0],
+        'Afia Juice': productImages.grocery[0],
+        'Elianto Cooking Oil': productImages.cooking[0],
+        'Fortune Cooking Oil': productImages.cooking[1],
+        'Kimbo Cooking Fat': productImages.cooking[1],
+        'Blue Band': productImages.cooking[1],
+        'Omo Detergent': productImages.household[0],
+        'Ariel Detergent': productImages.household[0],
+        'Harpic Toilet Cleaner': productImages.household[0],
+        'Jik Bleach': productImages.household[0],
+        'Colgate Toothpaste': productImages.household[0],
+        'Vaseline Jelly': productImages.household[0],
+        'Nivea Lotion': productImages.household[0],
+        'Always Sanitary Towels': productImages.household[0],
+        'Tropical Heat Crisps': productImages.grocery[0],
+        'Dairiboard Biscuits': productImages.grocery[0]
+      };
+
+      function getProductImage(product, index) {
+        if (productPhotoMap[product.name]) return productPhotoMap[product.name];
+
+        const categoryImages = {
+          Dairy: productImages.dairy,
+          Household: productImages.household,
+          Cleaning: productImages.household,
+          Cooking: productImages.cooking,
+          Staples: productImages.grocery,
+          Bakery: productImages.general,
+          Drinks: productImages.grocery,
+          'Personal Care': productImages.household,
+          Snacks: productImages.grocery
+        };
+        const images = categoryImages[product.category] || productImages.general;
+        return images[index % images.length];
+      }
+
       const els = {
         catalogGrid: document.getElementById('catalogGrid'),
+        categoryTabs: document.getElementById('categoryTabs'),
         customerProduct: document.getElementById('customerProduct'),
         customerQuantity: document.getElementById('customerQuantity'),
         customerName: document.getElementById('customerName'),
+        basketItems: document.getElementById('basketItems'),
+        addToBasketBtn: document.getElementById('addToBasketBtn'),
         receiptLines: document.getElementById('receiptLines'),
         receiptTotal: document.getElementById('receiptTotal'),
         receiptShopName: document.getElementById('receiptShopName'),
-        smsPhoneNumber: document.getElementById('smsPhoneNumber')
+        smsPhoneNumber: document.getElementById('smsPhoneNumber'),
+        bulkOrderForm: document.getElementById('bulkOrderForm'),
+        bulkProduct: document.getElementById('bulkProduct'),
+        bulkOrderStatus: document.getElementById('bulkOrderStatus')
       };
 
       async function apiRequest(url, options = {}) {
@@ -342,17 +696,41 @@
         try {
           const products = await apiRequest('/api/products');
           state.products = products;
+          renderCategoryTabs();
           renderCatalog();
           populateProductSelector();
           applyPrefs();
+          renderBasket();
         } catch (error) {
           alert(error.message || 'Unable to load products');
         }
       }
 
+      function renderCategoryTabs() {
+        const categories = ['All', ...new Set(state.products.map((product) => product.category))];
+        els.categoryTabs.innerHTML = categories.map((category) => `
+          <button type="button" class="category-tab${state.activeCategory === category ? ' active' : ''}" data-category="${category}">
+            ${category === 'All' ? 'All products' : category}
+          </button>
+        `).join('');
+
+        els.categoryTabs.querySelectorAll('.category-tab').forEach((tab) => {
+          tab.addEventListener('click', () => {
+            state.activeCategory = tab.dataset.category;
+            renderCategoryTabs();
+            renderCatalog();
+          });
+        });
+      }
+
       function renderCatalog() {
-        els.catalogGrid.innerHTML = state.products.map((product) => `
+        const filteredProducts = state.activeCategory === 'All'
+          ? state.products
+          : state.products.filter((product) => product.category === state.activeCategory);
+
+        els.catalogGrid.innerHTML = filteredProducts.map((product) => `
           <div class="product-card">
+            <img class="product-image" src="${getProductImage(product, Number(product.id) - 1)}" alt="${product.name}" loading="lazy" />
             <div class="product-name">${product.name}</div>
             <div class="product-meta">
               <span>${product.category}</span>
@@ -367,9 +745,9 @@
           button.addEventListener('click', () => {
             const product = state.products.find((item) => item.id === Number(button.dataset.id));
             if (!product) return;
-            els.customerProduct.value = product.id;
+            els.customerProduct.value = String(product.id);
             els.customerQuantity.value = 1;
-            showReceiptForSelection();
+            addItemToBasket();
           });
         });
       }
@@ -378,6 +756,9 @@
         els.customerProduct.innerHTML = '<option value="">Select product</option>' + state.products.map((product) => `
           <option value="${product.id}">${product.name} - Ksh ${Number(product.price).toLocaleString('en-KE')}</option>
         `).join('');
+        els.bulkProduct.innerHTML = '<option value="">Choose product</option>' + state.products.map((product) => `
+          <option value="${product.id}">${product.name} (${product.unit})</option>
+        `).join('');
       }
 
       function applyPrefs() {
@@ -385,60 +766,238 @@
         els.receiptShopName.textContent = shopName;
       }
 
-      function showReceiptForSelection() {
+      function renderBasket() {
+        if (!state.basket.length) {
+          els.basketItems.innerHTML = '<p class="text-xs text-slate-500">No items yet. Add products to build your basket.</p>';
+          showReceiptForSelection();
+          return;
+        }
+
+        els.basketItems.innerHTML = state.basket.map((item) => {
+          const product = state.products.find((entry) => entry.id === item.productId);
+          if (!product) return '';
+
+          return `
+            <div class="rounded-xl border border-slate-200 bg-slate-50 p-2">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-sm font-semibold text-slate-700">${product.name}</span>
+                <button type="button" class="text-xs font-bold text-red-600" data-remove-product="${product.id}">Remove</button>
+              </div>
+              <div class="mt-2 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.08em] text-slate-500">
+                <span>Qty</span>
+                <input type="number" min="1" value="${item.quantity}" data-product-id="${product.id}" class="w-20 rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-800" />
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        showReceiptForSelection();
+      }
+
+      function validateStockQuantity(product, quantity, contextLabel = 'This item') {
+        if (!product) return false;
+        if (quantity > product.stock) {
+          alert(`${contextLabel} exceeds available stock. Only ${product.stock} ${product.name} left.`);
+          return false;
+        }
+        return true;
+      }
+
+      function addItemToBasket() {
         const productId = Number(els.customerProduct.value);
         const quantity = Number(els.customerQuantity.value) || 1;
-        const product = state.products.find((item) => item.id === productId);
+
+        if (!productId || quantity < 1) {
+          alert('Select a product and enter a valid quantity.');
+          return;
+        }
+
+        const product = state.products.find((entry) => entry.id === productId);
         if (!product) {
-          els.receiptLines.innerHTML = '<div class="receipt-line"><span>Select a product</span></div>';
+          alert('Product not found.');
+          return;
+        }
+
+        const existingItem = state.basket.find((item) => item.productId === productId);
+        const totalRequestedQty = (existingItem ? existingItem.quantity : 0) + quantity;
+
+        if (!validateStockQuantity(product, totalRequestedQty, 'Your basket quantity')) {
+          return;
+        }
+
+        if (existingItem) {
+          existingItem.quantity = totalRequestedQty;
+        } else {
+          state.basket.push({ productId, quantity });
+        }
+
+        els.customerQuantity.value = 1;
+        els.customerProduct.value = '';
+        renderBasket();
+      }
+
+      function getSelectedPurchaseItems() {
+        return state.basket.map((item) => {
+          const product = state.products.find((entry) => entry.id === item.productId);
+          if (!product) return null;
+
+          const qtyInput = els.basketItems.querySelector(`input[data-product-id="${item.productId}"]`);
+          const quantity = Number(qtyInput?.value || item.quantity || 1);
+          return quantity > 0 ? { id: product.id, product, quantity } : null;
+        }).filter(Boolean);
+      }
+
+      function showReceiptForSelection() {
+        const selectedProducts = getSelectedPurchaseItems();
+        const customerName = document.getElementById('customerName').value || 'Walk-in customer';
+        if (!selectedProducts.length) {
+          els.receiptLines.innerHTML = '<div class="receipt-line"><span>Select at least one product</span></div>';
           els.receiptTotal.textContent = 'Ksh 0';
           return;
         }
 
-        const total = product.price * quantity;
-        els.receiptLines.innerHTML = `
-          <div class="receipt-line"><span>Customer</span><span>${(document.getElementById('customerName').value || 'Walk-in customer')}</span></div>
-          <div class="receipt-line"><span>Item</span><span>${product.name}</span></div>
-          <div class="receipt-line"><span>Qty</span><span>${quantity}</span></div>
-          <div class="receipt-line"><span>Unit price</span><span>Ksh ${Number(product.price).toLocaleString('en-KE')}</span></div>
-          <div class="receipt-line"><span>Amount</span><span>Ksh ${Number(total).toLocaleString('en-KE')}</span></div>
-        `;
+        const total = selectedProducts.reduce((sum, item) => sum + (Number(item.product.price) * item.quantity), 0);
+        const lines = [
+          `<div class="receipt-line"><span>Customer</span><span>${customerName}</span></div>`,
+          ...selectedProducts.map((item) => `
+            <div class="receipt-line"><span>${item.product.name}</span><span>${item.quantity} x Ksh ${Number(item.product.price).toLocaleString('en-KE')}</span></div>
+          `),
+          `<div class="receipt-line"><span>Items</span><span>${selectedProducts.length}</span></div>`,
+          `<div class="receipt-line"><span>Amount</span><span>Ksh ${Number(total).toLocaleString('en-KE')}</span></div>`
+        ];
+
+        els.receiptLines.innerHTML = lines.join('');
         els.receiptTotal.textContent = `Ksh ${Number(total).toLocaleString('en-KE')}`;
       }
 
-      document.getElementById('customerProduct').addEventListener('change', showReceiptForSelection);
-      document.getElementById('customerQuantity').addEventListener('input', showReceiptForSelection);
+      els.customerProduct.addEventListener('change', () => {
+        const selectedProductId = Number(els.customerProduct.value);
+        if (!selectedProductId) {
+          renderBasket();
+          return;
+        }
+        showReceiptForSelection();
+      });
+
+      els.addToBasketBtn.addEventListener('click', addItemToBasket);
+
+      els.basketItems.addEventListener('input', (event) => {
+        const input = event.target.closest('input[data-product-id]');
+        if (!input) return;
+
+        const productId = Number(input.dataset.productId);
+        const currentItem = state.basket.find((item) => item.productId === productId);
+        if (!currentItem) return;
+
+        const product = state.products.find((entry) => entry.id === productId);
+        const nextQty = Number(input.value) || 1;
+
+        if (product && nextQty > product.stock) {
+          alert(`Only ${product.stock} ${product.name} are available in stock.`);
+          currentItem.quantity = product.stock;
+          input.value = product.stock;
+          showReceiptForSelection();
+          return;
+        }
+
+        currentItem.quantity = Math.max(1, nextQty);
+        input.value = currentItem.quantity;
+        showReceiptForSelection();
+      });
+
+      els.basketItems.addEventListener('click', (event) => {
+        const removeBtn = event.target.closest('[data-remove-product]');
+        if (!removeBtn) return;
+
+        const productId = Number(removeBtn.dataset.removeProduct);
+        state.basket = state.basket.filter((item) => item.productId !== productId);
+        renderBasket();
+      });
+
+      document.getElementById('customerQuantity').addEventListener('input', () => {
+        if (Number(els.customerQuantity.value) < 1) {
+          els.customerQuantity.value = 1;
+        }
+        showReceiptForSelection();
+      });
       document.getElementById('customerName').addEventListener('input', showReceiptForSelection);
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('dukaUserRole');
+        window.location.href = '/login';
+      });
+
+      els.bulkOrderForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        els.bulkOrderStatus.textContent = 'Sending your request...';
+
+        try {
+          const order = await apiRequest('/api/bulk-orders', {
+            method: 'POST',
+            body: JSON.stringify({
+              name: document.getElementById('bulkName').value,
+              phone: document.getElementById('bulkPhone').value,
+              email: document.getElementById('bulkEmail').value,
+              location: document.getElementById('bulkLocation').value,
+              productId: els.bulkProduct.value,
+              quantity: document.getElementById('bulkQuantity').value,
+              deliveryDate: document.getElementById('bulkDeliveryDate').value,
+              notes: document.getElementById('bulkNotes').value
+            })
+          });
+
+          els.bulkOrderStatus.textContent = `Request ${order.id} received. We will contact you to confirm delivery.`;
+          els.bulkOrderForm.reset();
+          document.getElementById('bulkQuantity').value = 10;
+        } catch (error) {
+          els.bulkOrderStatus.textContent = error.message || 'Unable to send bulk request.';
+        }
+      });
 
       document.getElementById('customerSaleForm').addEventListener('submit', async (event) => {
         event.preventDefault();
-        const productId = Number(els.customerProduct.value);
-        const quantity = Number(els.customerQuantity.value);
+        const selectedProducts = getSelectedPurchaseItems();
         const customer = document.getElementById('customerName').value.trim() || 'Walk-in customer';
 
-        if (!productId || !quantity || quantity < 1) {
-          alert('Select a valid product and quantity.');
+        if (!selectedProducts.length) {
+          alert('Add at least one product to the basket before buying.');
+          return;
+        }
+
+        const invalidItem = selectedProducts.find((item) => item.quantity > item.product.stock);
+        if (invalidItem) {
+          alert(`Only ${invalidItem.product.stock} ${invalidItem.product.name} are available in stock.`);
           return;
         }
 
         try {
-          await apiRequest('/api/sales', {
+          const response = await apiRequest('/api/sales', {
             method: 'POST',
-            body: JSON.stringify({ productId, quantity, customer })
+            body: JSON.stringify({
+              customer,
+              items: selectedProducts.map((item) => ({
+                productId: item.product.id,
+                quantity: item.quantity
+              }))
+            })
           });
-          const product = state.products.find((item) => item.id === productId);
-          const total = Number(product.price) * quantity;
+
+          const sales = response.sales || [];
+          const total = sales.reduce((sum, sale) => sum + (Number(sale.unitPrice) * Number(sale.quantity)), 0);
           const line = [
             `Customer: ${customer}`,
-            `Item: ${product.name}`,
-            `Qty: ${quantity}`,
-            `Unit price: Ksh ${Number(product.price).toLocaleString('en-KE')}`,
-            `Amount: Ksh ${Number(total).toLocaleString('en-KE')}`
+            ...sales.map((sale) => `Item: ${sale.productName} (${sale.quantity} x Ksh ${Number(sale.unitPrice).toLocaleString('en-KE')})`),
+            `Total: Ksh ${Number(total).toLocaleString('en-KE')}`
           ];
+
           els.receiptLines.innerHTML = line.map((item) => `<div class="receipt-line"><span>${item}</span></div>`).join('');
           els.receiptTotal.textContent = `Ksh ${Number(total).toLocaleString('en-KE')}`;
+          state.basket = [];
+          renderBasket();
+          els.customerProduct.value = '';
+          els.customerQuantity.value = 1;
           await loadCatalog();
-          alert('Sale recorded successfully!');
+          alert('Purchase recorded successfully!');
         } catch (error) {
           alert(error.message || 'Unable to process sale');
         }

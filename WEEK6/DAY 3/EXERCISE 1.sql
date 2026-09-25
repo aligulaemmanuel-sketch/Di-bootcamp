@@ -1,6 +1,10 @@
 -- DVD Rental Database Exercises
 -- Exercises 1 & 2 combined
 
+-- These tables are created by this exercise, so remove old copies before rerunning.
+DROP TABLE IF EXISTS customer_review;
+DROP TABLE IF EXISTS new_film CASCADE;
+
 -----------------------------------------------------------
 -- 🌟 Exercise 1: Table Creation and Relationships
 -----------------------------------------------------------

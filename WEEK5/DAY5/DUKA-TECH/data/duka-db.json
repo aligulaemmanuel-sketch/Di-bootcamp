@@ -2,39 +2,417 @@
   "products": [
     {
       "id": 1,
-      "name": "Bread",
+      "name": "White Bread",
       "category": "Bakery",
-      "stock": 4,
+      "stock": 18,
       "price": 60,
       "threshold": 5,
       "unit": "loaf"
     },
     {
       "id": 2,
-      "name": "Milk",
+      "name": "Brown Bread",
+      "category": "Bakery",
+      "stock": 14,
+      "price": 75,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 3,
+      "name": "Sourdough Bread",
+      "category": "Bakery",
+      "stock": 10,
+      "price": 95,
+      "threshold": 4,
+      "unit": "loaf"
+    },
+    {
+      "id": 4,
+      "name": "Fresh Milk",
       "category": "Dairy",
-      "stock": 18,
+      "stock": 20,
       "price": 70,
       "threshold": 8,
       "unit": "packet"
     },
     {
-      "id": 3,
-      "name": "Soap",
+      "id": 5,
+      "name": "Skim Milk",
+      "category": "Dairy",
+      "stock": 12,
+      "price": 80,
+      "threshold": 6,
+      "unit": "packet"
+    },
+    {
+      "id": 6,
+      "name": "Bath Soap",
       "category": "Household",
-      "stock": 11,
+      "stock": 18,
       "price": 140,
       "threshold": 6,
       "unit": "bar"
     },
     {
-      "id": 4,
+      "id": 7,
+      "name": "Liquid Soap",
+      "category": "Household",
+      "stock": 8,
+      "price": 220,
+      "threshold": 4,
+      "unit": "bottle"
+    },
+    {
+      "id": 8,
       "name": "Rice",
       "category": "Staples",
       "stock": 30,
       "price": 260,
       "threshold": 10,
       "unit": "bag"
+    },
+    {
+      "id": 9,
+      "name": "Festive Bread",
+      "category": "Bakery",
+      "stock": 20,
+      "price": 65,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 10,
+      "name": "Broadways Bread",
+      "category": "Bakery",
+      "stock": 20,
+      "price": 70,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 11,
+      "name": "Eliot Bread",
+      "category": "Bakery",
+      "stock": 16,
+      "price": 68,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 12,
+      "name": "Superloaf Bread",
+      "category": "Bakery",
+      "stock": 22,
+      "price": 75,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 13,
+      "name": "Menengai Soap",
+      "category": "Household",
+      "stock": 18,
+      "price": 55,
+      "threshold": 6,
+      "unit": "bar"
+    },
+    {
+      "id": 14,
+      "name": "Geisha Soap",
+      "category": "Household",
+      "stock": 18,
+      "price": 65,
+      "threshold": 6,
+      "unit": "bar"
+    },
+    {
+      "id": 15,
+      "name": "Sunlight Soap",
+      "category": "Household",
+      "stock": 16,
+      "price": 75,
+      "threshold": 5,
+      "unit": "bar"
+    },
+    {
+      "id": 16,
+      "name": "Whitewash Soap",
+      "category": "Household",
+      "stock": 14,
+      "price": 60,
+      "threshold": 5,
+      "unit": "bar"
+    },
+    {
+      "id": 17,
+      "name": "Msafi Soap",
+      "category": "Household",
+      "stock": 16,
+      "price": 50,
+      "threshold": 5,
+      "unit": "bar"
+    },
+    {
+      "id": 18,
+      "name": "Flamingo Soap",
+      "category": "Household",
+      "stock": 12,
+      "price": 70,
+      "threshold": 4,
+      "unit": "bar"
+    },
+    {
+      "id": 19,
+      "name": "Imperial Soap",
+      "category": "Household",
+      "stock": 14,
+      "price": 80,
+      "threshold": 5,
+      "unit": "bar"
+    },
+    {
+      "id": 20,
+      "name": "Brookside Milk",
+      "category": "Dairy",
+      "stock": 20,
+      "price": 75,
+      "threshold": 8,
+      "unit": "packet"
+    },
+    {
+      "id": 21,
+      "name": "Daima Milk",
+      "category": "Dairy",
+      "stock": 20,
+      "price": 68,
+      "threshold": 8,
+      "unit": "packet"
+    },
+    {
+      "id": 22,
+      "name": "Longlife Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 85,
+      "threshold": 6,
+      "unit": "packet"
+    },
+    {
+      "id": 23,
+      "name": "Tuzo Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 65,
+      "threshold": 6,
+      "unit": "packet"
+    },
+    {
+      "id": 24,
+      "name": "Ilara Milk",
+      "category": "Dairy",
+      "stock": 16,
+      "price": 72,
+      "threshold": 6,
+      "unit": "packet"
+    },
+    {
+      "id": 25,
+      "name": "Coca-Cola",
+      "category": "Drinks",
+      "stock": 24,
+      "price": 80,
+      "threshold": 8,
+      "unit": "bottle"
+    },
+    {
+      "id": 26,
+      "name": "Fanta",
+      "category": "Drinks",
+      "stock": 24,
+      "price": 80,
+      "threshold": 8,
+      "unit": "bottle"
+    },
+    {
+      "id": 27,
+      "name": "Sprite",
+      "category": "Drinks",
+      "stock": 24,
+      "price": 80,
+      "threshold": 8,
+      "unit": "bottle"
+    },
+    {
+      "id": 28,
+      "name": "Afia Juice",
+      "category": "Drinks",
+      "stock": 18,
+      "price": 120,
+      "threshold": 6,
+      "unit": "bottle"
+    },
+    {
+      "id": 29,
+      "name": "Pishori Rice",
+      "category": "Staples",
+      "stock": 24,
+      "price": 300,
+      "threshold": 8,
+      "unit": "bag"
+    },
+    {
+      "id": 30,
+      "name": "Jogoo Maize Flour",
+      "category": "Staples",
+      "stock": 30,
+      "price": 150,
+      "threshold": 10,
+      "unit": "packet"
+    },
+    {
+      "id": 31,
+      "name": "Unga Maize Flour",
+      "category": "Staples",
+      "stock": 30,
+      "price": 145,
+      "threshold": 10,
+      "unit": "packet"
+    },
+    {
+      "id": 32,
+      "name": "Mumias Sugar",
+      "category": "Staples",
+      "stock": 20,
+      "price": 180,
+      "threshold": 7,
+      "unit": "packet"
+    },
+    {
+      "id": 33,
+      "name": "Elianto Cooking Oil",
+      "category": "Cooking",
+      "stock": 16,
+      "price": 280,
+      "threshold": 5,
+      "unit": "bottle"
+    },
+    {
+      "id": 34,
+      "name": "Fortune Cooking Oil",
+      "category": "Cooking",
+      "stock": 16,
+      "price": 270,
+      "threshold": 5,
+      "unit": "bottle"
+    },
+    {
+      "id": 35,
+      "name": "Kimbo Cooking Fat",
+      "category": "Cooking",
+      "stock": 14,
+      "price": 190,
+      "threshold": 5,
+      "unit": "packet"
+    },
+    {
+      "id": 36,
+      "name": "Blue Band",
+      "category": "Cooking",
+      "stock": 18,
+      "price": 180,
+      "threshold": 6,
+      "unit": "tub"
+    },
+    {
+      "id": 37,
+      "name": "Omo Detergent",
+      "category": "Cleaning",
+      "stock": 16,
+      "price": 250,
+      "threshold": 5,
+      "unit": "packet"
+    },
+    {
+      "id": 38,
+      "name": "Ariel Detergent",
+      "category": "Cleaning",
+      "stock": 16,
+      "price": 280,
+      "threshold": 5,
+      "unit": "packet"
+    },
+    {
+      "id": 39,
+      "name": "Harpic Toilet Cleaner",
+      "category": "Cleaning",
+      "stock": 12,
+      "price": 220,
+      "threshold": 4,
+      "unit": "bottle"
+    },
+    {
+      "id": 40,
+      "name": "Jik Bleach",
+      "category": "Cleaning",
+      "stock": 12,
+      "price": 180,
+      "threshold": 4,
+      "unit": "bottle"
+    },
+    {
+      "id": 41,
+      "name": "Colgate Toothpaste",
+      "category": "Personal Care",
+      "stock": 18,
+      "price": 160,
+      "threshold": 6,
+      "unit": "tube"
+    },
+    {
+      "id": 42,
+      "name": "Vaseline Jelly",
+      "category": "Personal Care",
+      "stock": 14,
+      "price": 180,
+      "threshold": 5,
+      "unit": "jar"
+    },
+    {
+      "id": 43,
+      "name": "Nivea Lotion",
+      "category": "Personal Care",
+      "stock": 12,
+      "price": 350,
+      "threshold": 4,
+      "unit": "bottle"
+    },
+    {
+      "id": 44,
+      "name": "Always Sanitary Towels",
+      "category": "Personal Care",
+      "stock": 18,
+      "price": 180,
+      "threshold": 6,
+      "unit": "pack"
+    },
+    {
+      "id": 45,
+      "name": "Tropical Heat Crisps",
+      "category": "Snacks",
+      "stock": 24,
+      "price": 70,
+      "threshold": 8,
+      "unit": "pack"
+    },
+    {
+      "id": 46,
+      "name": "Dairiboard Biscuits",
+      "category": "Snacks",
+      "stock": 20,
+      "price": 60,
+      "threshold": 6,
+      "unit": "pack"
     }
   ],
   "sales": [
@@ -64,6 +442,114 @@
       "unitPrice": 140,
       "customer": "Walk-in",
       "timestamp": "2026-09-18T12:40:00.000Z"
+    },
+    {
+      "id": 1789973446428,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 3,
+      "unitPrice": 60,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T06:50:46.428Z"
+    },
+    {
+      "id": 1789973467829,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 1,
+      "unitPrice": 60,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T06:51:07.829Z"
+    },
+    {
+      "id": 1789973919973.0615,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 2,
+      "unitPrice": 60,
+      "customer": "Test Buyer",
+      "timestamp": "2026-09-21T06:58:39.973Z"
+    },
+    {
+      "id": 1789973919974.213,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 2,
+      "unitPrice": 70,
+      "customer": "Test Buyer",
+      "timestamp": "2026-09-21T06:58:39.974Z"
+    },
+    {
+      "id": 1789974462868.1433,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 2,
+      "unitPrice": 60,
+      "customer": "Basket Buyer",
+      "timestamp": "2026-09-21T07:07:42.868Z"
+    },
+    {
+      "id": 1789974462868.2478,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 3,
+      "unitPrice": 70,
+      "customer": "Basket Buyer",
+      "timestamp": "2026-09-21T07:07:42.868Z"
+    },
+    {
+      "id": 1789974797635.3257,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 4,
+      "unitPrice": 70,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T07:13:17.635Z"
+    },
+    {
+      "id": 1789975107897.8674,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 2,
+      "unitPrice": 60,
+      "customer": "Test buyer",
+      "timestamp": "2026-09-21T07:18:27.897Z"
+    },
+    {
+      "id": 1789975107897.8997,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 3,
+      "unitPrice": 70,
+      "customer": "Test buyer",
+      "timestamp": "2026-09-21T07:18:27.897Z"
+    },
+    {
+      "id": 1789975473444.2407,
+      "productId": 1,
+      "productName": "Bread",
+      "quantity": 4,
+      "unitPrice": 60,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T07:24:33.444Z"
+    },
+    {
+      "id": 1789982241961.1135,
+      "productId": 2,
+      "productName": "Milk",
+      "quantity": 1,
+      "unitPrice": 70,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T09:17:21.961Z"
+    },
+    {
+      "id": 1789982241961.4893,
+      "productId": 3,
+      "productName": "Soap",
+      "quantity": 1,
+      "unitPrice": 140,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-09-21T09:17:21.961Z"
     }
   ],
   "suppliers": [

@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS items, customers CASCADE;
+
 -- Create the tables
 CREATE TABLE items (
     item_id SERIAL PRIMARY KEY,
@@ -24,4 +26,4 @@ INSERT INTO customers (first_name, last_name) VALUES
 ('Trevor', 'Green'),
 ('Melanie', 'Johnson');
 SELECT * FROM items;
-SELECT COUNT(*) FROM actors;
+SELECT COUNT(*) AS customer_count FROM customers;

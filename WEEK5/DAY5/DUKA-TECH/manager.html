@@ -248,7 +248,10 @@
           <a href="/customer" class="hover:text-white">Customer view</a>
           <a href="/manager" class="hover:text-white">Manager dashboard</a>
         </nav>
-        <button class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" id="savePrefsBtn">Save shop name</button>
+        <div class="flex items-center gap-3">
+          <button class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" id="savePrefsBtn">Save shop name</button>
+          <button id="logoutBtn" type="button" class="rounded-full border border-white/40 bg-white/5 px-4 py-2 font-bold text-white hover:bg-white/10">Log out</button>
+        </div>
       </div>
     </header>
 
@@ -397,6 +400,15 @@
     </main>
 
     <script>
+      const expectedRole = 'manager';
+      const currentRole = localStorage.getItem('dukaUserRole');
+
+      if (!currentRole) {
+        window.location.href = '/login';
+      } else if (currentRole !== expectedRole) {
+        window.location.href = currentRole === 'customer' ? '/customer' : '/login';
+      }
+
       const state = {
         products: [],
         sales: [],
@@ -657,6 +669,11 @@
           localStorage.setItem('dukaPrefs', JSON.stringify(state.prefs));
           alert('Shop name saved.');
         }
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('dukaUserRole');
+        window.location.href = '/login';
       });
 
       loadDashboard();

@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.13.1",
+    "dotenv": "^16.4.7"
   }
 }

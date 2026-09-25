@@ -137,63 +137,65 @@
         .skill-tag {
             display: inline-flex;
             align-items: center;
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 800;
+            letter-spacing: 0.03em;
             margin: 4px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
             cursor: default;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
         }
         .skill-tag:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.25);
         }
         .skill-tag i { margin-right: 6px; font-size: 0.9rem; }
         
         .tag-cloud { 
-            background: rgba(0, 188, 212, 0.15); 
-            color: #00838f; 
-            border-color: rgba(0, 188, 212, 0.3);
+            background: linear-gradient(135deg, rgba(103, 232, 249, 0.9), rgba(191, 219, 254, 0.9)); 
+            color: #083344; 
+            border-color: rgba(14, 116, 144, 0.7);
         }
         .tag-ai { 
-            background: rgba(255, 193, 7, 0.15); 
-            color: #f57f17; 
-            border-color: rgba(255, 193, 7, 0.3);
+            background: linear-gradient(135deg, rgba(253, 224, 71, 0.9), rgba(254, 215, 170, 0.9)); 
+            color: #6b3c00; 
+            border-color: rgba(146, 64, 14, 0.5);
         }
         .tag-dev { 
-            background: rgba(33, 150, 243, 0.15); 
-            color: #1565c0; 
-            border-color: rgba(33, 150, 243, 0.3);
+            background: linear-gradient(135deg, rgba(147, 197, 253, 0.92), rgba(191, 219, 254, 0.92)); 
+            color: #0f172a; 
+            border-color: rgba(37, 99, 235, 0.6);
         }
         .tag-creative { 
-            background: rgba(156, 39, 176, 0.15); 
-            color: #7b1fa2; 
-            border-color: rgba(156, 39, 176, 0.3);
+            background: linear-gradient(135deg, rgba(216, 180, 254, 0.85), rgba(196, 181, 253, 0.9)); 
+            color: #4c1d95; 
+            border-color: rgba(109, 40, 217, 0.6);
         }
         
         /* Branded Tag with EA Logo */
         .branded-tag {
             display: inline-flex;
             align-items: center;
-            background: #1a237e;
-            color: white;
-            padding: 8px 16px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 55%, #8b5cf6 100%);
+            color: #f8fafc;
+            padding: 9px 18px;
             border-radius: 25px;
             margin: 6px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 8px rgba(26, 35, 126, 0.2);
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 20px rgba(76, 29, 149, 0.32);
         }
         .branded-tag:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(26, 35, 126, 0.3);
-            border-color: #38bdf8;
+            box-shadow: 0 10px 22px rgba(76, 29, 149, 0.42);
+            border-color: rgba(191, 219, 254, 0.9);
         }
         .branded-tag svg {
             width: 16px;
@@ -475,7 +477,7 @@
             <div class="container">
                 <h3 class="white-text">Full-Stack Developer</h3>
                 <h1 class="white-text">Emmanuel Asuva</h1>
-                <h5 class="light">Cloud Practitioner | Multimedia Engineer | C.E.O</h5>
+                <h5 class="light">Cloud Practitioner | Multimedia Engineer</h5>
                 <p>Bridging the gap between technical infrastructure and creative storytelling.</p>
                 
                 <!-- Social Media Links -->
@@ -528,7 +530,7 @@
                 <p class="mission-text">
                     I am an <strong>AWS Certified Cloud Practitioner</strong> and <strong>Full-Stack Developer</strong> standing at the intersection of robust infrastructure and cinematic storytelling.
                     <br><br>
-                    As C.E.O and founder of my digital brand, I combine technical foundation in <strong>Python (Flask)</strong> and Cloud Systems with creative expertise in multimedia production. I build scalable web solutions that are as functional as they are secure.
+                    I combine technical foundation in <strong>Python (Flask)</strong> and Cloud Systems with creative expertise in multimedia production. I build scalable web solutions that are as functional as they are secure.
                     <br><br>
                     My background as a trained sound engineer and videographer gives me a unique edge: I don't just build the backend; I understand the high-fidelity content that lives on it. Currently deep-diving into <strong>Artificial Intelligence</strong>, integrating LLMs and automated workflows to revolutionize how we edit video and write code.
                     <br><br>
@@ -539,7 +541,6 @@
                     <div class="status-badge cloud">$ cloud_status: certified</div>
                     <div class="status-badge multimedia">$ multimedia: production_ready</div>
                     <div class="status-badge ai">$ ai_learning: active</div>
-                    <div class="status-badge" style="border-color: #25d366; color: #1b5e20; background: rgba(37, 211, 102, 0.05);">$ role: ceo_founder</div>
                 </div>
             </div>
         </section>
@@ -592,19 +593,7 @@
                         </svg>
                         AI Automation
                     </div>
-                    <div class="branded-tag">
-                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="tagGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#38bdf8" />
-                                    <stop offset="100%" stop-color="#a855f7" />
-                                </linearGradient>
-                            </defs>
-                            <path d="M20,70 L20,30 L80,30 M20,50 L60,50 M20,70 L80,70 L80,30" 
-                                  stroke="url(#tagGradient4)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        C.E.O
-                    </div>
+
                 </div>
 
                 <div class="row">
@@ -815,7 +804,7 @@
                 <div class="col l6 s12">
                     <h5 class="white-text">Emmanuel Asuva</h5>
                     <p class="grey-text text-lighten-4" style="line-height: 1.8;">
-                        <strong>Full-Stack Developer</strong> | <strong>C.E.O</strong><br>
+                        <strong>Full-Stack Developer</strong><br>
                         Building digital experiences that merge code with creativity.
                         Available for freelance cloud architecture, full-stack development, and professional video production.
                     </p>
@@ -865,7 +854,7 @@
                         <path d="M20,70 L20,30 L80,30 M20,50 L60,50 M20,70 L80,70 L80,30" 
                               stroke="url(#footerGradient)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span>© 2026 Emmanuel Asuva. Full-Stack Developer & C.E.O. All rights reserved.</span>
+                    <span>© 2026 Emmanuel Asuva. Full-Stack Developer. All rights reserved.</span>
                 </div>
             </div>
         </div>

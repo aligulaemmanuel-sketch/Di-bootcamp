@@ -27,6 +27,15 @@
       transition: background 0.5s ease;
     }
 
+    .page-scroll {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding-bottom: 24px;
+    }
+
     .lamp-container {
       position: relative;
       display: flex;
@@ -123,7 +132,8 @@
       transform: translateY(12px) scale(0.98);
       transition: all 0.5s ease;
       z-index: 5;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .login-box h2 {
@@ -385,6 +395,19 @@
       opacity: 0.25;
     }
 
+    body.lamp-on .login-box,
+    body.lamp-on .role-card,
+    body.lamp-on .toggle-btn,
+    body.lamp-on .form-group,
+    body.lamp-on .login-btn,
+    body.lamp-on .social-btn,
+    body.lamp-on .input-group input,
+    body.lamp-on .input-group select,
+    body.lamp-on .password-toggle {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
     body.lamp-on .bulb {
       background: linear-gradient(180deg, #ffe7a0, #f7c96d);
       box-shadow: 0 0 30px 10px rgba(255, 222, 125, 0.7);
@@ -435,20 +458,21 @@
   </style>
 </head>
 <body>
-  <div class="lamp-container">
-    <div class="wire"></div>
-    <div class="shade"></div>
-    <div class="bulb"></div>
+  <div class="page-scroll">
+    <div class="lamp-container">
+      <div class="wire"></div>
+      <div class="shade"></div>
+      <div class="bulb"></div>
 
-    <div class="pull-cord" id="cord">
-      <div class="cord-line" id="cordLine"></div>
-      <div class="cord-handle"></div>
+      <div class="pull-cord" id="cord">
+        <div class="cord-line" id="cordLine"></div>
+        <div class="cord-handle"></div>
+      </div>
     </div>
-  </div>
 
-  <div class="light-beam"></div>
+    <div class="light-beam"></div>
 
-  <div class="login-box">
+    <div class="login-box">
     <div id="roleSelector" class="role-selector">
       <div class="role-card" data-role="customer">
         <strong>Customer Portal</strong>
@@ -593,6 +617,7 @@
       setRoleSelection(role);
       roleSelector.classList.add('hidden');
       authPanel.classList.remove('hidden');
+      document.querySelector('.toggle-btn.active')?.click();
     }
 
     function redirectByRole(role) {
@@ -646,7 +671,7 @@
       });
     });
 
-    document.getElementById('signinForm').addEventListener('submit', (event) => {
+    document.getElementById('signinForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!ensureLampOn()) return;
 
@@ -659,11 +684,22 @@
         return;
       }
 
-      localStorage.setItem('dukaUserRole', role);
-      redirectByRole(role);
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role })
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        alert(result.message || 'Unable to sign in.');
+        return;
+      }
+      localStorage.setItem('dukaUserRole', result.user.role);
+      localStorage.setItem('dukaUser', JSON.stringify(result.user));
+      redirectByRole(result.user.role);
     });
 
-    document.getElementById('signupForm').addEventListener('submit', (event) => {
+    document.getElementById('signupForm').addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!ensureLampOn()) return;
 
@@ -683,9 +719,20 @@
         return;
       }
 
-      localStorage.setItem('dukaUserRole', role);
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role })
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        alert(result.message || 'Unable to create account.');
+        return;
+      }
+      localStorage.setItem('dukaUserRole', result.user.role);
+      localStorage.setItem('dukaUser', JSON.stringify(result.user));
       alert('Account created successfully. Redirecting to your dashboard...');
-      redirectByRole(role);
+      redirectByRole(result.user.role);
     });
 
     const eyeClosedIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.8"></circle><path d="M4 4l16 16"></path></svg>';
