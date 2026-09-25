@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/emmanuel_asuva_portfolio.html" }
+  ]
+}
