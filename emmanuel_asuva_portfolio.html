@@ -9,24 +9,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-indigo: #1a237e;
-            --accent-amber: #ff6f00;
-            --cloud-cyan: #00bcd4;
-            --ai-amber: #ffc107;
-            --dev-blue: #2196f3;
-            --creative-purple: #9c27b0;
-            --ig-pink: #e4405f;
-            --fb-blue: #1877f2;
-            --tiktok-black: #000000;
-            --tg-blue: #0088cc;
-            --wa-green: #25d366;
+            --primary-indigo: #111827;
+            --primary-blue: #1d4ed8;
+            --accent-violet: #7c3aed;
+            --accent-amber: #f59e0b;
+            --cloud-cyan: #67e8f9;
+            --ai-amber: #fbbf24;
+            --dev-blue: #60a5fa;
+            --creative-purple: #a78bfa;
+            --ig-pink: #f472b6;
+            --fb-blue: #60a5fa;
+            --tiktok-black: #020617;
+            --tg-blue: #38bdf8;
+            --wa-green: #4ade80;
+            --page-ink: #e5eefb;
+            --deep-panel: #0f172a;
         }
         
         body { 
             display: flex; 
             min-height: 100vh; 
             flex-direction: column; 
-            background-color: #f5f5f5;
+            background: linear-gradient(180deg, #020817 0%, #0f172a 100%);
+            color: var(--page-ink);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         main { flex: 1 0 auto; }
@@ -34,7 +39,11 @@
         /* Navigation */
         .nav-wrapper { 
             padding: 0 20px; 
-            background: linear-gradient(135deg, var(--primary-indigo) 0%, #283593 100%);
+            background: rgba(2, 6, 23, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.18);
         }
         .brand-logo { 
             display: flex !important; 
@@ -47,48 +56,89 @@
         
         /* Hero Section */
         .hero { 
-            background: linear-gradient(135deg, rgba(26, 35, 126, 0.92) 0%, rgba(40, 53, 147, 0.92) 100%), 
+            background: linear-gradient(135deg, rgba(2, 6, 23, 0.84) 0%, rgba(30, 64, 175, 0.74) 35%, rgba(88, 28, 135, 0.70) 100%), 
                       url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80'); 
             background-size: cover; 
             background-position: center;
             color: white; 
-            padding: 120px 0 100px; 
-            text-align: center;
+            padding: 90px 0 90px; 
             position: relative;
             overflow: hidden;
         }
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+            inset: 0;
+            background: radial-gradient(circle at 15% 30%, rgba(125, 211, 252, 0.20) 0%, transparent 24%),
+                        radial-gradient(circle at 82% 70%, rgba(192, 132, 252, 0.18) 0%, transparent 30%),
+                        linear-gradient(120deg, rgba(255,255,255,0.10), transparent 45%);
             pointer-events: none;
+        }
+        .hero .container {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+            align-items: center;
+            gap: 36px;
+        }
+        .hero-copy {
+            text-align: left;
+            padding-right: 10px;
+        }
+        .hero-portrait {
+            width: min(100%, 430px);
+            height: auto;
+            display: block;
+            justify-self: center;
+            border-radius: 30px;
+            border: 8px solid rgba(255,255,255,0.82);
+            box-shadow: 0 30px 70px rgba(15, 23, 42, 0.45), 0 0 0 6px rgba(125, 211, 252, 0.20), 0 0 30px rgba(168, 85, 247, 0.25);
+            background: rgba(255,255,255,0.15);
+            object-fit: cover;
+            transform: rotate(1.5deg);
+        }
+        .btn-large {
+            border-radius: 999px;
+            box-shadow: 0 18px 35px rgba(251, 146, 60, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-large:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(251, 146, 60, 0.35);
         }
         .hero h1 { 
             font-weight: 800; 
-            margin-bottom: 0.5rem;
+            margin: 0 0 0.75rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             position: relative;
-            font-size: 3.5rem;
+            font-size: clamp(2.7rem, 5vw, 5rem);
+            letter-spacing: -0.04em;
+            line-height: 0.98;
         }
         .hero h3 {
-            font-weight: 300;
-            margin-bottom: 1rem;
-            opacity: 0.95;
-            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0 0 0.8rem;
+            opacity: 0.96;
+            font-size: clamp(1.3rem, 2vw, 2rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
         .hero h5 { 
-            font-weight: 400; 
-            margin-bottom: 1.5rem;
+            font-weight: 500; 
+            margin: 0 0 1.25rem;
             opacity: 0.9;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
+            font-size: 1.1rem;
         }
         .hero p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 2rem;
+            font-size: 1.15rem;
+            opacity: 0.92;
+            max-width: 620px;
+            margin: 0 0 2rem;
+            line-height: 1.7;
         }
         
         /* Social Links Hero */
@@ -205,16 +255,28 @@
         
         /* Mission Section */
         #mission {
-            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+            background: linear-gradient(180deg, rgba(11, 17, 32, 0.96) 0%, rgba(17, 24, 39, 0.98) 100%);
             padding: 80px 0;
+            position: relative;
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        #mission::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.10), rgba(168, 85, 247, 0.08));
+            pointer-events: none;
         }
         .mission-text {
             font-size: 1.15rem;
             line-height: 1.8;
-            color: #455a64;
+            color: #dfeafc;
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
         .status-badges {
             margin-top: 40px;
@@ -222,26 +284,29 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
+            position: relative;
+            z-index: 1;
         }
         .status-badge {
-            background: rgba(26, 35, 126, 0.05);
-            border: 1px solid rgba(26, 35, 126, 0.2);
+            background: rgba(15, 23, 42, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.28);
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-family: 'Courier New', monospace;
             font-size: 0.9rem;
-            color: var(--primary-indigo);
-            font-weight: 600;
+            color: #e0f2fe;
+            font-weight: 700;
+            box-shadow: 0 8px 18px rgba(2, 6, 23, 0.22);
         }
-        .status-badge.cloud { border-color: var(--cloud-cyan); color: #00838f; background: rgba(0, 188, 212, 0.05); }
-        .status-badge.multimedia { border-color: var(--creative-purple); color: #7b1fa2; background: rgba(156, 39, 176, 0.05); }
-        .status-badge.ai { border-color: var(--ai-amber); color: #f57f17; background: rgba(255, 193, 7, 0.05); }
+        .status-badge.cloud { border-color: rgba(34, 211, 238, 0.65); color: #a5f3fc; background: rgba(8, 145, 178, 0.16); }
+        .status-badge.multimedia { border-color: rgba(192, 132, 252, 0.65); color: #e9d5ff; background: rgba(126, 34, 206, 0.16); }
+        .status-badge.ai { border-color: rgba(251, 191, 36, 0.7); color: #fef3c7; background: rgba(180, 83, 9, 0.16); }
         
         /* Skills Section */
         .section-title { 
             margin-bottom: 50px; 
             font-weight: 700; 
-            color: var(--primary-indigo);
+            color: #e2e8f0;
             position: relative;
             display: inline-block;
         }
@@ -251,54 +316,67 @@
             bottom: -10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
+            width: 72px;
             height: 4px;
             background: linear-gradient(to right, #38bdf8, #a855f7);
-            border-radius: 2px;
+            border-radius: 999px;
         }
         .skill-card { 
-            border-radius: 12px; 
+            border-radius: 18px; 
             transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(148, 163, 184, 0.18);
             height: 100%;
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.85), rgba(15, 23, 42, 0.96));
+            box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .skill-card:hover { 
             transform: translateY(-8px); 
-            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            box-shadow: 0 20px 45px rgba(37, 99, 235, 0.10);
         }
         .skill-card .card-content { padding: 30px 24px; }
         .skill-icon {
-            width: 70px;
-            height: 70px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 2rem;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
         }
-        .skill-icon.cloud { background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); color: #00838f; }
-        .skill-icon.multimedia { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); color: #7b1fa2; }
-        .skill-icon.ai { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); color: #f57f17; }
+        .skill-icon.cloud { background: linear-gradient(135deg, #dffafc 0%, #bae6fd 100%); color: #0f766e; }
+        .skill-icon.multimedia { background: linear-gradient(135deg, #f5e8ff 0%, #ddd6fe 100%); color: #6d28d9; }
+        .skill-icon.ai { background: linear-gradient(135deg, #fff7d6 0%, #fde68a 100%); color: #b45309; }
+        .skill-card h5 { color: #e2e8f0 !important; }
+        .skill-card p { color: #b7c5d9 !important; }
         
         /* Projects Section */
-        #projects { padding: 60px 0 80px; }
+        #projects { padding: 60px 0 80px; background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
         .project-card {
-            border-radius: 12px;
+            border-radius: 18px;
             overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.97));
+            box-shadow: 0 18px 35px rgba(15, 23, 42, 0.18);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .project-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 18px 45px rgba(59, 130, 246, 0.12);
         }
         .project-card .card-content { padding: 24px; }
         .project-card .card-title {
             font-weight: 700 !important;
-            color: var(--primary-indigo) !important;
+            color: #e2e8f0 !important;
             font-size: 1.4rem !important;
         }
+        .project-card p { color: #b7c5d9 !important; }
+        .project-card .card-action { border-top-color: rgba(148, 163, 184, 0.16) !important; }
         .project-tags {
             margin-top: 15px;
             display: flex;
@@ -306,28 +384,38 @@
             gap: 6px;
         }
         .project-tag {
-            background: #e8eaf6;
-            color: var(--primary-indigo);
-            padding: 4px 10px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(168, 85, 247, 0.18));
+            color: #dbeafe;
+            padding: 5px 10px;
             border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: inset 0 0 0 1px rgba(147, 197, 253, 0.18);
         }
         .card-action a {
-            color: var(--primary-indigo) !important;
-            font-weight: 600;
+            color: #93c5fd !important;
+            font-weight: 700;
             transition: all 0.2s;
         }
         .card-action a:hover {
-            color: var(--accent-amber) !important;
+            color: #c4b5fd !important;
             transform: translateX(3px);
         }
         
         /* Social Section */
         #social-section {
-            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 40%, #4f46e5 100%);
             padding: 60px 0;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        #social-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.10), transparent 30%);
+            pointer-events: none;
         }
         .social-grid {
             display: grid;
@@ -339,33 +427,35 @@
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             align-items: center;
             transition: all 0.3s ease;
             text-decoration: none;
             color: white;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
         }
         .social-card:hover {
             transform: translateY(-5px);
-            background: rgba(255,255,255,0.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.16);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
         }
         .social-card i {
             font-size: 2rem;
             margin-right: 15px;
-            width: 50px;
-            height: 50px;
+            width: 52px;
+            height: 52px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.16);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
         }
         .social-card .handle {
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.06rem;
         }
         .social-card .platform {
             font-size: 0.85rem;
@@ -374,8 +464,9 @@
         
         /* Footer */
         footer.page-footer { 
-            background: linear-gradient(135deg, #0d1642 0%, #1a237e 100%);
+            background: linear-gradient(135deg, #020817 0%, #0f172a 30%, #111827 100%);
             padding-top: 40px;
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
         }
         footer h5 { 
             font-weight: 600; 
@@ -423,6 +514,10 @@
         /* Responsive */
         @media (max-width: 600px) {
             .hero { padding: 80px 0 60px; }
+            .hero-layout { grid-template-columns: 1fr; gap: 42px; }
+            .hero-copy { text-align: center; padding-right: 0; }
+            .hero-copy p { margin-left: auto; margin-right: auto; }
+            .hero-portrait { width: min(78vw, 340px); }
             .hero h1 { font-size: 2.2rem; }
             .hero h3 { font-size: 1.3rem; }
             .hero-social { gap: 10px; }
@@ -475,51 +570,60 @@
         <!-- Hero Section -->
         <div class="hero">
             <div class="container">
-                <h3 class="white-text">Full-Stack Developer</h3>
-                <h1 class="white-text">Emmanuel Asuva</h1>
-                <h5 class="light">Cloud Practitioner | Multimedia Engineer</h5>
-                <p>Bridging the gap between technical infrastructure and creative storytelling.</p>
-                
-                <!-- Social Media Links -->
-                <div class="hero-social">
-                    <a href="https://instagram.com/tocky_manu" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@tocky_manu">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://instagram.com/nirvana_tockless" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@nirvana_tockless">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://instagram.com/tockymanu" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@tockymanu">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://facebook.com/tocky.manu" target="_blank" class="social-fb tooltipped" data-position="bottom" data-tooltip="Tocky Manu">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://tiktok.com/@tocky.manu" target="_blank" class="social-tiktok tooltipped" data-position="bottom" data-tooltip="@tocky.manu">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                    <a href="https://t.me/tocky_manu" target="_blank" class="social-tg tooltipped" data-position="bottom" data-tooltip="Eye Witness TG">
-                        <i class="fab fa-telegram-plane"></i>
-                    </a>
-                    <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="social-wa tooltipped" data-position="bottom" data-tooltip="WhatsApp">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                    <a href="https://github.com/aligulaemmanuel-sketch" target="_blank" class="social-github tooltipped" data-position="bottom" data-tooltip="GitHub">
-                        <i class="fab fa-github"></i>
-                    </a>
+                <div class="hero-layout">
+                    <div class="hero-copy">
+                        <h3 class="white-text">Full-Stack Developer</h3>
+                        <h1 class="white-text">Emmanuel Asuva</h1>
+                        <h5 class="light">Cloud Practitioner | Multimedia Engineer</h5>
+                        <p>Bridging the gap between technical infrastructure and creative storytelling.</p>
+                        
+                        <!-- Social Media Links -->
+                        <div class="hero-social">
+                            <a href="https://instagram.com/tocky_manu" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@tocky_manu">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://instagram.com/nirvana_tockless" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@nirvana_tockless">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://instagram.com/tockymanu" target="_blank" class="social-ig tooltipped" data-position="bottom" data-tooltip="@tockymanu">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://facebook.com/tocky.manu" target="_blank" class="social-fb tooltipped" data-position="bottom" data-tooltip="Tocky Manu">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://tiktok.com/@tocky.manu" target="_blank" class="social-tiktok tooltipped" data-position="bottom" data-tooltip="@tocky.manu">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                            <a href="https://t.me/tocky_manu" target="_blank" class="social-tg tooltipped" data-position="bottom" data-tooltip="Eye Witness TG">
+                                <i class="fab fa-telegram-plane"></i>
+                            </a>
+                            <a href="https://wa.me/254XXXXXXXXX" target="_blank" class="social-wa tooltipped" data-position="bottom" data-tooltip="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="https://github.com/aligulaemmanuel-sketch" target="_blank" class="social-github tooltipped" data-position="bottom" data-tooltip="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- Quick Skill Tags -->
+                        <div style="margin-top: 20px;">
+                            <span class="skill-tag tag-cloud"><i class="fas fa-cloud"></i>AWS CCP</span>
+                            <span class="skill-tag tag-dev"><i class="fas fa-code"></i>Python / Flask</span>
+                            <span class="skill-tag tag-ai"><i class="fas fa-brain"></i>AI Integration</span>
+                            <span class="skill-tag tag-creative"><i class="fas fa-film"></i>Multimedia</span>
+                        </div>
+                        
+                        <br><br>
+                        <a href="https://github.com/aligulaemmanuel-sketch/Di-bootcamp" target="_blank" class="btn-large waves-effect waves-light amber darken-3 z-depth-2">
+                            <i class="fab fa-github left"></i>View GitHub
+                        </a>
+                    </div>
+
+                    <img class="hero-portrait" 
+                        src="week%200/Emmanuel%20Asuva/portrait-formal-golden-hour.jpg" 
+                        onerror="this.onerror=null;this.src='week%200/Emmanuel%20Asuva/portrait-formal-orange.jpg';" 
+                        alt="Emmanuel Asuva in a black suit" loading="eager">
                 </div>
-                
-                <!-- Quick Skill Tags -->
-                <div style="margin-top: 20px;">
-                    <span class="skill-tag tag-cloud"><i class="fas fa-cloud"></i>AWS CCP</span>
-                    <span class="skill-tag tag-dev"><i class="fas fa-code"></i>Python / Flask</span>
-                    <span class="skill-tag tag-ai"><i class="fas fa-brain"></i>AI Integration</span>
-                    <span class="skill-tag tag-creative"><i class="fas fa-film"></i>Multimedia</span>
-                </div>
-                
-                <br><br>
-                <a href="https://github.com/aligulaemmanuel-sketch/Di-bootcamp" target="_blank" class="btn-large waves-effect waves-light amber darken-3 z-depth-2">
-                    <i class="fab fa-github left"></i>View GitHub
-                </a>
             </div>
         </div>
 
@@ -658,18 +762,19 @@
                 <div class="row">
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
+                            <img src="https://www.theelephant.info/wp-content/uploads/2025/11/rao4-706x397.jpg" alt="Raila Odinga portrait for the tribute project" loading="eager" style="display: block; width: 100%; height: 190px; object-fit: cover; object-position: center;">
                             <div class="card-content">
-                                <span class="card-title">The Tocky Bakery</span>
-                                <p style="color: #546e7a; margin-bottom: 15px;">An e-commerce platform built with Flask featuring a functional "Add to Cart" system and database storage.</p>
+                                <span class="card-title">Maradona Barber Shop</span>
+                                <p style="color: #546e7a; margin-bottom: 15px;">A modern barber shop website presenting professional grooming services, a sharp visual identity, and an easy way for clients to connect.</p>
                                 <div class="project-tags">
-                                    <span class="project-tag">Flask</span>
-                                    <span class="project-tag">Materialize</span>
-                                    <span class="project-tag">SQLite</span>
+                                    <span class="project-tag">Barbering</span>
+                                    <span class="project-tag">Responsive Design</span>
+                                    <span class="project-tag">Client Experience</span>
                                 </div>
                             </div>
                             <div class="card-action" style="border-top: 1px solid rgba(0,0,0,0.05);">
-                                <a href="https://github.com/aligulaemmanuel-sketch/Di-bootcamp" target="_blank" class="waves-effect">
-                                    <i class="fas fa-code-branch" style="margin-right: 5px;"></i>View Source
+                                <a href="https://maradona-berber-shop.vercel.app/" target="_blank" rel="noopener noreferrer" class="waves-effect">
+                                    <i class="fas fa-play-circle" style="margin-right: 5px;"></i>Visit Maradona Barber Shop
                                 </a>
                             </div>
                         </div>
@@ -677,12 +782,12 @@
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
                             <div class="card-content">
-                                <span class="card-title">Patrice Lumumba Tribute</span>
-                                <p style="color: #546e7a; margin-bottom: 15px;">A responsive historical archive utilizing advanced CSS Grid and semantic HTML5 structures.</p>
+                                <span class="card-title">Raila Tribute</span>
+                                <p style="color: #546e7a; margin-bottom: 15px;">A responsive tribute website celebrating Raila Odinga's public life, leadership, and contribution to Kenya's democratic journey.</p>
                                 <div class="project-tags">
                                     <span class="project-tag">HTML5</span>
                                     <span class="project-tag">CSS Grid</span>
-                                    <span class="project-tag">Design</span>
+                                    <span class="project-tag">Tribute Design</span>
                                 </div>
                             </div>
                             <div class="card-action" style="border-top: 1px solid rgba(0,0,0,0.05);">
@@ -695,17 +800,17 @@
                     <div class="col s12 m6 l4">
                         <div class="card project-card z-depth-1">
                             <div class="card-content">
-                                <span class="card-title">AI Video Pipeline</span>
-                                <p style="color: #546e7a; margin-bottom: 15px;">Engineered a workflow to convert 90-minute footage into high-engagement shorts using AI-assisted clipping.</p>
+                                <span class="card-title">Kuhis Parlour</span>
+                                <p style="color: #546e7a; margin-bottom: 15px;">A polished salon and beauty parlour website designed to showcase services, attract clients, and create a smooth booking experience.</p>
                                 <div class="project-tags">
-                                    <span class="project-tag">CapCut</span>
-                                    <span class="project-tag">AI Tools</span>
-                                    <span class="project-tag">Video Eng.</span>
+                                    <span class="project-tag">Salon Branding</span>
+                                    <span class="project-tag">Web Experience</span>
+                                    <span class="project-tag">Vercel</span>
                                 </div>
                             </div>
                             <div class="card-action" style="border-top: 1px solid rgba(0,0,0,0.05);">
-                                <a href="#" class="waves-effect">
-                                    <i class="fas fa-book" style="margin-right: 5px;"></i>Case Study
+                                <a href="https://solon-project.vercel.app" target="_blank" rel="noopener noreferrer" class="waves-effect">
+                                    <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i>View Kuhis Parlour
                                 </a>
                             </div>
                         </div>
