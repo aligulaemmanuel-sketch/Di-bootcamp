@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/emmanuel_asuva_portfolio.html" }
+    { "source": "/", "destination": "/week%200/Emmanuel%20Asuva/emmanuel_asuva_portfolio.html" }
   ]
 }
