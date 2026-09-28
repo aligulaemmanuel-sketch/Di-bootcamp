@@ -1,4 +1,4 @@
-import Car from './Components/ExerciseOne';
+import Car from './ExerciseOne';
 
 function App() {
   // Part I: The carinfo object

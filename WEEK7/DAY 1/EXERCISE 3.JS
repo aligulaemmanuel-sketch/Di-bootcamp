@@ -1,17 +1,20 @@
 const express = require('express');
-const router = express.Router();
+
+const app = express();
+const PORT = 3000;
+app.use(express.json());
 
 let books = [
     { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald' }
 ];
 
 // GET all books
-router.get('/', (req, res) => {
+app.get('/books', (req, res) => {
     res.json(books);
 });
 
 // POST a new book
-router.post('/', (req, res) => {
+app.post('/books', (req, res) => {
     const newBook = {
         id: books.length + 1,
         title: req.body.title,
@@ -22,7 +25,7 @@ router.post('/', (req, res) => {
 });
 
 // PUT (Update) a book by ID
-router.put('/:id', (req, res) => {
+app.put('/books/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const index = books.findIndex(b => b.id === id);
     if (index !== -1) {
@@ -34,20 +37,12 @@ router.put('/:id', (req, res) => {
 });
 
 // DELETE a book by ID
-router.delete('/:id', (req, res) => {
+app.delete('/books/:id', (req, res) => {
     const id = parseInt(req.params.id);
     books = books.filter(b => b.id !== id);
     res.status(204).send();
 });
 
-module.exports = router;
-const express = require('express');
-const app = express();
-const bookRouter = require('./routes/books');
-
-app.use(express.json());
-app.use('/books', bookRouter);
-
-app.listen(3000, () => {
-    console.log('Book API is live at http://localhost:3000/books');
+app.listen(PORT, () => {
+    console.log(`Book API is live at http://localhost:${PORT}/books`);
 });

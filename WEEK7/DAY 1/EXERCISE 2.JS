@@ -1,17 +1,20 @@
 const express = require('express');
-const router = express.Router();
+
+const app = express();
+const PORT = 3000;
+app.use(express.json());
 
 let todos = [
     { id: 1, task: 'Learn Express', completed: false }
 ];
 
 // GET all to-do items
-router.get('/', (req, res) => {
+app.get('/todos', (req, res) => {
     res.json(todos);
 });
 
 // POST a new to-do item
-router.post('/', (req, res) => {
+app.post('/todos', (req, res) => {
     const newTodo = {
         id: todos.length + 1,
         task: req.body.task,
@@ -22,7 +25,7 @@ router.post('/', (req, res) => {
 });
 
 // PUT (Update) a to-do item by ID
-router.put('/:id', (req, res) => {
+app.put('/todos/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const todo = todos.find(t => t.id === id);
     if (todo) {
@@ -35,18 +38,10 @@ router.put('/:id', (req, res) => {
 });
 
 // DELETE a to-do item by ID
-router.delete('/:id', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
     const id = parseInt(req.params.id);
     todos = todos.filter(t => t.id !== id);
     res.send(`Todo with ID ${id} deleted.`);
 });
 
-module.exports = router;
-const express = require('express');
-const app = express();
-const todoRouter = require('./routes/todos');
-
-app.use(express.json()); // Essential for POST/PUT requests
-app.use('/todos', todoRouter);
-
-app.listen(3000, () => console.log('Todo API running on port 3000'));
+app.listen(PORT, () => console.log(`Todo API running on port ${PORT}`));
