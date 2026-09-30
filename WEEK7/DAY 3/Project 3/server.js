@@ -1,11 +1,16 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // Serves your frontend files
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/WEEK7/DAY 3/DAILY CHALLENGE .HTML', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'Daily Challenge', 'index.html'));
+});
 
 let gameState = {
     players: {

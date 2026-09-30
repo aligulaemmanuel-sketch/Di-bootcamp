@@ -1,12 +1,15 @@
 const fs = require('fs');
+const path = require('path');
 const _ = require('lodash');
 const yargs = require('yargs');
+
+const DATA_PATH = path.join(__dirname, 'notes-data.json');
 
 // --- DATA LOGIC SECTION (Formerly notes.js) ---
 
 const fetchNotes = () => {
   try {
-    const notesString = fs.readFileSync('notes-data.json');
+    const notesString = fs.readFileSync(DATA_PATH, 'utf8');
     return JSON.parse(notesString);
   } catch (e) {
     return [];
@@ -14,7 +17,7 @@ const fetchNotes = () => {
 };
 
 const saveNotes = (notes) => {
-  fs.writeFileSync('notes-data.json', JSON.stringify(notes));
+  fs.writeFileSync(DATA_PATH, JSON.stringify(notes, null, 2));
 };
 
 const addNote = (title, body) => {
