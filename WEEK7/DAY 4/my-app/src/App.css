@@ -1,0 +1,97 @@
+.destination-page {
+  min-height: 100vh;
+  color: #172f28;
+  background: linear-gradient(135deg, #f5f5ec 0%, #e3eee8 100%);
+}
+
+.destination-heading {
+  margin: 0 auto 2rem;
+  text-align: center;
+}
+
+.destination-eyebrow {
+  margin-bottom: 0.65rem;
+  color: #bd543c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.destination-heading h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2.6rem;
+  font-weight: 400;
+}
+
+.destination-intro {
+  margin: 0.8rem 0 0;
+  color: #52665d;
+}
+
+.destination-page .carousel {
+  overflow: hidden;
+  border: 6px solid #fff;
+  border-radius: 6px;
+  box-shadow: 0 18px 48px rgb(23 47 40 / 14%);
+}
+
+.destination-page .carousel .slide {
+  background: #172f28;
+}
+
+.destination-page .carousel .slide img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+}
+
+.destination-page .carousel .slide .legend {
+  bottom: 2.5rem;
+  left: 50%;
+  width: auto;
+  max-width: calc(100% - 2rem);
+  padding: 0.65rem 1.2rem;
+  border-radius: 3px;
+  background: #172f28e8;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.25rem;
+  opacity: 1;
+  transform: translateX(-50%);
+}
+
+.destination-page .carousel .control-arrow {
+  opacity: 0.9;
+}
+
+.destination-page .carousel .control-arrow:hover {
+  background: rgb(23 47 40 / 22%);
+}
+
+.destination-page .carousel .control-dots .dot {
+  box-shadow: none;
+}
+
+.carousel-note {
+  margin: 1rem 0 0;
+  color: #52665d;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  .destination-page .container {
+    padding-top: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  .destination-heading h1 {
+    font-size: 2.1rem;
+  }
+
+  .destination-page .carousel .slide .legend {
+    bottom: 1.7rem;
+    font-size: 1.05rem;
+  }
+}
