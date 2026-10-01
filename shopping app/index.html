@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Basket</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-mark">U</div>
+          <div>
+            <p class="eyebrow">Smart shopping</p>
+            <h1>Urban Basket</h1>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#">Deals</a>
+          <a href="#">New In</a>
+          <a href="#">Electronics</a>
+          <a href="#">Home</a>
+          <a href="#">Fashion</a>
+        </nav>
+
+        <div class="header-actions">
+          <label class="search-box" aria-label="Search products">
+            <span>⌕</span>
+            <input id="searchInput" type="search" placeholder="Search products" />
+          </label>
+
+          <button class="ghost-button" id="loginButton">Log in</button>
+          <button class="cart-button" id="cartButton" aria-label="Open cart">
+            <span>Cart</span>
+            <span class="cart-count" id="cartCount">0</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="promo-strip">
+        <span class="promo-pill">Flash Deals</span>
+        <span>Free shipping over $75</span>
+        <span>New arrivals weekly</span>
+        <span>Secure checkout</span>
+      </div>
+
+      <main class="content">
+        <aside class="filters-panel">
+          <div class="panel-header">
+            <h2>Browse</h2>
+          </div>
+
+          <div class="shop-highlights">
+            <div class="mini-stat">
+              <strong>24h</strong>
+              <span>delivery</span>
+            </div>
+            <div class="mini-stat highlight">
+              <strong>4.9</strong>
+              <span>rating</span>
+            </div>
+          </div>
+
+          <div class="filter-list" id="categoryFilters"></div>
+        </aside>
+
+        <section class="catalog-section">
+          <div class="hero-banner">
+            <div class="hero-copy">
+              <p class="eyebrow light">Trending now</p>
+              <h2>Upgrade your life with smart essentials</h2>
+              <p>Curated tech, home, and lifestyle picks for everyday comfort.</p>
+              <div class="hero-actions">
+                <button class="primary-cta">Shop now</button>
+                <button class="secondary-cta">Explore deals</button>
+              </div>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="visual-card card-one"></div>
+              <div class="visual-card card-two"></div>
+              <div class="visual-badge">Up to 40% off</div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Trending</p>
+              <h2>Featured products</h2>
+            </div>
+            <button class="see-all-btn">See all</button>
+          </div>
+
+          <div class="results-text-wrap">
+            <p class="results-text" id="resultsText">0 items</p>
+          </div>
+
+          <section class="tracking-panel">
+            <div class="tracking-head">
+              <div>
+                <p class="eyebrow">Order tracking</p>
+                <h3>Track your shipment</h3>
+              </div>
+              <span class="tracking-badge">Live</span>
+            </div>
+
+            <div class="tracking-steps">
+              <div class="step-item active">
+                <span class="step-dot"></span>
+                <div>
+                  <strong>Order placed</strong>
+                  <small>Today, 09:40 AM</small>
+                </div>
+              </div>
+              <div class="step-item">
+                <span class="step-dot"></span>
+                <div>
+                  <strong>Processing</strong>
+                  <small>In progress</small>
+                </div>
+              </div>
+              <div class="step-item">
+                <span class="step-dot"></span>
+                <div>
+                  <strong>Shipped</strong>
+                  <small>Expected tomorrow</small>
+                </div>
+              </div>
+              <div class="step-item">
+                <span class="step-dot"></span>
+                <div>
+                  <strong>Delivered</strong>
+                  <small>ETA 2-3 days</small>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="product-grid" id="productGrid"></div>
+        </section>
+
+        <aside class="cart-panel" id="cartPanel">
+          <div class="panel-header cart-header">
+            <h2>Your cart</h2>
+            <button class="clear-btn" id="clearCartBtn">Clear</button>
+          </div>
+
+          <div class="cart-items" id="cartItems"></div>
+
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <strong id="subtotalValue">$0.00</strong>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div class="auth-overlay" id="authOverlay" aria-hidden="true">
+      <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <button class="close-modal" id="closeModal" aria-label="Close login modal">×</button>
+
+        <div class="auth-panel auth-brand-panel">
+          <div class="brand-pill">Urban Basket</div>
+
+          <div class="brand-illustration" aria-hidden="true">
+            <div class="illustration-orb orb-one"></div>
+            <div class="illustration-orb orb-two"></div>
+            <div class="illustration-window window-main">
+              <div class="window-header">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="window-body">
+                <div class="window-line short"></div>
+                <div class="window-line"></div>
+                <div class="window-line medium"></div>
+              </div>
+            </div>
+            <div class="floating-card card-top">
+              <span>New deals</span>
+              <strong>24% OFF</strong>
+            </div>
+            <div class="floating-card card-bottom">
+              <span>Delivery</span>
+              <strong>2 days</strong>
+            </div>
+          </div>
+
+          <h2 id="authTitle">Welcome back</h2>
+          <p>
+            Shop smarter with secure checkout, curated deals, and everyday essentials delivered fast.
+          </p>
+
+          <ul class="feature-list">
+            <li>Fast delivery in 24 hours</li>
+            <li>Exclusive member prices</li>
+            <li>Easy order tracking</li>
+          </ul>
+
+          <div class="mini-card">
+            <span class="mini-label">Member savings</span>
+            <strong>Save up to 40%</strong>
+          </div>
+        </div>
+
+        <div class="auth-panel auth-form-panel">
+          <div class="auth-header">
+            <button class="auth-tab active" data-auth-tab="signin">Sign in</button>
+            <button class="auth-tab" data-auth-tab="signup">Register</button>
+          </div>
+
+          <form class="auth-form" id="authForm">
+            <div class="field-row hidden" id="nameField">
+              <label for="fullName">Full name</label>
+              <input id="fullName" type="text" placeholder="John Doe" />
+            </div>
+
+            <div class="field-row">
+              <label for="emailInput">Email</label>
+              <input id="emailInput" type="email" placeholder="you@example.com" />
+            </div>
+
+            <div class="field-row">
+              <label for="passwordInput">Password</label>
+              <input id="passwordInput" type="password" placeholder="Enter your password" />
+            </div>
+
+            <div class="form-meta">
+              <label class="check-wrap">
+                <input type="checkbox" checked />
+                <span>Remember me</span>
+              </label>
+              <a href="#">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="auth-submit">Continue</button>
+
+            <div class="divider"><span>or continue with</span></div>
+
+            <div class="social-row">
+              <button type="button" class="social-btn">Google</button>
+              <button type="button" class="social-btn">Apple</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <template id="productTemplate">
+      <article class="product-card">
+        <div class="product-image-wrap">
+          <img class="product-image" alt="" />
+          <span class="product-tag"></span>
+        </div>
+        <div class="product-body">
+          <div class="product-meta">
+            <span class="product-category"></span>
+            <span class="product-rating">★ <span class="rating-value"></span></span>
+          </div>
+          <h3 class="product-name"></h3>
+          <p class="product-description"></p>
+          <div class="product-footer">
+            <div>
+              <span class="product-price"></span>
+            </div>
+            <button class="add-btn">Add to cart</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
