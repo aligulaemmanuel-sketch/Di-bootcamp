@@ -6,7 +6,7 @@ Express and Knex API for Sketch Code community accounts, discussions, replies, a
 
 1. Create `.env` in this folder using `.env.example` as a template.
 2. Set the connection fields to the values in your VS Code PostgreSQL profile. Keep the password in `.env`; it is git-ignored.
-3. Set `JWT_SECRET` to a long random value.
+3. For production, set `JWT_SECRET` to a long random value. Local development generates a temporary secret each time the backend starts, so restarting it signs users out.
 4. Install dependencies, migrate, and start the API:
 
 ```powershell

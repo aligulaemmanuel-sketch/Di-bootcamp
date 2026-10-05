@@ -1,10 +1,11 @@
+const crypto = require('crypto');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
 
 const router = express.Router();
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? null : crypto.randomBytes(32).toString('hex'));
 const categories = new Set(['Idea', 'Question', 'Showcase']);
 
 const publicUser = (user) => ({
