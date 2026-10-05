@@ -46,26 +46,25 @@ const getStoredState = (key, fallback) => {
   }
 };
 
-const createId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const apiOrigin = (process.env.REACT_APP_API_URL || 'http://localhost:4000').replace(/\/$/, '');
+const communityApi = `${apiOrigin}/api/community`;
 
-const hashPassword = async (password, saltHex) => {
-  const salt = saltHex
-    ? Uint8Array.from(saltHex.match(/.{2}/g), (byte) => parseInt(byte, 16))
-    : window.crypto.getRandomValues(new Uint8Array(16));
-  const key = await window.crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
-  const bits = await window.crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    key,
-    256
-  );
-  const hash = Array.from(new Uint8Array(bits), (byte) => byte.toString(16).padStart(2, '0')).join('');
-  return { salt: Array.from(salt, (byte) => byte.toString(16).padStart(2, '0')).join(''), hash };
+const apiRequest = async (path, { token, ...options } = {}) => {
+  const response = await fetch(`${communityApi}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('Community API is unavailable. Start the Knex backend on port 4000.');
+  }
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'The community request failed.');
+  return result;
 };
 
 const resizeImage = (file) => new Promise((resolve, reject) => {
@@ -97,9 +96,9 @@ const resizeImage = (file) => new Promise((resolve, reject) => {
 });
 
 function App() {
-  const [users, setUsers] = useState(() => getStoredState('sketch-community-users', []));
   const [currentUser, setCurrentUser] = useState(() => getStoredState('sketch-community-session', null));
-  const [posts, setPosts] = useState(() => getStoredState('sketch-community-posts', []));
+  const [posts, setPosts] = useState([]);
+  const [communityError, setCommunityError] = useState('');
   const [authMode, setAuthMode] = useState(null);
   const [authValues, setAuthValues] = useState({ name: '', email: '', password: '' });
   const [authError, setAuthError] = useState('');
@@ -122,10 +121,6 @@ function App() {
   );
 
   useEffect(() => {
-    localStorage.setItem('sketch-community-users', JSON.stringify(users));
-  }, [users]);
-
-  useEffect(() => {
     if (currentUser) {
       localStorage.setItem('sketch-community-session', JSON.stringify(currentUser));
     } else {
@@ -134,8 +129,10 @@ function App() {
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem('sketch-community-posts', JSON.stringify(posts));
-  }, [posts]);
+    apiRequest('/posts')
+      .then(setPosts)
+      .catch((error) => setCommunityError(error.message));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('portfolio-profile', JSON.stringify(profile));
@@ -193,83 +190,83 @@ function App() {
   const openAuth = (mode) => {
     setAuthValues({ name: '', email: '', password: '' });
     setAuthError('');
+    setAuthPhoto('');
     setAuthMode(mode);
   };
 
   const handleAuthSubmit = async (event) => {
     event.preventDefault();
-    const email = authValues.email.trim().toLowerCase();
-
     try {
-      if (authMode === 'signup') {
-        if (users.some((user) => user.email === email)) {
-          setAuthError('An account with this email already exists.');
-          return;
-        }
-        const credentials = await hashPassword(authValues.password);
-        const user = { id: createId(), name: authValues.name.trim(), email, photo: authPhoto, ...credentials };
-        setUsers((existing) => [...existing, user]);
-        setCurrentUser({ id: user.id, name: user.name, email: user.email, photo: user.photo });
-      } else {
-        const user = users.find((account) => account.email === email);
-        if (!user) {
-          setAuthError('No account found for that email. Create an account to join.');
-          return;
-        }
-        const credentials = await hashPassword(authValues.password, user.salt);
-        if (credentials.hash !== user.hash) {
-          setAuthError('That password does not match this account.');
-          return;
-        }
-        setCurrentUser({ id: user.id, name: user.name, email: user.email, photo: user.photo });
-      }
+      const endpoint = authMode === 'signup' ? '/signup' : '/login';
+      const payload = {
+        email: authValues.email.trim().toLowerCase(),
+        password: authValues.password,
+        ...(authMode === 'signup' ? { name: authValues.name.trim(), photo: authPhoto || null } : {}),
+      };
+      const result = await apiRequest(endpoint, { method: 'POST', body: JSON.stringify(payload) });
+      const session = { ...result.user, token: result.token };
+      localStorage.setItem('sketch-community-session', JSON.stringify(session));
+      setCurrentUser(session);
       setAuthMode(null);
-    } catch {
-      setAuthError('Account sign-in is unavailable in this browser.');
+    } catch (error) {
+      setAuthError(error.message);
     }
   };
 
-  const handleLogout = () => setCurrentUser(null);
+  const handleLogout = () => {
+    localStorage.removeItem('sketch-community-session');
+    setCurrentUser(null);
+  };
 
-  const handlePostSubmit = (event) => {
+  const handlePostSubmit = async (event) => {
     event.preventDefault();
     const body = draftPost.trim();
     if (!currentUser || !body) return;
-    setPosts((existing) => [{
-      id: createId(),
-      author: currentUser.name,
-      authorId: currentUser.id,
-      authorPhoto: currentUser.photo,
-      category: postCategory,
-      body,
-      createdAt: new Date().toISOString(),
-      likes: [],
-      comments: [],
-    }, ...existing]);
-    setDraftPost('');
+    try {
+      await apiRequest('/posts', {
+        method: 'POST',
+        token: currentUser.token,
+        body: JSON.stringify({ body, category: postCategory }),
+      });
+      setPosts(await apiRequest('/posts'));
+      setDraftPost('');
+      setCommunityError('');
+    } catch (error) {
+      setCommunityError(error.message);
+    }
   };
 
-  const handleLike = (postId) => {
+  const handleLike = async (postId) => {
     if (!currentUser) {
       openAuth('login');
       return;
     }
-    setPosts((existing) => existing.map((post) => {
-      if (post.id !== postId) return post;
-      const liked = post.likes.includes(currentUser.id);
-      return { ...post, likes: liked ? post.likes.filter((id) => id !== currentUser.id) : [...post.likes, currentUser.id] };
-    }));
+    try {
+      const result = await apiRequest(`/posts/${postId}/likes`, { method: 'POST', token: currentUser.token });
+      setPosts((existing) => existing.map((post) => post.id === postId ? { ...post, likes: result.likes } : post));
+    } catch (error) {
+      setCommunityError(error.message);
+    }
   };
 
-  const handleCommentSubmit = (postId, event) => {
+  const handleCommentSubmit = async (postId, event) => {
     event.preventDefault();
     const body = (commentDrafts[postId] || '').trim();
     if (!currentUser || !body) return;
-    setPosts((existing) => existing.map((post) => post.id === postId
-      ? { ...post, comments: [...post.comments, { id: createId(), author: currentUser.name, authorPhoto: currentUser.photo, body }] }
-      : post
-    ));
-    setCommentDrafts((existing) => ({ ...existing, [postId]: '' }));
+    try {
+      const result = await apiRequest(`/posts/${postId}/comments`, {
+        method: 'POST',
+        token: currentUser.token,
+        body: JSON.stringify({ body }),
+      });
+      setPosts((existing) => existing.map((post) => post.id === postId
+        ? { ...post, comments: [...post.comments, result.comment] }
+        : post
+      ));
+      setCommentDrafts((existing) => ({ ...existing, [postId]: '' }));
+    } catch (error) {
+      setCommunityError(error.message);
+    }
   };
 
   const handleThemeToggle = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'));
@@ -521,6 +518,8 @@ function App() {
               <button className="secondary-btn" onClick={() => openAuth('login')}>Log in</button>
             </div>
           )}
+
+          {communityError && <p className="field-error" role="alert">{communityError}</p>}
 
           <div className="community-feed">
             {posts.length ? posts.map((post) => (
