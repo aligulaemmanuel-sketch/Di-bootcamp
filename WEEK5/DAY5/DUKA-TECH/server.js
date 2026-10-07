@@ -9,21 +9,25 @@ const { Pool } = require('pg');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const DATA_FILE = path.join(__dirname, 'data', 'duka-db.json');
-const databasePool = new Pool({
+const USERS_FILE = path.join(__dirname, 'data', 'duka-users.json');
+const hasDatabaseConfig = Boolean(process.env.DATABASE_URL || (process.env.PGHOST && process.env.PGUSER));
+const databasePool = hasDatabaseConfig ? new Pool({
   connectionString: process.env.DATABASE_URL,
   host: process.env.PGHOST || 'localhost',
   port: Number(process.env.PGPORT || 5432),
   database: process.env.PGDATABASE || 'duka_tech',
   user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD,
+  password: process.env.PGPASSWORD || '',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+}) : null;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
 async function ensureUsersTable() {
+  if (!databasePool) return;
+
   await databasePool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
@@ -116,6 +120,46 @@ async function writeDatabase(database) {
   await fs.writeFile(DATA_FILE, JSON.stringify(database, null, 2));
 }
 
+async function ensureUsersStore() {
+  try {
+    await fs.access(USERS_FILE);
+    return;
+  } catch (error) {
+    await fs.mkdir(path.dirname(USERS_FILE), { recursive: true });
+    const defaultUsers = [
+      {
+        id: 1,
+        name: 'Manager',
+        email: 'manager@duka.com',
+        username: 'manager',
+        password_hash: await bcrypt.hash('manager123', 12),
+        role: 'manager'
+      },
+      {
+        id: 2,
+        name: 'Customer',
+        email: 'customer@duka.com',
+        username: 'customer',
+        password_hash: await bcrypt.hash('customer123', 12),
+        role: 'customer'
+      }
+    ];
+    await fs.writeFile(USERS_FILE, JSON.stringify({ users: defaultUsers }, null, 2));
+  }
+}
+
+async function readUsers() {
+  await ensureUsersStore();
+  const data = await fs.readFile(USERS_FILE, 'utf8');
+  const parsed = JSON.parse(data);
+  return Array.isArray(parsed.users) ? parsed.users : [];
+}
+
+async function writeUsers(users) {
+  await fs.mkdir(path.dirname(USERS_FILE), { recursive: true });
+  await fs.writeFile(USERS_FILE, JSON.stringify({ users }, null, 2));
+}
+
 function calculateSummary(database) {
   const totalRevenue = database.sales.reduce((sum, sale) => sum + (sale.quantity * sale.unitPrice), 0);
   const productSales = {};
@@ -148,17 +192,51 @@ app.post('/api/auth/signup', async (req, res) => {
     return res.status(400).json({ message: 'Name, email, password, and a valid role are required.' });
   }
 
+  if (databasePool) {
+    try {
+      const passwordHash = await bcrypt.hash(password, 12);
+      const result = await databasePool.query(
+        'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role',
+        [name.trim(), email.trim().toLowerCase(), passwordHash, role]
+      );
+      return res.status(201).json({ user: result.rows[0] });
+    } catch (error) {
+      if (error.code === '23505') {
+        return res.status(409).json({ message: 'An account with that email already exists.' });
+      }
+      console.error(error);
+      return res.status(500).json({ message: 'Unable to create account.' });
+    }
+  }
+
   try {
-    const passwordHash = await bcrypt.hash(password, 12);
-    const result = await databasePool.query(
-      'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role',
-      [name.trim(), email.trim().toLowerCase(), passwordHash, role]
-    );
-    res.status(201).json({ user: result.rows[0] });
-  } catch (error) {
-    if (error.code === '23505') {
+    const users = await readUsers();
+    const trimmedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = users.find((user) => user.email.toLowerCase() === normalizedEmail || user.name.toLowerCase() === trimmedName.toLowerCase());
+
+    if (existingUser) {
       return res.status(409).json({ message: 'An account with that email already exists.' });
     }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const username = (trimmedName.toLowerCase().replace(/\s+/g, '') || normalizedEmail.split('@')[0]) + (users.length + 1);
+    const newUser = {
+      id: Date.now(),
+      name: trimmedName,
+      email: normalizedEmail,
+      username,
+      password_hash: passwordHash,
+      role
+    };
+
+    users.push(newUser);
+    await writeUsers(users);
+
+    res.status(201).json({
+      user: { id: newUser.id, name: newUser.name, email: newUser.email, username: newUser.username, role: newUser.role }
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Unable to create account.' });
   }
@@ -171,21 +249,47 @@ app.post('/api/auth/signin', async (req, res) => {
     return res.status(400).json({ message: 'Username, password, and a valid role are required.' });
   }
 
+  if (databasePool) {
+    try {
+      const result = await databasePool.query(
+        'SELECT id, name, email, password_hash, role FROM users WHERE (LOWER(email) = LOWER($1) OR LOWER(name) = LOWER($1)) AND role = $2',
+        [username.trim(), role]
+      );
+      const user = result.rows[0];
+
+      if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+        return res.status(401).json({ message: 'Invalid login details.' });
+      }
+
+      return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Unable to sign in.' });
+    }
+  }
+
   try {
-    const result = await databasePool.query(
-      'SELECT id, name, email, password_hash, role FROM users WHERE (LOWER(email) = LOWER($1) OR LOWER(name) = LOWER($1)) AND role = $2',
-      [username.trim(), role]
-    );
-    const user = result.rows[0];
+    const users = await readUsers();
+    const searchTerm = username.trim().toLowerCase();
+    const user = users.find((candidate) => {
+      const candidateRole = candidate.role;
+      if (candidateRole !== role) return false;
+      const emailMatch = candidate.email && candidate.email.toLowerCase() === searchTerm;
+      const nameMatch = candidate.name && candidate.name.toLowerCase() === searchTerm;
+      const usernameMatch = candidate.username && candidate.username.toLowerCase() === searchTerm;
+      return emailMatch || nameMatch || usernameMatch;
+    });
 
     if (!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ message: 'Invalid login details.' });
     }
 
-    res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    return res.json({
+      user: { id: user.id, name: user.name, email: user.email, username: user.username, role: user.role }
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Unable to sign in.' });
+    return res.status(500).json({ message: 'Unable to sign in.' });
   }
 });
 
@@ -393,6 +497,10 @@ app.get('/manager', (req, res) => {
   res.sendFile(path.join(__dirname, 'manager.html'));
 });
 
+app.get('/products', (req, res) => {
+  res.sendFile(path.join(__dirname, 'manager.html'));
+});
+
 app.get('/customer', (req, res) => {
   res.sendFile(path.join(__dirname, 'customer.html'));
 });
@@ -407,13 +515,19 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-ensureUsersTable()
-  .then(() => {
+async function startServer() {
+  try {
+    if (databasePool) {
+      await ensureUsersTable();
+    }
+
     app.listen(PORT, () => {
       console.log(`Duka-Tech server running on http://localhost:${PORT}`);
     });
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('PostgreSQL connection failed:', error.message);
     process.exit(1);
-  });
+  }
+}
+
+startServer();

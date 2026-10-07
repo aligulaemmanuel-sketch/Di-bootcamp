@@ -413,6 +413,69 @@
       "price": 60,
       "threshold": 6,
       "unit": "pack"
+    },
+    {
+      "id": 1791361714443,
+      "name": "Local Save Test",
+      "category": "Bakery",
+      "stock": 12,
+      "price": 95,
+      "threshold": 5,
+      "unit": "loaf"
+    },
+    {
+      "id": 1791362080881,
+      "name": "Rice",
+      "category": "Staples",
+      "stock": 25,
+      "price": 260,
+      "threshold": 8,
+      "unit": "bag"
+    },
+    {
+      "id": 1791362080902,
+      "name": "Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 70,
+      "threshold": 5,
+      "unit": "packet"
+    },
+    {
+      "id": 1791362080919,
+      "name": "Soap",
+      "category": "Household",
+      "stock": 14,
+      "price": 140,
+      "threshold": 6,
+      "unit": "bar"
+    },
+    {
+      "id": 1791362105408,
+      "name": "Rice",
+      "category": "Staples",
+      "stock": 25,
+      "price": 260,
+      "threshold": 8,
+      "unit": "bag"
+    },
+    {
+      "id": 1791362105441,
+      "name": "Milk",
+      "category": "Dairy",
+      "stock": 18,
+      "price": 70,
+      "threshold": 5,
+      "unit": "packet"
+    },
+    {
+      "id": 1791362105471,
+      "name": "Soap",
+      "category": "Household",
+      "stock": 14,
+      "price": 140,
+      "threshold": 6,
+      "unit": "bar"
     }
   ],
   "sales": [
