@@ -32,8 +32,8 @@ button {
   background: rgba(17, 24, 39, 0.18);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  max-width: 680px;
-  width: min(100%, 680px);
+  max-width: 720px;
+  width: min(100%, 720px);
   border-radius: 28px;
   padding: 34px 30px 28px;
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.35);
@@ -60,6 +60,35 @@ button {
   text-transform: uppercase;
   font-size: 0.7rem;
   font-weight: 700;
+}
+
+.filter-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.filter-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-btn:hover {
+  transform: translateY(-1px);
+}
+
+.filter-btn.active {
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
 }
 
 .quote-text {
@@ -136,6 +165,14 @@ button {
   .quote-box {
     padding: 26px 20px 20px;
     border-radius: 22px;
+  }
+
+  .filter-row {
+    gap: 6px;
+  }
+
+  .filter-btn {
+    flex: 1 1 40%;
   }
 
   .quote-actions {

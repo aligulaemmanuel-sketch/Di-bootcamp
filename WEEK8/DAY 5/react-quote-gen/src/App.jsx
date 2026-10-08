@@ -1,6 +1,22 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import quotes from "./QuotesDatabase.js";
 import QuoteBox from "./components/QuoteBox.jsx";
+
+const CAT_KEYWORDS = {
+  all: [],
+  motivation: ["dream", "goal", "success", "effort", "courage", "work", "achievement"],
+  wisdom: ["learn", "knowledge", "wisdom", "truth", "study", "future", "fear", "time"],
+  life: ["life", "live", "change", "today", "tomorrow", "future", "time", "world"],
+  love: ["love", "kind", "grow", "human", "relationship", "heart"],
+};
+
+function getQuoteCategory(text) {
+  const value = text.toLowerCase();
+  if (value.includes("love") || value.includes("kind") || value.includes("heart")) return "love";
+  if (value.includes("life") || value.includes("live") || value.includes("change") || value.includes("today") || value.includes("tomorrow")) return "life";
+  if (value.includes("learn") || value.includes("wisdom") || value.includes("truth") || value.includes("study") || value.includes("knowledge") || value.includes("fear")) return "wisdom";
+  return "motivation";
+}
 
 const seen = new Set();
 const QUOTES = [];
@@ -12,6 +28,7 @@ for (const q of quotes) {
     id: QUOTES.length,
     text: q.quote.trim(),
     author: q.author.trim() || "Unknown",
+    category: getQuoteCategory(q.quote),
   });
 }
 
@@ -28,14 +45,23 @@ const PALETTES = [
   { bg: "#2d1e2f", text: "#f0e6ef", accent: "#d44a7a" },
 ];
 
+const FILTERS = ["all", "motivation", "wisdom", "life", "love"];
+const FILTER_LABELS = {
+  all: "All",
+  motivation: "Motivation",
+  wisdom: "Wisdom",
+  life: "Life",
+  love: "Love",
+};
+
 const randomIndex = (length) => Math.floor(Math.random() * length);
 
-function randomQuote(exceptId) {
-  let index = randomIndex(QUOTES.length);
-  if (QUOTES.length > 1) {
-    while (QUOTES[index].id === exceptId) index = randomIndex(QUOTES.length);
+function randomQuote(exceptId, list) {
+  let index = randomIndex(list.length);
+  if (list.length > 1) {
+    while (list[index].id === exceptId) index = randomIndex(list.length);
   }
-  return QUOTES[index];
+  return list[index];
 }
 
 function randomPalette(exceptIndex) {
@@ -47,14 +73,19 @@ function randomPalette(exceptIndex) {
 }
 
 export default function App() {
-  const [quote, setQuote] = useState(() => randomQuote(-1));
-  const [{ palette, index: paletteIndex }, setTheme] = useState(() =>
-    randomPalette(-1)
-  );
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [quote, setQuote] = useState(() => randomQuote(-1, QUOTES));
+  const [{ palette, index: paletteIndex }, setTheme] = useState(() => randomPalette(-1));
   const [copied, setCopied] = useState(false);
 
+  const filteredQuotes = useMemo(() => {
+    if (activeFilter === "all") return QUOTES;
+    return QUOTES.filter((item) => item.category === activeFilter);
+  }, [activeFilter]);
+
   function handleNewQuote() {
-    setQuote((prev) => randomQuote(prev.id));
+    const nextQuote = randomQuote(quote.id, filteredQuotes);
+    setQuote(nextQuote);
     setTheme((prev) => randomPalette(prev.index));
     setCopied(false);
   }
@@ -87,6 +118,10 @@ export default function App() {
         onNewQuote={handleNewQuote}
         onCopyQuote={handleCopyQuote}
         copied={copied}
+        activeFilter={activeFilter}
+        filters={FILTERS}
+        filterLabels={FILTER_LABELS}
+        onFilterChange={setActiveFilter}
       />
     </div>
   );

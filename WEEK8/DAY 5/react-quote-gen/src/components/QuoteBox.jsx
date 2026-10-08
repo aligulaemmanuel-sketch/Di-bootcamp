@@ -6,6 +6,10 @@ export default function QuoteBox({
   onNewQuote,
   onCopyQuote,
   copied,
+  activeFilter,
+  filters,
+  filterLabels,
+  onFilterChange,
 }) {
   return (
     <main
@@ -19,6 +23,25 @@ export default function QuoteBox({
       <div className="quote-badge" style={{ color: accent }}>
         Daily inspiration
       </div>
+
+      <div className="filter-row" aria-label="Quote categories">
+        {filters.map((filter) => (
+          <button
+            key={filter}
+            type="button"
+            className={activeFilter === filter ? "filter-btn active" : "filter-btn"}
+            onClick={() => onFilterChange(filter)}
+            style={{
+              color: activeFilter === filter ? textColor : accent,
+              borderColor: `${accent}88`,
+              background: activeFilter === filter ? `${accent}22` : "transparent",
+            }}
+          >
+            {filterLabels[filter]}
+          </button>
+        ))}
+      </div>
+
       <h1 className="quote-text" id="text">
         <span className="mark">&ldquo;</span>
         {quote}
