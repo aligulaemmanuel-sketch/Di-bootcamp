@@ -2,18 +2,19 @@ import { useState } from "react";
 import quotes from "./QuotesDatabase.js";
 import QuoteBox from "./components/QuoteBox.jsx";
 
-// dedupe the raw database + fill empty authors, with stable ids
 const seen = new Set();
 const QUOTES = [];
 for (const q of quotes) {
   const key = q.quote.trim().toLowerCase();
   if (seen.has(key)) continue;
   seen.add(key);
-  QUOTES.push({ id: QUOTES.length, text: q.quote.trim(),
-                author: q.author.trim() || "Unknown" });
+  QUOTES.push({
+    id: QUOTES.length,
+    text: q.quote.trim(),
+    author: q.author.trim() || "Unknown",
+  });
 }
 
-// palettes for the random background / quote / button colors
 const PALETTES = [
   { bg: "#1b263b", text: "#e0e1dd", accent: "#778da9" },
   { bg: "#3a0ca3", text: "#f72585", accent: "#4cc9f0" },
@@ -31,7 +32,6 @@ const randomIndex = (length) => Math.floor(Math.random() * length);
 
 function randomQuote(exceptId) {
   let index = randomIndex(QUOTES.length);
-  // make sure we never display the same quote twice in a row
   if (QUOTES.length > 1) {
     while (QUOTES[index].id === exceptId) index = randomIndex(QUOTES.length);
   }
@@ -47,25 +47,36 @@ function randomPalette(exceptIndex) {
 }
 
 export default function App() {
-  // ---- React state: the quote and the color theme ----
   const [quote, setQuote] = useState(() => randomQuote(-1));
   const [{ palette, index: paletteIndex }, setTheme] = useState(() =>
     randomPalette(-1)
   );
+  const [copied, setCopied] = useState(false);
 
-  // ---- event handler wired to the button's onClick ----
   function handleNewQuote() {
-    setQuote((prev) => randomQuote(prev.id));          // never repeats
-    setTheme((prev) => randomPalette(prev.index));     // new random colors
+    setQuote((prev) => randomQuote(prev.id));
+    setTheme((prev) => randomPalette(prev.index));
+    setCopied(false);
+  }
+
+  async function handleCopyQuote() {
+    const textToCopy = `"${quote.text}" — ${quote.author}`;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
   }
 
   return (
     <div
       className="app"
       style={{
-        backgroundColor: palette.bg,
+        background: `radial-gradient(circle at top, ${palette.accent}33 0%, transparent 35%), ${palette.bg}`,
         color: palette.text,
-        transition: "background-color 0.6s ease, color 0.6s ease",
+        transition: "background 0.6s ease, color 0.6s ease",
       }}
     >
       <QuoteBox
@@ -74,6 +85,8 @@ export default function App() {
         accent={palette.accent}
         textColor={palette.text}
         onNewQuote={handleNewQuote}
+        onCopyQuote={handleCopyQuote}
+        copied={copied}
       />
     </div>
   );
