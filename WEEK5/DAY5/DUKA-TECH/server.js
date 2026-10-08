@@ -300,7 +300,7 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   const database = await readDatabase();
-  const { name, category, stock, price, threshold, unit } = req.body;
+  const { name, imageUrl, category, stock, price, threshold, unit } = req.body;
 
   if (!name || !category || stock === undefined || price === undefined) {
     return res.status(400).json({ message: 'Product name, category, stock, and price are required.' });
@@ -309,6 +309,7 @@ app.post('/api/products', async (req, res) => {
   const newProduct = {
     id: Date.now(),
     name,
+    imageUrl: typeof imageUrl === 'string' ? imageUrl.trim() : '',
     category,
     stock: Number(stock),
     price: Number(price),

@@ -368,6 +368,22 @@
         gap: 8px;
       }
 
+      .product-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+      }
+
+      .product-image {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        object-fit: cover;
+        border-radius: 8px;
+        background: var(--striped);
+      }
+
       .mini-btn {
         border: none;
         border-radius: 8px;
@@ -595,6 +611,7 @@
               </div>
               <form id="productForm">
                 <input id="productName" class="form-input" type="text" placeholder="Product name" required />
+                <input id="productImageUrl" class="form-input" type="url" placeholder="Product photo URL (optional)" />
                 <select id="productCategory" class="form-select" required>
                   <option value="">Select category</option>
                   <option value="Bakery">Bakery</option>
@@ -728,6 +745,19 @@
         prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
       };
 
+      const PRODUCT_IMAGE_URLS = {
+        bakery: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=120&q=80',
+        dairy: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=120&q=80',
+        household: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?auto=format&fit=crop&w=120&q=80',
+        staples: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=120&q=80',
+        drinks: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=120&q=80',
+        cleaning: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&w=120&q=80',
+        cooking: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=120&q=80',
+        'personal care': 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=120&q=80',
+        snacks: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=120&q=80',
+        others: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=120&q=80'
+      };
+
       const els = {
         productTableBody: document.getElementById('productTableBody'),
         salesTableBody: document.getElementById('salesTableBody'),
@@ -821,7 +851,7 @@
           const statusText = product.stock <= product.threshold ? 'Low stock' : 'Healthy';
           return `
             <tr>
-              <td>${product.name}</td>
+              <td><div class="product-cell"><img class="product-image" src="${escapeHtml(getProductImageUrl(product))}" alt="${escapeHtml(product.name)}" loading="lazy"><span>${escapeHtml(product.name)}</span></div></td>
               <td>${product.category}</td>
               <td>${product.stock}</td>
               <td>Ksh ${formatMoney(product.price)}</td>
@@ -862,6 +892,30 @@
 
       function formatMoney(value) {
         return Number(value || 0).toLocaleString('en-KE');
+      }
+
+      function getProductImageUrl(product) {
+        const imageUrl = (product.imageUrl || '').trim();
+        if (imageUrl) {
+          try {
+            const parsedUrl = new URL(imageUrl, window.location.origin);
+            if (parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:') return parsedUrl.href;
+          } catch (error) {
+            return PRODUCT_IMAGE_URLS.others;
+          }
+        }
+
+        return PRODUCT_IMAGE_URLS[(product.category || '').toLowerCase()] || PRODUCT_IMAGE_URLS.others;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[character]);
       }
 
       function populateSaleSelection() {
@@ -938,6 +992,7 @@
           if (!product) return;
 
           document.getElementById('productName').value = product.name;
+          document.getElementById('productImageUrl').value = product.imageUrl || '';
           document.getElementById('productCategory').value = product.category;
           document.getElementById('productStock').value = product.stock;
           document.getElementById('productPrice').value = product.price;
@@ -955,6 +1010,7 @@
         event.preventDefault();
         const payload = {
           name: document.getElementById('productName').value.trim(),
+          imageUrl: document.getElementById('productImageUrl').value.trim(),
           category: document.getElementById('productCategory').value,
           stock: Number(document.getElementById('productStock').value),
           price: Number(document.getElementById('productPrice').value),
@@ -1037,7 +1093,6 @@
       document.getElementById('generateReceiptBtn').addEventListener('click', generateReceipt);
       document.getElementById('shareReceiptBtn').addEventListener('click', shareReceipt);
 
-      generateReceipt();
       loadDashboard();
     </script>
   </body>

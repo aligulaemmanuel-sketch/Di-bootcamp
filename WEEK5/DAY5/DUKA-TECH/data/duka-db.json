@@ -7,7 +7,8 @@
       "stock": 18,
       "price": 60,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTspLR7Ul-Cad1pAR0I5krx7cXvt2RroXxbUBYDWhtCAQ&s=10"
     },
     {
       "id": 2,
@@ -16,7 +17,8 @@
       "stock": 14,
       "price": 75,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "imageUrl": "https://cdn.mafrservices.com/sys-master-root/h45/h99/12681201647646/74581_main.jpg"
     },
     {
       "id": 3,
@@ -52,7 +54,8 @@
       "stock": 18,
       "price": 140,
       "threshold": 6,
-      "unit": "bar"
+      "unit": "bar",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlOaM9GGafh3H55xcPG1AGtQltCcmhfwKygZeY6dVqsg&s"
     },
     {
       "id": 7,
@@ -106,7 +109,8 @@
       "stock": 22,
       "price": 75,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0Y9AO1nU6y3Vrt1d9osNE3GehFHevFJ2a1JLy0-Rdsw&s=10"
     },
     {
       "id": 13,
@@ -115,7 +119,8 @@
       "stock": 18,
       "price": 55,
       "threshold": 6,
-      "unit": "bar"
+      "unit": "bar",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGCgsUxxqO6YD6mRhQ7myuweBhgqRqqVZg4yKMn0Kkhw&s=10"
     },
     {
       "id": 14,
@@ -133,7 +138,8 @@
       "stock": 16,
       "price": 75,
       "threshold": 5,
-      "unit": "bar"
+      "unit": "bar",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWcAdXWWctGPFHAJo-oR2XHEC_HMbII3bsLuEqxkI0oA&s=10"
     },
     {
       "id": 16,
@@ -385,7 +391,8 @@
       "stock": 12,
       "price": 350,
       "threshold": 4,
-      "unit": "bottle"
+      "unit": "bottle",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4M-xWNNYOdHAv69hvgS6T8U7-uvLUa3dxEbmaPEZUaA&s=10"
     },
     {
       "id": 44,
