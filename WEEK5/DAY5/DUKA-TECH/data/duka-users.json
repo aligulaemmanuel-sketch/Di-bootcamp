@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Manager",
+      "email": "manager@duka.com",
+      "username": "manager",
+      "password_hash": "$2a$12$LUOA.yz.8JAaUdKbwTgfTOAR7E.4Mkcrl2QbSVBwtJRwRKO2AkzBm",
+      "role": "manager"
+    },
+    {
+      "id": 2,
+      "name": "Customer",
+      "email": "customer@duka.com",
+      "username": "customer",
+      "password_hash": "$2a$12$199Xj1wF0erpR641dqzyhutvpKbre1AOorhpmuCVMgZl2HEAqYKpC",
+      "role": "customer"
+    }
+  ]
+}
