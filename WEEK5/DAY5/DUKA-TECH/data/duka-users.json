@@ -15,6 +15,14 @@
       "username": "customer",
       "password_hash": "$2a$12$199Xj1wF0erpR641dqzyhutvpKbre1AOorhpmuCVMgZl2HEAqYKpC",
       "role": "customer"
+    },
+    {
+      "id": 1791526132030,
+      "name": "Aligula Emmanuel",
+      "email": "aligulaemmanuel@gmail.com",
+      "username": "aligulaemmanuel3",
+      "password_hash": "$2a$12$afEdRbtWW3DiqB3AMdG6sOZD8JPS/AEoIiqRgfv7B.WKjJeRtUzWC",
+      "role": "customer"
     }
   ]
 }

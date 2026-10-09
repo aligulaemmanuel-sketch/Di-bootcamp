@@ -602,22 +602,22 @@
       };
 
       const productPhotoMap = {
-        'White Bread': '/assets/white-bread.jpg',
+        'White Bread': productImages.general[0],
         'Brown Bread': productImages.general[0],
         'Sourdough Bread': productImages.general[0],
-        'Festive Bread': productImages.general[0],
+        'Festive Supreme White Bread': '/assets/milk.jpg',
         'Broadways Bread': productImages.general[0],
         'Eliot Bread': productImages.general[0],
         'Superloaf Bread': productImages.general[0],
-        'Fresh Milk': productImages.dairy[0],
+        'Fresh Milk': '/assets/white-bread.jpg',
         'Skim Milk': productImages.dairy[0],
         'Brookside Milk': productImages.dairy[0],
         'Daima Milk': productImages.dairy[0],
         'Longlife Milk': productImages.dairy[0],
         'Tuzo Milk': productImages.dairy[0],
         'Ilara Milk': productImages.dairy[0],
-        'Bath Soap': '/assets/bath-soap.jpg',
-        'Liquid Soap': '/assets/liquid-soap.jpg',
+        'Imperial Leather Classic Bath Soap': '/assets/bath-soap.jpg',
+        'Morning Fresh Dishwashing Liquid': '/assets/liquid-soap.jpg',
         'Menengai Soap': productImages.household[0],
         'Geisha Soap': productImages.household[0],
         'Sunlight Soap': productImages.household[0],
@@ -650,9 +650,8 @@
         'Dairiboard Biscuits': productImages.grocery[0]
       };
 
-      function getProductImage(product, index) {
+      function getFallbackProductImage(product, index) {
         if (productPhotoMap[product.name]) return productPhotoMap[product.name];
-
         const categoryImages = {
           Dairy: productImages.dairy,
           Household: productImages.household,
@@ -666,6 +665,11 @@
         };
         const images = categoryImages[product.category] || productImages.general;
         return images[index % images.length];
+      }
+
+      function getProductImage(product, index) {
+        const linkedImage = typeof product.imageUrl === 'string' ? product.imageUrl.trim() : '';
+        return linkedImage || getFallbackProductImage(product, index);
       }
 
       const els = {
@@ -730,7 +734,7 @@
 
         els.catalogGrid.innerHTML = filteredProducts.map((product) => `
           <div class="product-card">
-            <img class="product-image" src="${getProductImage(product, Number(product.id) - 1)}" alt="${product.name}" loading="lazy" />
+            <img class="product-image" alt="${product.name}" loading="lazy" />
             <div class="product-name">${product.name}</div>
             <div class="product-meta">
               <span>${product.category}</span>
@@ -740,6 +744,15 @@
             <button type="button" data-id="${product.id}">Quick buy</button>
           </div>
         `).join('');
+
+        els.catalogGrid.querySelectorAll('.product-image').forEach((image, index) => {
+          const product = filteredProducts[index];
+          const imageIndex = Number(product.id) - 1;
+          image.addEventListener('error', () => {
+            image.src = getFallbackProductImage(product, imageIndex);
+          }, { once: true });
+          image.src = getProductImage(product, imageIndex);
+        });
 
         els.catalogGrid.querySelectorAll('button[data-id]').forEach((button) => {
           button.addEventListener('click', () => {
