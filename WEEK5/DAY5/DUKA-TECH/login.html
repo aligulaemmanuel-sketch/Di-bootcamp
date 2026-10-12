@@ -559,6 +559,29 @@
               <option value="manager">Manager account</option>
             </select>
           </div>
+          <div id="managerShopFields" class="hidden">
+            <div class="input-group">
+              <input type="text" id="signupShopName" placeholder="Shop name" />
+            </div>
+            <div class="input-group">
+              <input type="text" id="signupShopLocation" placeholder="Shop location (optional)" />
+            </div>
+            <div class="input-group">
+              <input type="text" id="signupOwnerIdNumber" placeholder="Owner's national ID number" autocomplete="off" />
+            </div>
+            <div class="input-group">
+              <input type="text" id="signupBusinessLicenseNumber" placeholder="Business license/registration number" autocomplete="off" />
+            </div>
+            <div class="input-group">
+              <label for="signupOwnerIdDocument">Upload owner ID (PDF, JPG, or PNG; max 5 MB)</label>
+              <input type="file" id="signupOwnerIdDocument" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+            </div>
+            <div class="input-group">
+              <label for="signupBusinessLicenseDocument">Upload business license (PDF, JPG, or PNG; max 5 MB)</label>
+              <input type="file" id="signupBusinessLicenseDocument" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+            </div>
+            <p class="input-group">Your verification documents are encrypted and only available to authorized Duka-Tech administrators. Your shop will stay hidden until approved.</p>
+          </div>
           <button type="submit" class="login-btn">Create Account</button>
         </form>
         <div class="social-divider">or sign up with</div>
@@ -604,10 +627,21 @@
     const authPanel = document.getElementById('authPanel');
     const signinRole = document.getElementById('signinRole');
     const signupRole = document.getElementById('signupRole');
+    const managerShopFields = document.getElementById('managerShopFields');
+    const signupShopName = document.getElementById('signupShopName');
+
+    function updateManagerSignupFields() {
+      const isManagerSignup = signupRole.value === 'manager';
+      managerShopFields.classList.toggle('hidden', !isManagerSignup);
+      signupShopName.required = isManagerSignup;
+      ['signupOwnerIdNumber', 'signupBusinessLicenseNumber', 'signupOwnerIdDocument', 'signupBusinessLicenseDocument']
+        .forEach((id) => { document.getElementById(id).required = isManagerSignup; });
+    }
 
     function setRoleSelection(role) {
       signinRole.value = role;
       signupRole.value = role;
+      updateManagerSignupFields();
       document.querySelectorAll('.role-card').forEach((card) => {
         card.classList.toggle('active', card.dataset.role === role);
       });
@@ -664,6 +698,9 @@
       });
     });
 
+    signupRole.addEventListener('change', updateManagerSignupFields);
+    updateManagerSignupFields();
+
     document.querySelectorAll('.role-card').forEach((card) => {
       card.addEventListener('click', () => {
         if (!ensureLampOn()) return;
@@ -708,9 +745,16 @@
       const password = document.getElementById('signupPassword').value;
       const confirmPassword = document.getElementById('signupConfirmPassword').value;
       const role = document.getElementById('signupRole').value;
+      const shopName = signupShopName.value.trim();
+      const shopLocation = document.getElementById('signupShopLocation').value.trim();
 
       if (!name || !email || !password) {
         alert('Please complete all sign-up fields.');
+        return;
+      }
+
+      if (role === 'manager' && !shopName) {
+        alert('Please enter your shop name.');
         return;
       }
 
@@ -719,11 +763,27 @@
         return;
       }
 
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role })
-      });
+      let body;
+      const headers = {};
+      if (role === 'manager') {
+        body = new FormData();
+        Object.entries({
+          name,
+          email,
+          password,
+          role,
+          shopName,
+          shopLocation,
+          ownerIdNumber: document.getElementById('signupOwnerIdNumber').value.trim(),
+          businessLicenseNumber: document.getElementById('signupBusinessLicenseNumber').value.trim()
+        }).forEach(([key, value]) => body.append(key, value));
+        body.append('ownerIdDocument', document.getElementById('signupOwnerIdDocument').files[0]);
+        body.append('businessLicenseDocument', document.getElementById('signupBusinessLicenseDocument').files[0]);
+      } else {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify({ name, email, password, role, shopName, shopLocation });
+      }
+      const response = await fetch('/api/auth/signup', { method: 'POST', headers, body });
       const result = await response.json();
       if (!response.ok) {
         alert(result.message || 'Unable to create account.');
@@ -731,7 +791,10 @@
       }
       localStorage.setItem('dukaUserRole', result.user.role);
       localStorage.setItem('dukaUser', JSON.stringify(result.user));
-      alert('Account created successfully. Redirecting to your dashboard...');
+      document.getElementById('signupForm').reset();
+      alert(role === 'manager'
+        ? 'Shop application submitted. Your shop will appear to customers after Duka-Tech administrator approval.'
+        : 'Account created successfully. Redirecting to your dashboard...');
       redirectByRole(result.user.role);
     });
 

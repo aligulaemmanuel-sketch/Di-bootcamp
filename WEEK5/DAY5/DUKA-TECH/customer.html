@@ -217,6 +217,29 @@
         min-height: 220px;
       }
 
+      .shop-offers {
+        display: grid;
+        gap: 8px;
+        margin: 8px 0 14px;
+      }
+
+      .shop-offer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+      }
+
+      .shop-offer-details { min-width: 0; }
+      .shop-offer-name { display: block; font-size: .88rem; font-weight: 700; color: var(--green-900); }
+      .shop-offer-location { display: block; font-size: .75rem; color: var(--muted); }
+      .shop-offer-price { display: block; margin-top: 2px; font-weight: 800; color: var(--green-900); }
+      .shop-offer button { width: auto; margin: 0; padding: 8px 11px; white-space: nowrap; }
+
       .product-image {
         width: 100%;
         height: 142px;
@@ -454,6 +477,14 @@
           <a href="/customer" class="hover:text-white">Customer home</a>
         </nav>
         <div class="flex items-center gap-3">
+          <button id="cartButton" type="button" class="relative inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/5 px-4 py-2 font-bold text-white hover:bg-white/10" aria-label="Shopping cart, 0 items">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6" />
+              <circle cx="10" cy="21" r="1" /><circle cx="18" cy="21" r="1" />
+            </svg>
+            <span>Cart</span>
+            <span id="cartCount" class="grid min-w-5 h-5 place-items-center rounded-full bg-brand-gold px-1 text-xs text-brand-900" aria-live="polite">0</span>
+          </button>
           <a class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" href="/manager">Open seller dashboard</a>
           <button id="logoutBtn" type="button" class="rounded-full border border-white/40 bg-white/5 px-4 py-2 font-bold text-white hover:bg-white/10">Log out</button>
         </div>
@@ -464,7 +495,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="hero-note">Open today · Fresh stock</div>
         <h1 class="text-4xl md:text-6xl font-bold tracking-tight">Fresh essentials for your daily shop.</h1>
-        <p class="mt-4 max-w-2xl text-white/80 text-lg">Browse daily products, place a quick order, and share your receipt right from the store dashboard.</p>
+        <p class="mt-4 max-w-2xl text-white/80 text-lg">Compare prices from local shops, choose the best offer, and build a basket from multiple stores.</p>
       </div>
     </section>
 
@@ -475,21 +506,34 @@
             <div class="section-heading">
               <div>
                 <h2>Shop the essentials</h2>
-                <p>Choose what you need, then build one order.</p>
+                <p>Compare matching products by shop, then build one order across stores.</p>
               </div>
             </div>
             <div class="flex flex-wrap gap-2" id="categoryTabs">
               <button type="button" class="category-tab active" data-category="All">All</button>
             </div>
           </div>
+          <div class="relative mt-4">
+            <label class="sr-only" for="catalogSearch">Search products</label>
+            <svg class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+            </svg>
+            <input id="catalogSearch" type="search" class="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-10 pr-4 text-slate-800 outline-none transition focus:border-brand-700 focus:bg-white focus:ring-2 focus:ring-brand-700/20" placeholder="Search products, categories, or shops..." autocomplete="off" />
+          </div>
           <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4" id="catalogGrid"></div>
         </div>
 
-        <aside class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-          <div class="text-xs uppercase tracking-[0.12em] font-bold text-slate-500">Quick purchase</div>
+        <aside id="cartSection" class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm" tabindex="-1">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="text-xl font-bold text-slate-800">Your cart</h2>
+              <p id="cartSummary" class="mt-1 text-sm text-slate-500" aria-live="polite">0 items · Ksh 0</p>
+            </div>
+            <span class="rounded-full bg-brand-200 px-3 py-1 text-xs font-bold text-brand-900">Multi-shop</span>
+          </div>
           <form id="customerSaleForm" class="mt-5 grid gap-3">
             <label class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500" for="customerProduct">Choose products</label>
-            <select id="customerProduct" class="border border-slate-200 rounded-xl px-3 py-2" required>
+            <select id="customerProduct" class="border border-slate-200 rounded-xl px-3 py-2">
               <option value="">Select product</option>
             </select>
             <div class="grid grid-cols-[1fr_auto] gap-2">
@@ -579,6 +623,7 @@
         products: [],
         basket: [],
         activeCategory: 'All',
+        searchQuery: '',
         prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
       };
 
@@ -672,9 +717,24 @@
         return linkedImage || getFallbackProductImage(product, index);
       }
 
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        })[character]);
+      }
+
       const els = {
         catalogGrid: document.getElementById('catalogGrid'),
         categoryTabs: document.getElementById('categoryTabs'),
+        catalogSearch: document.getElementById('catalogSearch'),
+        cartButton: document.getElementById('cartButton'),
+        cartCount: document.getElementById('cartCount'),
+        cartSummary: document.getElementById('cartSummary'),
+        cartSection: document.getElementById('cartSection'),
         customerProduct: document.getElementById('customerProduct'),
         customerQuantity: document.getElementById('customerQuantity'),
         customerName: document.getElementById('customerName'),
@@ -696,7 +756,7 @@
         return data;
       }
 
-      async function loadCatalog() {
+      async function loadCatalog(preserveReceipt = false) {
         try {
           const products = await apiRequest('/api/products');
           state.products = products;
@@ -704,7 +764,7 @@
           renderCatalog();
           populateProductSelector();
           applyPrefs();
-          renderBasket();
+          renderBasket(preserveReceipt);
         } catch (error) {
           alert(error.message || 'Unable to load products');
         }
@@ -728,25 +788,67 @@
       }
 
       function renderCatalog() {
-        const filteredProducts = state.activeCategory === 'All'
+        const categoryProducts = state.activeCategory === 'All'
           ? state.products
           : state.products.filter((product) => product.category === state.activeCategory);
+        const query = state.searchQuery.trim().toLocaleLowerCase();
+        const filteredProducts = query
+          ? categoryProducts.filter((product) => [
+            product.name,
+            product.category,
+            product.unit,
+            product.shopName,
+            product.shopLocation
+          ].some((value) => String(value || '').toLocaleLowerCase().includes(query)))
+          : categoryProducts;
 
-        els.catalogGrid.innerHTML = filteredProducts.map((product) => `
-          <div class="product-card">
-            <img class="product-image" alt="${product.name}" loading="lazy" />
-            <div class="product-name">${product.name}</div>
-            <div class="product-meta">
-              <span>${product.category}</span>
-              <span>${product.stock} in stock</span>
+        const productGroups = new Map();
+        filteredProducts.forEach((product) => {
+          const key = [
+            product.name.trim().toLocaleLowerCase(),
+            String(product.category || '').toLocaleLowerCase(),
+            String(product.unit || '').toLocaleLowerCase()
+          ].join('::');
+          if (!productGroups.has(key)) productGroups.set(key, []);
+          productGroups.get(key).push(product);
+        });
+        const comparedProducts = [...productGroups.values()].map((offers) =>
+          offers.slice().sort((left, right) => Number(left.price) - Number(right.price))
+        );
+
+        if (!comparedProducts.length) {
+          els.catalogGrid.innerHTML = '<p class="col-span-full rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500" role="status">No products match your search. Try a different name or category.</p>';
+          return;
+        }
+
+        els.catalogGrid.innerHTML = comparedProducts.map((offers) => {
+          const product = offers[0];
+          return `
+            <div class="product-card">
+              <img class="product-image" alt="${escapeHtml(product.name)}" loading="lazy" />
+              <div class="product-name">${escapeHtml(product.name)}</div>
+              <div class="product-meta">
+                <span>${escapeHtml(product.category)}</span>
+                <span>${offers.length} ${offers.length === 1 ? 'shop' : 'shops'}</span>
+              </div>
+              <div class="shop-offers">
+                ${offers.map((offer, index) => `
+                  <div class="shop-offer">
+                    <div class="shop-offer-details">
+                      <span class="shop-offer-name">${escapeHtml(offer.shopName || 'Local shop')}${index === 0 && offers.length > 1 ? ' · Best price' : ''}</span>
+                      ${offer.shopLocation ? `<span class="shop-offer-location">${escapeHtml(offer.shopLocation)}</span>` : ''}
+                      <span class="shop-offer-price">Ksh ${Number(offer.price).toLocaleString('en-KE')} · ${Number(offer.stock)} in stock</span>
+                    </div>
+                    <button type="button" data-id="${Number(offer.id)}" ${Number(offer.stock) < 1 ? 'disabled' : ''}>${Number(offer.stock) < 1 ? 'Out of stock' : 'Add to cart'}</button>
+                  </div>
+                `).join('')}
+              </div>
             </div>
-            <div class="price">Ksh ${Number(product.price).toLocaleString('en-KE')}</div>
-            <button type="button" data-id="${product.id}">Quick buy</button>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
         els.catalogGrid.querySelectorAll('.product-image').forEach((image, index) => {
-          const product = filteredProducts[index];
+          const product = comparedProducts[index][0];
           const imageIndex = Number(product.id) - 1;
           image.addEventListener('error', () => {
             image.src = getFallbackProductImage(product, imageIndex);
@@ -765,12 +867,17 @@
         });
       }
 
+      els.catalogSearch.addEventListener('input', () => {
+        state.searchQuery = els.catalogSearch.value;
+        renderCatalog();
+      });
+
       function populateProductSelector() {
         els.customerProduct.innerHTML = '<option value="">Select product</option>' + state.products.map((product) => `
-          <option value="${product.id}">${product.name} - Ksh ${Number(product.price).toLocaleString('en-KE')}</option>
+          <option value="${product.id}">${escapeHtml(product.name)} — ${escapeHtml(product.shopName || 'Local shop')} — Ksh ${Number(product.price).toLocaleString('en-KE')}</option>
         `).join('');
         els.bulkProduct.innerHTML = '<option value="">Choose product</option>' + state.products.map((product) => `
-          <option value="${product.id}">${product.name} (${product.unit})</option>
+          <option value="${product.id}">${escapeHtml(product.name)} — ${escapeHtml(product.shopName || 'Local shop')} (${escapeHtml(product.unit)})</option>
         `).join('');
       }
 
@@ -779,10 +886,11 @@
         els.receiptShopName.textContent = shopName;
       }
 
-      function renderBasket() {
+      function renderBasket(preserveReceipt = false) {
+        updateCartSummary();
         if (!state.basket.length) {
           els.basketItems.innerHTML = '<p class="text-xs text-slate-500">No items yet. Add products to build your basket.</p>';
-          showReceiptForSelection();
+          if (!preserveReceipt) showReceiptForSelection();
           return;
         }
 
@@ -793,7 +901,7 @@
           return `
             <div class="rounded-xl border border-slate-200 bg-slate-50 p-2">
               <div class="flex items-center justify-between gap-3">
-                <span class="text-sm font-semibold text-slate-700">${product.name}</span>
+                <span class="text-sm font-semibold text-slate-700">${escapeHtml(product.name)} <span class="block text-xs font-normal text-slate-500">${escapeHtml(product.shopName || 'Local shop')}</span><span class="block text-xs font-normal text-slate-500">Ksh ${Number(product.price).toLocaleString('en-KE')} each</span></span>
                 <button type="button" class="text-xs font-bold text-red-600" data-remove-product="${product.id}">Remove</button>
               </div>
               <div class="mt-2 flex items-center justify-between gap-3 text-xs uppercase tracking-[0.08em] text-slate-500">
@@ -804,8 +912,24 @@
           `;
         }).join('');
 
-        showReceiptForSelection();
+        if (!preserveReceipt) showReceiptForSelection();
       }
+
+      function updateCartSummary() {
+        const items = state.basket.reduce((total, item) => total + item.quantity, 0);
+        const total = state.basket.reduce((sum, item) => {
+          const product = state.products.find((entry) => entry.id === item.productId);
+          return sum + (product ? Number(product.price) * item.quantity : 0);
+        }, 0);
+        els.cartCount.textContent = String(items);
+        els.cartSummary.textContent = `${items} ${items === 1 ? 'item' : 'items'} · Ksh ${total.toLocaleString('en-KE')}`;
+        els.cartButton.setAttribute('aria-label', `Shopping cart, ${items} ${items === 1 ? 'item' : 'items'}, total Ksh ${total.toLocaleString('en-KE')}`);
+      }
+
+      els.cartButton.addEventListener('click', () => {
+        els.cartSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        els.cartSection.focus({ preventScroll: true });
+      });
 
       function validateStockQuantity(product, quantity, contextLabel = 'This item') {
         if (!product) return false;
@@ -873,7 +997,7 @@
         const lines = [
           `<div class="receipt-line"><span>Customer</span><span>${customerName}</span></div>`,
           ...selectedProducts.map((item) => `
-            <div class="receipt-line"><span>${item.product.name}</span><span>${item.quantity} x Ksh ${Number(item.product.price).toLocaleString('en-KE')}</span></div>
+            <div class="receipt-line"><span>${escapeHtml(item.product.name)} · ${escapeHtml(item.product.shopName || 'Local shop')}</span><span>${item.quantity} x Ksh ${Number(item.product.price).toLocaleString('en-KE')}</span></div>
           `),
           `<div class="receipt-line"><span>Items</span><span>${selectedProducts.length}</span></div>`,
           `<div class="receipt-line"><span>Amount</span><span>Ksh ${Number(total).toLocaleString('en-KE')}</span></div>`
@@ -915,6 +1039,7 @@
 
         currentItem.quantity = Math.max(1, nextQty);
         input.value = currentItem.quantity;
+        updateCartSummary();
         showReceiptForSelection();
       });
 
@@ -937,6 +1062,7 @@
 
       document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('dukaUserRole');
+        localStorage.removeItem('dukaUser');
         window.location.href = '/login';
       });
 
@@ -999,17 +1125,17 @@
           const total = sales.reduce((sum, sale) => sum + (Number(sale.unitPrice) * Number(sale.quantity)), 0);
           const line = [
             `Customer: ${customer}`,
-            ...sales.map((sale) => `Item: ${sale.productName} (${sale.quantity} x Ksh ${Number(sale.unitPrice).toLocaleString('en-KE')})`),
+            ...sales.map((sale) => `Item: ${sale.productName} from ${sale.shopName || 'Local shop'} (${sale.quantity} x Ksh ${Number(sale.unitPrice).toLocaleString('en-KE')})`),
             `Total: Ksh ${Number(total).toLocaleString('en-KE')}`
           ];
 
           els.receiptLines.innerHTML = line.map((item) => `<div class="receipt-line"><span>${item}</span></div>`).join('');
           els.receiptTotal.textContent = `Ksh ${Number(total).toLocaleString('en-KE')}`;
           state.basket = [];
-          renderBasket();
+          renderBasket(true);
           els.customerProduct.value = '';
           els.customerQuantity.value = 1;
-          await loadCatalog();
+          await loadCatalog(true);
           alert('Purchase recorded successfully!');
         } catch (error) {
           alert(error.message || 'Unable to process sale');

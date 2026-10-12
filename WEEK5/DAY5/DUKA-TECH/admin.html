@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Duka-Tech | Shop verification</title>
+    <style>
+      :root { font-family: Arial, Helvetica, sans-serif; color: #18382d; background: #f2f7f4; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      header { background: #0f3d2e; color: white; }
+      header > div, main { width: min(100% - 32px, 1040px); margin: 0 auto; }
+      header > div { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      header a { color: #fff; }
+      main { padding: 36px 0 64px; }
+      h1 { margin: 0 0 8px; }
+      p { line-height: 1.5; }
+      .panel, .application { background: white; border: 1px solid #d9e8df; border-radius: 18px; padding: 24px; box-shadow: 0 10px 24px #123d2d0c; }
+      .panel { max-width: 440px; margin: 44px auto; }
+      .stack { display: grid; gap: 14px; }
+      label { display: grid; gap: 6px; font-size: .9rem; font-weight: 700; }
+      input, select, textarea, button { font: inherit; }
+      input, select, textarea { width: 100%; border: 1px solid #cbdcd2; border-radius: 10px; padding: 11px 12px; }
+      textarea { min-height: 84px; resize: vertical; }
+      button { border: 0; border-radius: 10px; padding: 11px 16px; font-weight: 700; cursor: pointer; }
+      button:disabled { opacity: .55; cursor: wait; }
+      .primary { background: #f7b500; color: #18382d; }
+      .approve { background: #ddf5ea; color: #0f3d2e; }
+      .reject { background: #fff0ef; color: #a43131; }
+      .secondary { color: white; background: #ffffff1c; border: 1px solid #ffffff55; }
+      .muted { color: #60716a; }
+      .error { color: #a43131; min-height: 1.2em; }
+      .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0; }
+      #applications { display: grid; gap: 16px; }
+      .application h2 { margin: 0 0 6px; }
+      .details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin: 20px 0; }
+      .details div { overflow-wrap: anywhere; }
+      .documents { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+      .review-actions { display: grid; grid-template-columns: 1fr auto auto; align-items: end; gap: 10px; }
+      [hidden] { display: none !important; }
+      @media (max-width: 640px) {
+        .details { grid-template-columns: 1fr; }
+        .review-actions { grid-template-columns: 1fr 1fr; }
+        .review-actions label { grid-column: 1 / -1; }
+        .toolbar { align-items: stretch; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <strong>Duka-Tech · Shop verification</strong>
+        <a href="/">Back to Duka-Tech</a>
+      </div>
+    </header>
+    <main>
+      <section id="loginPanel" class="panel">
+        <h1>Administrator sign in</h1>
+        <p class="muted">Review shop identity and business license documents before stores can sell.</p>
+        <form id="loginForm" class="stack">
+          <label>Administrator username<input id="username" autocomplete="username" required /></label>
+          <label>Password<input id="password" type="password" autocomplete="current-password" required /></label>
+          <button class="primary">Sign in</button>
+          <p id="loginError" class="error" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="dashboard" hidden>
+        <h1>Shop applications</h1>
+        <p class="muted">Review the submitted owner ID and business license. Only approve stores after checking their documents.</p>
+        <div class="toolbar">
+          <label>Applications
+            <select id="statusFilter">
+              <option value="pending">Awaiting review</option>
+              <option value="all">All applications</option>
+            </select>
+          </label>
+          <button id="logoutButton" class="secondary" style="background:#0f3d2e">Sign out</button>
+        </div>
+        <p id="dashboardMessage" class="error" role="status"></p>
+        <div id="applications"></div>
+      </section>
+    </main>
+    <script>
+      const tokenKey = 'dukaAdminToken';
+      const loginPanel = document.getElementById('loginPanel');
+      const dashboard = document.getElementById('dashboard');
+      const applications = document.getElementById('applications');
+      const dashboardMessage = document.getElementById('dashboardMessage');
+      const token = () => sessionStorage.getItem(tokenKey);
+
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        })[character]);
+      }
+
+      async function request(url, options = {}) {
+        const headers = { Authorization: `Bearer ${token()}`, ...(options.headers || {}) };
+        if (options.body && !(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+        const response = await fetch(url, { ...options, headers });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || 'Request failed.');
+        return data;
+      }
+
+      function showDashboard(isSignedIn) {
+        loginPanel.hidden = isSignedIn;
+        dashboard.hidden = !isSignedIn;
+      }
+
+      async function loadApplications() {
+        dashboardMessage.textContent = '';
+        const status = document.getElementById('statusFilter').value;
+        const rows = await request(`/api/admin/verifications?status=${encodeURIComponent(status)}`);
+        if (!rows.length) {
+          applications.innerHTML = '<div class="application muted">No shop applications found for this filter.</div>';
+          return;
+        }
+        applications.innerHTML = rows.map((shop) => {
+          const allDocumentsReviewed = shop.documents?.length === 2 && shop.documents.every((document) => document.reviewed);
+          return `
+          <article class="application" data-shop-id="${Number(shop.id)}">
+            <h2>${escapeHtml(shop.name)}</h2>
+            <p class="muted">${escapeHtml(shop.location || 'Location not provided')} · <strong>${escapeHtml(shop.verificationStatus)}</strong></p>
+            <div class="details">
+              <div><strong>Owner:</strong> ${escapeHtml(shop.ownerName)}</div>
+              <div><strong>Email:</strong> ${escapeHtml(shop.ownerEmail)}</div>
+              <div><strong>Owner ID number:</strong> ${escapeHtml(shop.ownerIdNumber)}</div>
+              <div><strong>Business license:</strong> ${escapeHtml(shop.businessLicenseNumber)}</div>
+              <div><strong>Submitted:</strong> ${escapeHtml(shop.submittedAt ? new Date(shop.submittedAt).toLocaleString() : 'Legacy shop')}</div>
+              ${shop.reviewNote ? `<div><strong>Review note:</strong> ${escapeHtml(shop.reviewNote)}</div>` : ''}
+            </div>
+            <div class="documents">
+              ${(shop.documents || []).map((document) => `
+                <button type="button" class="approve" data-document-id="${escapeHtml(document.id)}" data-reviewed="${document.reviewed ? 'true' : 'false'}">${document.reviewed ? 'Reviewed' : 'View'} · ${escapeHtml(document.kind)} · ${escapeHtml(document.originalName)}</button>
+              `).join('') || '<span class="muted">No verification documents attached.</span>'}
+            </div>
+            ${shop.verificationStatus === 'pending' ? `
+              <div class="review-actions">
+                <label>Rejection reason (required to reject)
+                  <textarea data-review-note maxlength="500" placeholder="Explain what the owner must correct"></textarea>
+                </label>
+                <button type="button" class="approve" data-action="approve" ${allDocumentsReviewed ? '' : 'disabled'}>Approve shop</button>
+                <button type="button" class="reject" data-action="reject">Reject application</button>
+              </div>
+            ` : ''}
+          </article>
+        `}).join('');
+      }
+
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const error = document.getElementById('loginError');
+        error.textContent = '';
+        try {
+          const response = await fetch('/api/admin/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: document.getElementById('username').value.trim(),
+              password: document.getElementById('password').value
+            })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.message || 'Unable to sign in.');
+          sessionStorage.setItem(tokenKey, result.user.token);
+          showDashboard(true);
+          await loadApplications();
+        } catch (requestError) {
+          error.textContent = requestError.message;
+        }
+      });
+
+      document.getElementById('statusFilter').addEventListener('change', () => {
+        loadApplications().catch((error) => { dashboardMessage.textContent = error.message; });
+      });
+
+      applications.addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const card = button.closest('[data-shop-id]');
+        const shopId = Number(card.dataset.shopId);
+        button.disabled = true;
+        dashboardMessage.textContent = '';
+        try {
+          if (button.dataset.documentId) {
+            const preview = window.open('about:blank', '_blank');
+            if (!preview) throw new Error('Allow pop-ups to review verification documents.');
+            const response = await fetch(`/api/admin/verifications/${shopId}/documents/${encodeURIComponent(button.dataset.documentId)}`, {
+              headers: { Authorization: `Bearer ${token()}` }
+            });
+            if (!response.ok) {
+              const error = await response.json().catch(() => ({}));
+              preview.close();
+              throw new Error(error.message || 'Unable to open document.');
+            }
+            const fileUrl = URL.createObjectURL(await response.blob());
+            preview.location.href = fileUrl;
+            window.setTimeout(() => URL.revokeObjectURL(fileUrl), 60000);
+            button.dataset.reviewed = 'true';
+            button.textContent = `Reviewed · ${button.textContent.replace(/^(View|Reviewed) · /, '')}`;
+            button.disabled = false;
+            const documents = [...card.querySelectorAll('[data-document-id]')];
+            const approveButton = card.querySelector('[data-action="approve"]');
+            if (approveButton && documents.length === 2 && documents.every((document) => document.dataset.reviewed === 'true')) {
+              approveButton.disabled = false;
+            }
+            return;
+          }
+
+          const status = button.dataset.action === 'approve' ? 'approved' : 'rejected';
+          const reviewNote = card.querySelector('[data-review-note]')?.value.trim() || '';
+          await request(`/api/admin/verifications/${shopId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status, reviewNote })
+          });
+          await loadApplications();
+        } catch (error) {
+          dashboardMessage.textContent = error.message;
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById('logoutButton').addEventListener('click', () => {
+        sessionStorage.removeItem(tokenKey);
+        showDashboard(false);
+      });
+
+      if (token()) {
+        showDashboard(true);
+        loadApplications().catch((error) => {
+          sessionStorage.removeItem(tokenKey);
+          showDashboard(false);
+          document.getElementById('loginError').textContent = error.message;
+        });
+      }
+    </script>
+  </body>
+</html>

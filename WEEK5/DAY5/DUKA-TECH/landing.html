@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Shop everyday essentials and manage your store with Duka-Tech." />
+  <title>Duka-Tech | Your neighborhood shop, made simple</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --green-950: #0b3024;
+      --green-900: #0f3d2e;
+      --green-700: #1d5f47;
+      --green-500: #31a66b;
+      --green-100: #e8f4ed;
+      --gold: #f7b500;
+      --ink: #1f2b27;
+      --muted: #66736d;
+      --paper: #fbfcf8;
+      --line: #e4ebe5;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+    .topbar { background: var(--green-950); color: white; }
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 800; font-size: 1.2rem; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      color: var(--green-950);
+      background: linear-gradient(135deg, var(--gold), #ffdb68);
+      border-radius: 13px;
+      font-size: 1.15rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: 26px; color: #d7e5dc; font-size: .94rem; }
+    .nav-links a:hover { color: white; }
+    .button {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 21px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--gold);
+      color: var(--green-950);
+      font: inherit;
+      font-weight: 800;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 10px 22px #071f172e; }
+    .button-light { background: white; color: var(--green-900); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      color: white;
+      background:
+        radial-gradient(ellipse at 76% 42%, #31a66b8c, transparent 34%),
+        linear-gradient(115deg, var(--green-950), var(--green-700));
+    }
+    .hero-grid {
+      min-height: 550px;
+      display: grid;
+      grid-template-columns: 1fr .9fr;
+      align-items: center;
+      gap: 54px;
+      padding-top: 48px;
+      padding-bottom: 58px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffe18a;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--gold); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 620px;
+      margin-bottom: 20px;
+      font-size: clamp(2.8rem, 6vw, 5.1rem);
+      line-height: 1.04;
+      letter-spacing: -.055em;
+    }
+    h1 span { color: #ffdb68; }
+    .hero-copy { max-width: 520px; margin-bottom: 29px; color: #d8e6de; font-size: 1.1rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-note { margin: 22px 0 0; color: #cfddd4; font-size: .88rem; }
+    .hero-photo {
+      position: relative;
+      padding: 14px;
+      background: #ffffff1a;
+      border: 1px solid #ffffff29;
+      border-radius: 28px;
+      box-shadow: 0 30px 80px #071f1745;
+      transform: rotate(1.3deg);
+    }
+    .hero-photo img { display: block; width: 100%; height: 350px; object-fit: cover; border-radius: 19px; }
+    .photo-tag {
+      position: absolute;
+      right: -18px;
+      bottom: 32px;
+      max-width: 220px;
+      padding: 14px 18px;
+      border-radius: 15px;
+      background: white;
+      color: var(--green-900);
+      box-shadow: 0 14px 34px #071f1733;
+      font-weight: 800;
+    }
+    .photo-tag small { display: block; color: var(--muted); font-weight: 600; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 27px; padding-top: 30px; color: #d4e4da; font-size: .86rem; }
+    .trust-row span::before { content: "✓"; margin-right: 8px; color: #ffdb68; font-weight: 900; }
+    .section { padding: 82px 0; }
+    .section-heading { max-width: 650px; margin-bottom: 34px; }
+    .section-heading .eyebrow { color: var(--green-700); }
+    h2 { margin-bottom: 10px; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.12; letter-spacing: -.04em; }
+    .section-heading p { margin-bottom: 0; color: var(--muted); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feature {
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 12px 36px #153a2410;
+    }
+    .feature img { display: block; width: 100%; height: 190px; object-fit: cover; }
+    .feature-body { padding: 22px; }
+    .feature h3 { margin-bottom: 8px; font-size: 1.18rem; }
+    .feature p { margin-bottom: 0; color: var(--muted); font-size: .94rem; }
+    .portals { background: var(--green-100); }
+    .portal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .portal-card {
+      padding: 29px;
+      background: white;
+      border: 1px solid #d7e7dc;
+      border-radius: 20px;
+    }
+    .portal-card .icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 18px;
+      border-radius: 15px;
+      background: #fff3ce;
+      color: var(--green-900);
+      font-size: 1.4rem;
+    }
+    .portal-card p { min-height: 48px; color: var(--muted); }
+    .text-link { display: inline-flex; gap: 8px; align-items: center; color: var(--green-700); font-weight: 800; }
+    .cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      margin: 76px 0;
+      padding: 38px 42px;
+      border-radius: 24px;
+      background: var(--green-900);
+      color: white;
+    }
+    .cta h2 { margin-bottom: 7px; font-size: clamp(1.7rem, 4vw, 2.5rem); }
+    .cta p { margin-bottom: 0; color: #d4e4da; }
+    footer { padding: 25px 0; color: var(--muted); border-top: 1px solid var(--line); font-size: .9rem; }
+    .footer-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+
+    @media (max-width: 780px) {
+      .nav { min-height: 68px; }
+      .nav-links { display: none; }
+      .hero-grid { min-height: initial; grid-template-columns: 1fr; gap: 36px; padding-top: 68px; padding-bottom: 54px; }
+      h1 { max-width: 560px; }
+      .hero-photo { max-width: 560px; }
+      .hero-photo img { height: 280px; }
+      .feature-grid { grid-template-columns: 1fr 1fr; }
+      .feature:last-child { grid-column: 1 / -1; }
+      .cta { align-items: flex-start; flex-direction: column; margin: 54px 0; padding: 30px; }
+    }
+    @media (max-width: 520px) {
+      .wrap { width: min(100% - 30px, 1160px); }
+      .brand { font-size: 1.05rem; }
+      .nav > .button { min-height: 41px; padding: 0 15px; font-size: .9rem; }
+      .hero-grid { padding-top: 56px; }
+      h1 { font-size: clamp(2.65rem, 13vw, 4rem); }
+      .hero-copy { font-size: 1rem; }
+      .hero-photo { padding: 9px; border-radius: 21px; }
+      .hero-photo img { height: 235px; border-radius: 14px; }
+      .photo-tag { right: 8px; bottom: 17px; padding: 11px 13px; }
+      .section { padding: 62px 0; }
+      .feature-grid, .portal-grid { grid-template-columns: 1fr; }
+      .feature:last-child { grid-column: auto; }
+      .feature img { height: 200px; }
+      .portal-card p { min-height: 0; }
+      .footer-row { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="brand" href="/" aria-label="Duka-Tech home">
+        <span class="brand-mark">D</span>
+        <span>Duka-Tech</span>
+      </a>
+      <div class="nav-links">
+        <a href="#why-duka">Why Duka-Tech</a>
+        <a href="#portals">Our portals</a>
+      </div>
+      <a class="button" href="/login">Sign in</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-grid wrap">
+        <div>
+          <span class="eyebrow">Your neighborhood shop, made simple</span>
+          <h1>Everyday essentials. <span>Right where you need them.</span></h1>
+          <p class="hero-copy">Compare prices from neighborhood shops before you buy, or use one simple dashboard to keep your own store running smoothly.</p>
+          <div class="hero-actions">
+            <a class="button" href="/login">Get started <span aria-hidden="true">&nbsp;→</span></a>
+            <a class="button button-light" href="#why-duka">Discover Duka-Tech</a>
+          </div>
+          <p class="hero-note">For shoppers and shop managers alike.</p>
+          <div class="trust-row">
+            <span>Everyday products</span>
+            <span>Compare shop prices</span>
+            <span>Buy from multiple shops</span>
+          </div>
+        </div>
+        <div class="hero-photo">
+          <img src="/assets/shop-display.jpg" alt="Everyday products stocked in a neighborhood shop" />
+          <div class="photo-tag">Your local shop, online<small>Shop essentials with ease</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="why-duka">
+      <div class="section-heading">
+        <span class="eyebrow">A smarter way to shop</span>
+        <h2>All the essentials, in one easy place.</h2>
+        <p>Browse familiar pantry, bakery, and home-care staples, then get on with your day.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature">
+          <img src="/assets/grocery.jpg" alt="A selection of everyday grocery and pantry products" loading="lazy" />
+          <div class="feature-body">
+            <h3>Pantry favorites</h3>
+            <p>Stock up on everyday grocery staples for your home.</p>
+          </div>
+        </article>
+        <article class="feature">
+          <img src="/assets/white-bread.jpg" alt="Packaged white bread ready for the breakfast table" loading="lazy" />
+          <div class="feature-body">
+            <h3>Fresh daily picks</h3>
+            <p>Find bread, milk, and other favorites in the catalog.</p>
+          </div>
+        </article>
+        <article class="feature">
+          <img src="/assets/soap-cleaning.jpg" alt="Household cleaning and personal care products" loading="lazy" />
+          <div class="feature-body">
+            <h3>Home-care essentials</h3>
+            <p>Keep the household supplied with practical everyday care.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section portals" id="portals">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">One platform, two ways to use it</span>
+          <h2>Welcome to your Duka-Tech portal.</h2>
+          <p>Sign in to continue to the experience that fits you.</p>
+        </div>
+        <div class="portal-grid">
+          <article class="portal-card">
+            <div class="icon" aria-hidden="true">🛒</div>
+            <h3>Shopping as a customer?</h3>
+            <p>Compare local shop prices, choose the offers you want, and build one basket across stores.</p>
+            <a class="text-link" href="/login">Continue to sign in <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="portal-card">
+            <div class="icon" aria-hidden="true">▦</div>
+            <h3>Managing a shop?</h3>
+            <p>Submit your owner ID and business license for administrator review, then manage your shop after approval.</p>
+            <a class="text-link" href="/login">Continue to sign in <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="cta">
+        <div>
+          <h2>Ready to get started?</h2>
+          <p>Sign in to shop or manage your store with Duka-Tech.</p>
+        </div>
+        <a class="button" href="/login">Go to sign in <span aria-hidden="true">&nbsp;→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-row wrap">
+      <a class="brand" href="/"><span class="brand-mark">D</span><span>Duka-Tech</span></a>
+      <span>© 2026 Duka-Tech. Everyday shopping, made simple. <a href="/admin" style="margin-left:12px">Administrator</a></span>
+    </div>
+  </footer>
+</body>
+</html>

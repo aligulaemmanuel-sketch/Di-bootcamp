@@ -243,19 +243,40 @@
         <div class="flex items-center gap-3 font-bold text-lg">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-gold to-yellow-300 text-brand-900 grid place-items-center">D</div>
           <span>Duka-Tech Manager</span>
+          <span id="shopLabel" class="hidden sm:inline text-sm font-normal text-white/70"></span>
         </div>
         <nav class="hidden md:flex items-center gap-6 text-sm text-white/80" aria-label="Manager navigation">
           <a href="/customer" class="hover:text-white">Customer view</a>
           <a href="/manager" class="hover:text-white">Manager dashboard</a>
         </nav>
         <div class="flex items-center gap-3">
-          <button class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" id="savePrefsBtn">Save shop name</button>
+          <button class="rounded-full bg-brand-gold text-brand-900 px-4 py-2 font-bold hover:opacity-95" id="savePrefsBtn">Edit shop</button>
           <button id="logoutBtn" type="button" class="rounded-full border border-white/40 bg-white/5 px-4 py-2 font-bold text-white hover:bg-white/10">Log out</button>
         </div>
       </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section id="verificationNotice" class="hidden mb-6 rounded-2xl border border-amber-300 bg-amber-50 p-5 text-amber-950" role="status">
+        <h2 id="verificationTitle" class="text-lg font-bold"></h2>
+        <p id="verificationMessage" class="mt-1 text-sm"></p>
+        <form id="verificationResubmission" class="mt-4 hidden grid gap-3 md:grid-cols-2">
+          <label class="grid gap-1 text-sm font-semibold">Owner's national ID number
+            <input id="resubmitOwnerIdNumber" class="rounded-xl border border-amber-300 bg-white px-3 py-2" required />
+          </label>
+          <label class="grid gap-1 text-sm font-semibold">Business license/registration number
+            <input id="resubmitLicenseNumber" class="rounded-xl border border-amber-300 bg-white px-3 py-2" required />
+          </label>
+          <label class="grid gap-1 text-sm font-semibold">Owner ID document (PDF, JPG, or PNG; max 5 MB)
+            <input id="resubmitOwnerIdDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required />
+          </label>
+          <label class="grid gap-1 text-sm font-semibold">Business license document (PDF, JPG, or PNG; max 5 MB)
+            <input id="resubmitLicenseDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required />
+          </label>
+          <button class="rounded-xl bg-brand-900 px-4 py-3 font-bold text-white md:col-span-2">Resubmit for review</button>
+        </form>
+      </section>
+
       <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
           <h3 class="text-[0.7rem] uppercase tracking-[0.08em] text-slate-500">Total revenue</h3>
@@ -303,7 +324,8 @@
           <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
             <h2 class="text-2xl font-bold mb-4">Add product</h2>
             <form id="productForm" class="grid gap-3">
-              <input id="productName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Product name" required />
+              <input id="productName" class="border border-slate-200 rounded-xl px-3 py-2" type="text" placeholder="Product name (use the common name shoppers compare)" required />
+              <p class="text-xs text-slate-500">Customers compare offers with the same product name, category, and unit.</p>
               <select id="productCategory" class="border border-slate-200 rounded-xl px-3 py-2" required>
                 <option value="">Select category</option>
                 <option value="Bakery">Bakery</option>
@@ -406,8 +428,14 @@
     <script>
       const expectedRole = 'manager';
       const currentRole = localStorage.getItem('dukaUserRole');
+      let signedInUser = null;
+      try {
+        signedInUser = JSON.parse(localStorage.getItem('dukaUser') || 'null');
+      } catch (error) {
+        signedInUser = null;
+      }
 
-      if (!currentRole) {
+      if (!currentRole || !signedInUser?.id) {
         window.location.href = '/login';
       } else if (currentRole !== expectedRole) {
         window.location.href = currentRole === 'customer' ? '/customer' : '/login';
@@ -418,7 +446,7 @@
         sales: [],
         suppliers: [],
         summary: null,
-        prefs: JSON.parse(localStorage.getItem('dukaPrefs') || '{}')
+        shop: null
       };
 
       const els = {
@@ -431,8 +459,12 @@
 
       async function apiRequest(url, options = {}) {
         const response = await fetch(url, {
-          headers: { 'Content-Type': 'application/json' },
-          ...options
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${signedInUser.token}`,
+            ...(options.headers || {})
+          }
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.message || 'Request failed');
@@ -441,17 +473,21 @@
 
       async function loadDashboard() {
         try {
-          const [products, sales, suppliers, summary] = await Promise.all([
+          const [products, sales, suppliers, summary, shop] = await Promise.all([
             apiRequest('/api/products'),
             apiRequest('/api/sales'),
             apiRequest('/api/suppliers'),
-            apiRequest('/api/summary')
+            apiRequest('/api/summary'),
+            apiRequest('/api/shop/me')
           ]);
 
           state.products = products;
           state.sales = sales;
           state.suppliers = suppliers;
           state.summary = summary;
+          state.shop = shop;
+          document.getElementById('shopLabel').textContent = shop.name;
+          renderVerificationStatus();
           renderProducts();
           renderSales();
           renderSuppliers();
@@ -459,6 +495,26 @@
           populateSaleSelection();
         } catch (error) {
           alert(error.message || 'Failed to load dashboard data');
+        }
+      }
+
+      function renderVerificationStatus() {
+        const notice = document.getElementById('verificationNotice');
+        const title = document.getElementById('verificationTitle');
+        const message = document.getElementById('verificationMessage');
+        const resubmission = document.getElementById('verificationResubmission');
+        const approved = state.shop?.verificationStatus === 'approved';
+        document.querySelectorAll('#productForm input, #productForm select, #productForm button, #saleForm input, #saleForm select, #saleForm button')
+          .forEach((control) => { control.disabled = !approved; });
+
+        notice.classList.toggle('hidden', approved);
+        resubmission.classList.toggle('hidden', state.shop?.verificationStatus !== 'rejected');
+        if (state.shop?.verificationStatus === 'rejected') {
+          title.textContent = 'Verification needs an update';
+          message.textContent = state.shop.verificationReviewNote || 'Please submit updated verification details and documents.';
+        } else if (state.shop?.verificationStatus === 'pending') {
+          title.textContent = 'Shop verification is under review';
+          message.textContent = 'Your shop and products will become visible to customers after an administrator approves your documents. You can view your dashboard while you wait.';
         }
       }
 
@@ -486,8 +542,8 @@
               <td>${product.threshold}</td>
               <td><span class="status-pill ${statusClass}">${statusText}</span></td>
               <td class="action-cell">
-                <button class="mini-btn edit" data-action="edit" data-id="${product.id}">Edit</button>
-                <button class="mini-btn delete" data-action="delete" data-id="${product.id}">Delete</button>
+                <button class="mini-btn edit" data-action="edit" data-id="${product.id}" ${state.shop?.verificationStatus !== 'approved' ? 'disabled' : ''}>Edit</button>
+                <button class="mini-btn delete" data-action="delete" data-id="${product.id}" ${state.shop?.verificationStatus !== 'approved' ? 'disabled' : ''}>Delete</button>
               </td>
             </tr>
           `;
@@ -666,17 +722,49 @@
         }
       });
 
-      document.getElementById('savePrefsBtn').addEventListener('click', () => {
-        const shopName = prompt('Shop name', state.prefs.shopName || 'Duka-Tech');
-        if (shopName) {
-          state.prefs.shopName = shopName.trim() || 'Duka-Tech';
-          localStorage.setItem('dukaPrefs', JSON.stringify(state.prefs));
-          alert('Shop name saved.');
+      document.getElementById('savePrefsBtn').addEventListener('click', async () => {
+        const shopName = prompt('Shop name', state.shop?.name || '');
+        if (shopName === null) return;
+        const location = prompt('Shop location (optional)', state.shop?.location || '');
+        if (location === null) return;
+        try {
+          state.shop = await apiRequest('/api/shop/me', {
+            method: 'PUT',
+            body: JSON.stringify({ name: shopName.trim(), location: location.trim() })
+          });
+          document.getElementById('shopLabel').textContent = state.shop.name;
+          alert('Shop profile saved.');
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+
+      document.getElementById('verificationResubmission').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('ownerIdNumber', document.getElementById('resubmitOwnerIdNumber').value.trim());
+        formData.append('businessLicenseNumber', document.getElementById('resubmitLicenseNumber').value.trim());
+        formData.append('ownerIdDocument', document.getElementById('resubmitOwnerIdDocument').files[0]);
+        formData.append('businessLicenseDocument', document.getElementById('resubmitLicenseDocument').files[0]);
+        try {
+          const response = await fetch('/api/shop/verification', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${signedInUser.token}` },
+            body: formData
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.message || 'Unable to resubmit verification.');
+          event.target.reset();
+          await loadDashboard();
+          alert('Your updated verification documents were submitted for review.');
+        } catch (error) {
+          alert(error.message || 'Unable to resubmit verification.');
         }
       });
 
       document.getElementById('logoutBtn').addEventListener('click', () => {
         localStorage.removeItem('dukaUserRole');
+        localStorage.removeItem('dukaUser');
         window.location.href = '/login';
       });
 

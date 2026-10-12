@@ -4,11 +4,12 @@
       "id": 1,
       "name": "White Bread",
       "category": "Bakery",
-      "stock": 18,
+      "stock": 16,
       "price": 60,
       "threshold": 5,
       "unit": "loaf",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTspLR7Ul-Cad1pAR0I5krx7cXvt2RroXxbUBYDWhtCAQ&s=10"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTspLR7Ul-Cad1pAR0I5krx7cXvt2RroXxbUBYDWhtCAQ&s=10",
+      "shopId": 1
     },
     {
       "id": 2,
@@ -18,7 +19,8 @@
       "price": 75,
       "threshold": 5,
       "unit": "loaf",
-      "imageUrl": "https://cdn.mafrservices.com/sys-master-root/h45/h99/12681201647646/74581_main.jpg"
+      "imageUrl": "https://cdn.mafrservices.com/sys-master-root/h45/h99/12681201647646/74581_main.jpg",
+      "shopId": 1
     },
     {
       "id": 3,
@@ -27,7 +29,8 @@
       "stock": 10,
       "price": 95,
       "threshold": 4,
-      "unit": "loaf"
+      "unit": "loaf",
+      "shopId": 1
     },
     {
       "id": 4,
@@ -36,7 +39,8 @@
       "stock": 20,
       "price": 70,
       "threshold": 8,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 5,
@@ -45,7 +49,8 @@
       "stock": 12,
       "price": 80,
       "threshold": 6,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 6,
@@ -55,7 +60,8 @@
       "price": 140,
       "threshold": 6,
       "unit": "bar",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlOaM9GGafh3H55xcPG1AGtQltCcmhfwKygZeY6dVqsg&s"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlOaM9GGafh3H55xcPG1AGtQltCcmhfwKygZeY6dVqsg&s",
+      "shopId": 1
     },
     {
       "id": 7,
@@ -64,7 +70,8 @@
       "stock": 8,
       "price": 220,
       "threshold": 4,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 8,
@@ -73,7 +80,8 @@
       "stock": 30,
       "price": 260,
       "threshold": 10,
-      "unit": "bag"
+      "unit": "bag",
+      "shopId": 1
     },
     {
       "id": 9,
@@ -82,7 +90,8 @@
       "stock": 20,
       "price": 65,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "shopId": 1
     },
     {
       "id": 10,
@@ -91,7 +100,8 @@
       "stock": 20,
       "price": 70,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "shopId": 1
     },
     {
       "id": 11,
@@ -100,7 +110,8 @@
       "stock": 16,
       "price": 68,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "shopId": 1
     },
     {
       "id": 12,
@@ -110,7 +121,8 @@
       "price": 75,
       "threshold": 5,
       "unit": "loaf",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0Y9AO1nU6y3Vrt1d9osNE3GehFHevFJ2a1JLy0-Rdsw&s=10"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0Y9AO1nU6y3Vrt1d9osNE3GehFHevFJ2a1JLy0-Rdsw&s=10",
+      "shopId": 1
     },
     {
       "id": 13,
@@ -120,7 +132,8 @@
       "price": 55,
       "threshold": 6,
       "unit": "bar",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGCgsUxxqO6YD6mRhQ7myuweBhgqRqqVZg4yKMn0Kkhw&s=10"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGCgsUxxqO6YD6mRhQ7myuweBhgqRqqVZg4yKMn0Kkhw&s=10",
+      "shopId": 1
     },
     {
       "id": 14,
@@ -129,7 +142,8 @@
       "stock": 18,
       "price": 65,
       "threshold": 6,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 15,
@@ -139,7 +153,8 @@
       "price": 75,
       "threshold": 5,
       "unit": "bar",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWcAdXWWctGPFHAJo-oR2XHEC_HMbII3bsLuEqxkI0oA&s=10"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWcAdXWWctGPFHAJo-oR2XHEC_HMbII3bsLuEqxkI0oA&s=10",
+      "shopId": 1
     },
     {
       "id": 16,
@@ -148,7 +163,8 @@
       "stock": 14,
       "price": 60,
       "threshold": 5,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 17,
@@ -157,7 +173,8 @@
       "stock": 16,
       "price": 50,
       "threshold": 5,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 18,
@@ -166,7 +183,8 @@
       "stock": 12,
       "price": 70,
       "threshold": 4,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 19,
@@ -175,7 +193,8 @@
       "stock": 14,
       "price": 80,
       "threshold": 5,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 20,
@@ -184,7 +203,8 @@
       "stock": 20,
       "price": 75,
       "threshold": 8,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 21,
@@ -193,7 +213,8 @@
       "stock": 20,
       "price": 68,
       "threshold": 8,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 22,
@@ -202,7 +223,8 @@
       "stock": 18,
       "price": 85,
       "threshold": 6,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 23,
@@ -211,7 +233,8 @@
       "stock": 18,
       "price": 65,
       "threshold": 6,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 24,
@@ -220,7 +243,8 @@
       "stock": 16,
       "price": 72,
       "threshold": 6,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 25,
@@ -229,7 +253,8 @@
       "stock": 24,
       "price": 80,
       "threshold": 8,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 26,
@@ -238,7 +263,8 @@
       "stock": 24,
       "price": 80,
       "threshold": 8,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 27,
@@ -247,7 +273,8 @@
       "stock": 24,
       "price": 80,
       "threshold": 8,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 28,
@@ -256,7 +283,8 @@
       "stock": 18,
       "price": 120,
       "threshold": 6,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 29,
@@ -265,7 +293,8 @@
       "stock": 24,
       "price": 300,
       "threshold": 8,
-      "unit": "bag"
+      "unit": "bag",
+      "shopId": 1
     },
     {
       "id": 30,
@@ -274,7 +303,8 @@
       "stock": 30,
       "price": 150,
       "threshold": 10,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 31,
@@ -283,7 +313,8 @@
       "stock": 30,
       "price": 145,
       "threshold": 10,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 32,
@@ -292,7 +323,8 @@
       "stock": 20,
       "price": 180,
       "threshold": 7,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 33,
@@ -301,7 +333,8 @@
       "stock": 16,
       "price": 280,
       "threshold": 5,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 34,
@@ -310,7 +343,8 @@
       "stock": 16,
       "price": 270,
       "threshold": 5,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 35,
@@ -319,7 +353,8 @@
       "stock": 14,
       "price": 190,
       "threshold": 5,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 36,
@@ -328,7 +363,8 @@
       "stock": 18,
       "price": 180,
       "threshold": 6,
-      "unit": "tub"
+      "unit": "tub",
+      "shopId": 1
     },
     {
       "id": 37,
@@ -337,7 +373,8 @@
       "stock": 16,
       "price": 250,
       "threshold": 5,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 38,
@@ -346,7 +383,8 @@
       "stock": 16,
       "price": 280,
       "threshold": 5,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 39,
@@ -355,7 +393,8 @@
       "stock": 12,
       "price": 220,
       "threshold": 4,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 40,
@@ -364,7 +403,8 @@
       "stock": 12,
       "price": 180,
       "threshold": 4,
-      "unit": "bottle"
+      "unit": "bottle",
+      "shopId": 1
     },
     {
       "id": 41,
@@ -373,7 +413,8 @@
       "stock": 18,
       "price": 160,
       "threshold": 6,
-      "unit": "tube"
+      "unit": "tube",
+      "shopId": 1
     },
     {
       "id": 42,
@@ -382,7 +423,8 @@
       "stock": 14,
       "price": 180,
       "threshold": 5,
-      "unit": "jar"
+      "unit": "jar",
+      "shopId": 1
     },
     {
       "id": 43,
@@ -392,7 +434,8 @@
       "price": 350,
       "threshold": 4,
       "unit": "bottle",
-      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4M-xWNNYOdHAv69hvgS6T8U7-uvLUa3dxEbmaPEZUaA&s=10"
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4M-xWNNYOdHAv69hvgS6T8U7-uvLUa3dxEbmaPEZUaA&s=10",
+      "shopId": 1
     },
     {
       "id": 44,
@@ -401,7 +444,8 @@
       "stock": 18,
       "price": 180,
       "threshold": 6,
-      "unit": "pack"
+      "unit": "pack",
+      "shopId": 1
     },
     {
       "id": 45,
@@ -410,7 +454,8 @@
       "stock": 24,
       "price": 70,
       "threshold": 8,
-      "unit": "pack"
+      "unit": "pack",
+      "shopId": 1
     },
     {
       "id": 46,
@@ -419,7 +464,8 @@
       "stock": 20,
       "price": 60,
       "threshold": 6,
-      "unit": "pack"
+      "unit": "pack",
+      "shopId": 1
     },
     {
       "id": 1791361714443,
@@ -428,7 +474,8 @@
       "stock": 12,
       "price": 95,
       "threshold": 5,
-      "unit": "loaf"
+      "unit": "loaf",
+      "shopId": 1
     },
     {
       "id": 1791362080881,
@@ -437,7 +484,8 @@
       "stock": 25,
       "price": 260,
       "threshold": 8,
-      "unit": "bag"
+      "unit": "bag",
+      "shopId": 1
     },
     {
       "id": 1791362080902,
@@ -446,7 +494,8 @@
       "stock": 18,
       "price": 70,
       "threshold": 5,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 1791362080919,
@@ -455,7 +504,8 @@
       "stock": 14,
       "price": 140,
       "threshold": 6,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
     },
     {
       "id": 1791362105408,
@@ -464,7 +514,8 @@
       "stock": 25,
       "price": 260,
       "threshold": 8,
-      "unit": "bag"
+      "unit": "bag",
+      "shopId": 1
     },
     {
       "id": 1791362105441,
@@ -473,7 +524,8 @@
       "stock": 18,
       "price": 70,
       "threshold": 5,
-      "unit": "packet"
+      "unit": "packet",
+      "shopId": 1
     },
     {
       "id": 1791362105471,
@@ -482,7 +534,19 @@
       "stock": 14,
       "price": 140,
       "threshold": 6,
-      "unit": "bar"
+      "unit": "bar",
+      "shopId": 1
+    },
+    {
+      "id": 1791531532447,
+      "name": "maize",
+      "imageUrl": "",
+      "category": "Others",
+      "stock": 90,
+      "price": 1000,
+      "threshold": 90,
+      "unit": "kg",
+      "shopId": 1
     }
   ],
   "sales": [
@@ -493,7 +557,9 @@
       "quantity": 2,
       "unitPrice": 60,
       "customer": "Amina",
-      "timestamp": "2026-09-18T08:15:00.000Z"
+      "timestamp": "2026-09-18T08:15:00.000Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 102,
@@ -502,7 +568,9 @@
       "quantity": 3,
       "unitPrice": 70,
       "customer": "Kibet",
-      "timestamp": "2026-09-18T10:05:00.000Z"
+      "timestamp": "2026-09-18T10:05:00.000Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 103,
@@ -511,7 +579,9 @@
       "quantity": 2,
       "unitPrice": 140,
       "customer": "Walk-in",
-      "timestamp": "2026-09-18T12:40:00.000Z"
+      "timestamp": "2026-09-18T12:40:00.000Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789973446428,
@@ -520,7 +590,9 @@
       "quantity": 3,
       "unitPrice": 60,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T06:50:46.428Z"
+      "timestamp": "2026-09-21T06:50:46.428Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789973467829,
@@ -529,7 +601,9 @@
       "quantity": 1,
       "unitPrice": 60,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T06:51:07.829Z"
+      "timestamp": "2026-09-21T06:51:07.829Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789973919973.0615,
@@ -538,7 +612,9 @@
       "quantity": 2,
       "unitPrice": 60,
       "customer": "Test Buyer",
-      "timestamp": "2026-09-21T06:58:39.973Z"
+      "timestamp": "2026-09-21T06:58:39.973Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789973919974.213,
@@ -547,7 +623,9 @@
       "quantity": 2,
       "unitPrice": 70,
       "customer": "Test Buyer",
-      "timestamp": "2026-09-21T06:58:39.974Z"
+      "timestamp": "2026-09-21T06:58:39.974Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789974462868.1433,
@@ -556,7 +634,9 @@
       "quantity": 2,
       "unitPrice": 60,
       "customer": "Basket Buyer",
-      "timestamp": "2026-09-21T07:07:42.868Z"
+      "timestamp": "2026-09-21T07:07:42.868Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789974462868.2478,
@@ -565,7 +645,9 @@
       "quantity": 3,
       "unitPrice": 70,
       "customer": "Basket Buyer",
-      "timestamp": "2026-09-21T07:07:42.868Z"
+      "timestamp": "2026-09-21T07:07:42.868Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789974797635.3257,
@@ -574,7 +656,9 @@
       "quantity": 4,
       "unitPrice": 70,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T07:13:17.635Z"
+      "timestamp": "2026-09-21T07:13:17.635Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789975107897.8674,
@@ -583,7 +667,9 @@
       "quantity": 2,
       "unitPrice": 60,
       "customer": "Test buyer",
-      "timestamp": "2026-09-21T07:18:27.897Z"
+      "timestamp": "2026-09-21T07:18:27.897Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789975107897.8997,
@@ -592,7 +678,9 @@
       "quantity": 3,
       "unitPrice": 70,
       "customer": "Test buyer",
-      "timestamp": "2026-09-21T07:18:27.897Z"
+      "timestamp": "2026-09-21T07:18:27.897Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789975473444.2407,
@@ -601,7 +689,9 @@
       "quantity": 4,
       "unitPrice": 60,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T07:24:33.444Z"
+      "timestamp": "2026-09-21T07:24:33.444Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789982241961.1135,
@@ -610,7 +700,9 @@
       "quantity": 1,
       "unitPrice": 70,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T09:17:21.961Z"
+      "timestamp": "2026-09-21T09:17:21.961Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     },
     {
       "id": 1789982241961.4893,
@@ -619,7 +711,20 @@
       "quantity": 1,
       "unitPrice": 140,
       "customer": "Walk-in customer",
-      "timestamp": "2026-09-21T09:17:21.961Z"
+      "timestamp": "2026-09-21T09:17:21.961Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
+    },
+    {
+      "id": 1791532094514.122,
+      "productId": 1,
+      "productName": "White Bread",
+      "quantity": 2,
+      "unitPrice": 60,
+      "customer": "Walk-in customer",
+      "timestamp": "2026-10-09T07:48:14.514Z",
+      "shopId": 1,
+      "shopName": "Duka-Tech Demo Shop"
     }
   ],
   "suppliers": [
@@ -629,7 +734,8 @@
       "phone": "0700-111-222",
       "product": "Bread",
       "balance": 2500,
-      "lastPurchase": "2026-09-12"
+      "lastPurchase": "2026-09-12",
+      "shopId": 1
     },
     {
       "id": 202,
@@ -637,7 +743,19 @@
       "phone": "0722-555-111",
       "product": "Milk",
       "balance": 1300,
-      "lastPurchase": "2026-09-15"
+      "lastPurchase": "2026-09-15",
+      "shopId": 1
     }
-  ]
+  ],
+  "shops": [
+    {
+      "id": 1,
+      "ownerId": 1,
+      "name": "Duka-Tech Demo Shop",
+      "location": "",
+      "verificationStatus": "approved",
+      "verifiedAt": "2026-10-09T09:35:36.543Z"
+    }
+  ],
+  "bulkOrders": []
 }
