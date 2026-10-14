@@ -1,33 +1,48 @@
 import {
+  ADD_CATEGORY,
+  REMOVE_CATEGORY,
   ADD_TODO,
   TOGGLE_TODO,
   REMOVE_TODO,
   CLEAR_COMPLETED,
   SET_FILTER,
-} from "./actionTypes";
+  DISMISS_ERROR,
+} from "./actionTypes.js";
 
-let nextId = Date.now();
+let counter = 0;
+// Unique enough for a local app: timestamp + per-session counter.
+export const makeId = () => `${Date.now().toString(36)}-${(counter++).toString(36)}`;
 
-export const addTodo = (text) => ({
+export const addCategory = (name) => ({
+  type: ADD_CATEGORY,
+  payload: { id: makeId(), name },
+});
+
+export const removeCategory = (categoryId) => ({
+  type: REMOVE_CATEGORY,
+  payload: { categoryId },
+});
+
+export const addTodo = (categoryId, text) => ({
   type: ADD_TODO,
-  payload: { id: nextId++, text },
+  payload: { categoryId, id: makeId(), text },
 });
 
-export const toggleTodo = (id) => ({
+export const toggleTodo = (categoryId, todoId) => ({
   type: TOGGLE_TODO,
-  payload: { id },
+  payload: { categoryId, todoId },
 });
 
-export const removeTodo = (id) => ({
+export const removeTodo = (categoryId, todoId) => ({
   type: REMOVE_TODO,
-  payload: { id },
+  payload: { categoryId, todoId },
 });
 
-export const clearCompleted = () => ({
-  type: CLEAR_COMPLETED,
-});
+export const clearCompleted = () => ({ type: CLEAR_COMPLETED });
 
 export const setFilter = (filter) => ({
   type: SET_FILTER,
   payload: { filter },
 });
+
+export const dismissError = () => ({ type: DISMISS_ERROR });

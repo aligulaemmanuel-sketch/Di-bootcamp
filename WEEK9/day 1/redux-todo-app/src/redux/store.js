@@ -1,14 +1,16 @@
 import { createStore } from "redux";
-import todoReducer, { initialState } from "./reducer";
+import todoReducer from "./reducer.js";
+import { migrateState } from "./persist.js";
 
-const STORAGE_KEY = "redux-todo-app:v1";
+const STORAGE_KEY = "redux-todo-app:v2";
+const LEGACY_KEY = "redux-todo-app:v1";
 
 function loadState() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw =
+      localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_KEY);
     if (!raw) return undefined;
-    const saved = JSON.parse(raw);
-    return { ...initialState, ...saved };
+    return migrateState(JSON.parse(raw));
   } catch {
     return undefined;
   }
@@ -23,7 +25,8 @@ const store = createStore(
 
 store.subscribe(() => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(store.getState()));
+    const { categories, filter } = store.getState();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ categories, filter }));
   } catch {
     /* storage unavailable: ignore */
   }
