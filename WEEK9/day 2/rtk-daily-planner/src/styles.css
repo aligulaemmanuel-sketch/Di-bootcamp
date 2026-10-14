@@ -1,0 +1,303 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f3f4f8;
+  color: #1f2430;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid #cfd4e0;
+  background: #fff;
+  color: inherit;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+button:hover {
+  background: #f1f3fa;
+}
+
+button.primary {
+  background: #5b7cfa;
+  border-color: #5b7cfa;
+  color: #fff;
+  font-weight: 600;
+}
+
+button.primary:hover {
+  background: #4565e6;
+}
+
+button.danger {
+  color: #b3364a;
+}
+
+input[type="text"],
+input[type="time"] {
+  font: inherit;
+  padding: 8px 10px;
+  border: 1px solid #cfd4e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid #5b7cfa;
+  outline-offset: 1px;
+}
+
+.app {
+  max-width: 940px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 1.8rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Date picker ---------- */
+
+.date-picker,
+.task-panel {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(20, 30, 60, 0.08);
+  padding: 16px;
+}
+
+.day-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.day-nav .today-btn {
+  flex: 1;
+  font-weight: 600;
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.month-nav button {
+  padding: 2px 10px;
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.calendar th {
+  font-size: 0.75rem;
+  color: #7b8296;
+  padding: 4px 0;
+}
+
+.calendar td {
+  padding: 2px;
+  text-align: center;
+}
+
+.calendar .day {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 50%;
+}
+
+.calendar .day:hover {
+  background: #eef1fb;
+}
+
+.calendar .day.today {
+  border-color: #5b7cfa;
+}
+
+.calendar .day.selected {
+  background: #5b7cfa;
+  color: #fff;
+  font-weight: 700;
+}
+
+.calendar .day.has-tasks::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: #e0883a;
+}
+
+.calendar .day.selected.has-tasks::after {
+  background: #fff;
+}
+
+/* ---------- Task panel ---------- */
+
+.task-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.task-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.summary {
+  font-size: 0.85rem;
+  color: #7b8296;
+  white-space: nowrap;
+}
+
+.add-task {
+  margin-bottom: 14px;
+}
+
+.add-task-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-task-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.field-error {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #b3364a;
+}
+
+.tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid #eceef4;
+}
+
+.task label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.task .time {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4565e6;
+  background: #e6ebff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.task .title {
+  overflow-wrap: anywhere;
+}
+
+.task.done .title {
+  text-decoration: line-through;
+  color: #9aa1b2;
+}
+
+.task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.task-actions button {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+.task.editing {
+  display: block;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.empty {
+  text-align: center;
+  color: #8a91a3;
+  padding: 18px 0 8px;
+}
+
+/* ---------- Error banner ---------- */
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdecee;
+  color: #8f2638;
+  border: 1px solid #f3c2c9;
+  font-size: 0.9rem;
+}
+
+.error-banner button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0 4px;
+}
