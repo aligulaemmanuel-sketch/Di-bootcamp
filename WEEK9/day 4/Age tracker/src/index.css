@@ -1,0 +1,56 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+}
+
+.app {
+  max-width: 360px;
+  margin: 3rem auto;
+  text-align: center;
+}
+
+.age-label {
+  margin: 0;
+  color: #666;
+}
+
+.age-value {
+  font-size: 4rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+/* Reserve space so the layout doesn't jump when the spinner appears. */
+.spinner-slot {
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ddd;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.age-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.age-controls button {
+  padding: 8px 16px;
+  font-size: 1rem;
+}

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Emmanuel Asuva builds thoughtful web experiences, cloud-ready systems, and visual stories from Nairobi, Kenya.">
     <title>Emmanuel Asuva | Developer & Visual Storyteller</title>
+    <link rel="icon" type="image/png" href="/week%200/Emmanuel%20Asuva/Emmanuel%20Asuva%20logo%201.png.png">
+    <link rel="apple-touch-icon" href="/week%200/Emmanuel%20Asuva/Emmanuel%20Asuva%20logo%201.png.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -31,26 +33,129 @@
             flex-direction: column; 
             background-color: #f5f5f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            line-height: 1.7;
         }
         main { flex: 1 0 auto; }
+        .container {
+            width: min(1200px, calc(100% - 32px));
+        }
         
         /* Navigation */
         .nav-wrapper { 
-            padding: 0 20px; 
-            background: linear-gradient(135deg, var(--primary-indigo) 0%, #283593 100%);
+            padding: 0 18px; 
+            background: #02070d;
+            border-bottom: 2px solid rgba(89, 226, 255, 0.8);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+            min-height: 108px;
+        }
+        .nav-wrapper > .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 108px;
+            gap: 18px;
         }
         .brand-logo { 
             display: flex !important; 
-            align-items: center; 
+            align-items: center;
             font-weight: 700 !important;
-            letter-spacing: 1px;
-            font-size: 1.5rem !important;
+            letter-spacing: 0.04em;
+            font-size: 1.85rem !important;
+            gap: 10px;
+            text-transform: uppercase;
+            line-height: 1.1;
+            padding: 8px 0;
+            flex-shrink: 0;
+            margin-right: auto;
+            color: #f3f9fd;
+            text-shadow: 0 0 10px rgba(140, 232, 223, 0.2);
         }
-        .brand-logo svg { margin-right: 10px; }
+        .brand-logo img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 10px rgba(94, 227, 255, 0.35));
+        }
+        .brand-logo span {
+            white-space: nowrap;
+            display: inline-block;
+        }
+        #nav-mobile {
+            display: flex !important;
+            align-items: center;
+            margin: 0 !important;
+            gap: 2px;
+            float: none !important;
+            margin-left: auto !important;
+        }
+        #nav-mobile li {
+            display: flex;
+            align-items: center;
+        }
+        #nav-mobile a {
+            padding: 0 12px !important;
+            font-size: 0.8rem !important;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            line-height: 1.2;
+            white-space: nowrap;
+            font-weight: 700;
+            color: rgba(243, 249, 253, 0.95);
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+        #nav-mobile a:hover,
+        #nav-mobile a:focus-visible {
+            color: #7feaff;
+            text-shadow: 0 0 12px rgba(127, 234, 255, 0.45);
+        }
+        @media (max-width: 992px) {
+            #nav-mobile {
+                display: none !important;
+            }
+            .nav-wrapper {
+                min-height: 78px;
+            }
+            .nav-wrapper > .container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                height: 78px;
+                min-height: 78px;
+                gap: 8px;
+            }
+            .nav-wrapper .brand-logo {
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                transform: none !important;
+                min-width: 0;
+                font-size: 0.78rem !important;
+                letter-spacing: 0.05em;
+                margin-right: 0;
+            }
+            .nav-wrapper .brand-logo img {
+                flex: 0 0 auto;
+                width: 52px;
+                height: 52px;
+                margin-right: 6px;
+            }
+            .nav-wrapper .sidenav-trigger {
+                display: inline-flex;
+                float: none !important;
+                flex: 0 0 auto;
+                width: 46px;
+                height: 46px;
+                margin: 0 0 0 8px;
+                line-height: normal;
+            }
+        }
         
         /* Hero Section */
         .hero { 
-            background: linear-gradient(135deg, rgba(26, 35, 126, 0.92) 0%, rgba(40, 53, 147, 0.92) 100%), 
+            background: linear-gradient(135deg, rgba(2, 12, 25, 0.94) 0%, rgba(6, 25, 43, 0.9) 30%, rgba(12, 52, 63, 0.86) 100%), 
                       url('/week%200/Emmanuel%20Asuva/creative-studio.png');
             background-size: cover; 
             background-position: center;
@@ -59,13 +164,16 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.28);
         }
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+            inset: 0;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(56, 189, 248, 0.18) 0%, transparent 36%),
+                radial-gradient(circle at 72% 28%, rgba(234, 179, 8, 0.12) 0%, transparent 28%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.14) 0%, transparent 38%);
             pointer-events: none;
         }
         .hero h1 { 
@@ -73,24 +181,26 @@
             margin-bottom: 0.5rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             position: relative;
-            font-size: 3.5rem;
+            font-size: clamp(3.6rem, 6.5vw, 7rem);
+            letter-spacing: -0.04em;
         }
         .hero h3 {
             font-weight: 300;
             margin-bottom: 1rem;
             opacity: 0.95;
-            font-size: 1.8rem;
+            font-size: 2.3rem;
         }
         .hero h5 { 
             font-weight: 400; 
             margin-bottom: 1.5rem;
             opacity: 0.9;
             letter-spacing: 2px;
+            font-size: 1.7rem;
         }
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             opacity: 0.9;
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto 2rem;
         }
         .hero-kicker {
@@ -104,10 +214,21 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 12px;
-            margin: 28px 0 8px;
+            gap: 14px;
+            margin: 30px 0 8px;
         }
-        .hero-actions .btn-large { margin: 0; }
+        .hero-actions .btn-large {
+            margin: 0;
+            padding: 0 28px;
+            height: 54px;
+            line-height: 54px;
+            border-radius: 16px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            box-shadow: 0 16px 26px rgba(0,0,0,0.18);
+        }
         .hero-contact {
             border: 1px solid rgba(255,255,255,.65);
             background: rgba(255,255,255,.12);
@@ -119,20 +240,22 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
         }
         .hero-social a {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.55rem;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.16);
         }
         .hero-social a::before {
             content: '';
@@ -157,12 +280,12 @@
         .skill-tag {
             display: inline-flex;
             align-items: center;
-            padding: 7px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 9px 18px;
+            border-radius: 22px;
+            font-size: 0.95rem;
             font-weight: 800;
             letter-spacing: 0.03em;
-            margin: 4px;
+            margin: 6px;
             transition: all 0.3s ease;
             border: 1px solid transparent;
             cursor: default;
@@ -283,6 +406,9 @@
             color: var(--primary-indigo);
             position: relative;
             display: inline-block;
+            font-size: clamp(2.2rem, 3vw, 3.1rem);
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
         }
         .section-title::after {
             content: '';
@@ -323,14 +449,15 @@
         /* Projects Section */
         #projects { padding: 60px 0 80px; }
         .project-card {
-            border-radius: 12px;
+            border-radius: 18px;
             overflow: hidden;
             transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.08);
+            border: 1px solid rgba(140,232,223,0.18);
+            box-shadow: 0 18px 42px rgba(11, 21, 38, 0.12);
         }
         .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 48px rgba(11, 21, 38, 0.18);
         }
         .project-card .card-content { padding: 24px; }
         .project-card > img {
@@ -378,7 +505,7 @@
         .project-card .card-title {
             font-weight: 700 !important;
             color: var(--primary-indigo) !important;
-            font-size: 1.4rem !important;
+            font-size: 1.7rem !important;
         }
         .project-tags {
             margin-top: 15px;
@@ -389,10 +516,10 @@
         .project-tag {
             background: #e8eaf6;
             color: var(--primary-indigo);
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.82rem;
+            font-weight: 700;
         }
         .card-action a {
             color: var(--primary-indigo) !important;
@@ -445,11 +572,11 @@
             background: rgba(255,255,255,0.2);
         }
         .social-card .handle {
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.3rem;
         }
         .social-card .platform {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             opacity: 0.8;
         }
         
@@ -534,6 +661,7 @@
             background: rgba(16,35,63,.82);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
+            min-height: 92px;
         }
         .portfolio-menu-toggle {
             display: none;
@@ -679,11 +807,19 @@
             .sidenav#mobile-demo .mobile-menu-heading { display: none; }
         }
         @media (max-width: 992px) {
+            #nav-mobile {
+                display: none !important;
+            }
+            .nav-wrapper {
+                min-height: 84px;
+            }
             .nav-wrapper > .container {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                height: 64px;
+                height: 84px;
+                min-height: 84px;
+                gap: 8px;
             }
             .nav-wrapper .brand-logo {
                 position: static !important;
@@ -691,16 +827,24 @@
                 top: auto !important;
                 transform: none !important;
                 min-width: 0;
-                font-size: 1.2rem !important;
+                font-size: 0.8rem !important;
+                letter-spacing: 0.04em;
+                max-width: none;
+                margin-right: 0;
             }
-            .nav-wrapper .brand-logo svg { flex: 0 0 auto; width: 32px; height: 32px; margin-right: 8px; }
+            .nav-wrapper .brand-logo img {
+                flex: 0 0 auto;
+                width: 90px;
+                height: 90px;
+                margin-right: 6px;
+            }
             .nav-wrapper .sidenav-trigger {
                 display: inline-flex;
                 float: none !important;
                 flex: 0 0 auto;
-                width: 48px;
-                height: 48px;
-                margin: 0 0 0 12px;
+                width: 46px;
+                height: 46px;
+                margin: 0 0 0 8px;
                 line-height: normal;
             }
         }
@@ -720,31 +864,31 @@
         }
         .hero-copy { text-align: left; }
         .hero-portrait {
-            width: min(100%, 390px);
+            width: min(100%, 460px);
             aspect-ratio: 1;
             justify-self: end;
             object-fit: contain;
             object-position: center;
             background: rgba(8,24,45,.78);
-            border: 8px solid rgba(255,255,255,.82);
-            border-radius: 22px;
-            box-shadow: 0 26px 70px rgba(2,18,38,.42);
+            border: 10px solid rgba(255,255,255,.82);
+            border-radius: 26px;
+            box-shadow: 0 30px 80px rgba(2,18,38,.42);
             transform: rotate(2deg);
         }
         .hero-copy .hero-actions,
         .hero-copy .hero-social { justify-content: flex-start; }
         .hero .container {
-            max-width: 900px;
-            padding: 56px 32px;
-            border: 1px solid rgba(255,255,255,.32);
-            border-radius: 28px;
-            background: rgba(255,255,255,.1);
-            box-shadow: 0 24px 80px rgba(2,18,38,.28);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            max-width: 980px;
+            padding: 64px 36px;
+            border: 1px solid rgba(255,255,255,.28);
+            border-radius: 30px;
+            background: rgba(9, 17, 32, 0.26);
+            box-shadow: 0 28px 90px rgba(2,18,38,.32), inset 0 1px 0 rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
-        .hero h1 { font-size: clamp(2.8rem, 7vw, 5.8rem); letter-spacing: -.03em; }
-        .hero h3 { color: #8ce8df; font-weight: 600; }
+        .hero h1 { font-size: clamp(3.4rem, 7vw, 6.4rem); letter-spacing: -.03em; }
+        .hero h3 { color: #8ce8df; font-weight: 600; font-size: clamp(1.7rem, 2vw, 2.5rem); }
         .hero-social a { border: 1px solid rgba(255,255,255,.4); box-shadow: 0 10px 25px rgba(0,0,0,.12); }
         #mission, #skills, #projects, #social-section { position: relative; }
         #mission { background: rgba(255,255,255,.2); }
@@ -1136,20 +1280,9 @@
 
     <nav class="nav-wrapper z-depth-2">
         <div class="container">
-            <a href="#" class="brand-logo">
-                <!-- EA Logo SVG -->
-                <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#38bdf8" />
-                            <stop offset="100%" stop-color="#a855f7" />
-                        </linearGradient>
-                    </defs>
-                    <path d="M15,75 L15,25 L85,25 M15,50 L65,50 M15,75 L85,75 L85,25" 
-                          stroke="url(#logoGradient)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="75" cy="35" r="8" fill="url(#logoGradient)"/>
-                </svg>
-                Emmanuel Asuva
+            <a href="#" class="brand-logo" aria-label="Emmanuel Asuva logo">
+                <img src="/week%200/Emmanuel%20Asuva/logo%202.png" alt="Emmanuel Asuva logo" loading="eager">
+                <span>Emmanuel Asuva</span>
             </a>
             <button type="button" data-target="mobile-demo" class="sidenav-trigger portfolio-menu-toggle" aria-label="Open navigation menu" aria-controls="mobile-demo" aria-expanded="false">
                 <span class="menu-toggle-lines" aria-hidden="true"><span></span><span></span><span></span></span>
