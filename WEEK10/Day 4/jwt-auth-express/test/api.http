@@ -1,0 +1,60 @@
+### JWT Auth Guide — API test flow (VS Code REST Client)
+### Or run the curl commands from the README.
+
+@host = http://localhost:3000
+
+### 0. Health check
+GET {{host}}/api/health
+
+### 1. Register (succeeds, sets cookies)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "username": "sara", "email": "sara@example.com", "password": "passw0rd1" }
+
+### 1b. Register validation failure (short password)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "username": "sara", "email": "sara@example.com", "password": "short" }
+
+### 1c. Register duplicate (409)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "username": "sara", "email": "sara@example.com", "password": "passw0rd1" }
+
+### 2. Protected route WITHOUT token (401)
+GET {{host}}/api/users/me
+
+### 3. Protected route WITH token (200)
+GET {{host}}/api/users/me
+Authorization: Bearer {{accessToken}}
+
+### 4. Login (set cookies; try 11x quickly to trigger the 429 rate limit)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "sara", "password": "passw0rd1" }
+
+### 4b. Login with wrong password (401; does NOT count toward rate limit)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "username": "sara", "password": "wrong-password" }
+
+### 5. Refresh (rotates tokens; old refresh token is revoked)
+POST {{host}}/api/auth/refresh
+
+### 6. Update profile (exercise #2)
+PATCH {{host}}/api/users/me
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{ "email": "sara.new@example.com" }
+
+### 7. Logout (revokes refresh token, clears cookies -> 204)
+POST {{host}}/api/auth/logout
+
+### 8. Refresh after logout (401 - revoked)
+POST {{host}}/api/auth/refresh

@@ -1,0 +1,74 @@
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  text-align: center;
+}
+
+.numbers strong {
+  display: block;
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+
+.numbers span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.track {
+  height: 10px;
+  overflow: hidden;
+  background: var(--border);
+  border-radius: 999px;
+}
+
+.fill {
+  height: 100%;
+  background: var(--success);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.caption {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.subtitle {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.9rem;
+}
+
+.categories {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.categories li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge {
+  min-width: 1.6rem;
+  padding: 0 0.5rem;
+  text-align: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fill {
+    transition: none;
+  }
+}

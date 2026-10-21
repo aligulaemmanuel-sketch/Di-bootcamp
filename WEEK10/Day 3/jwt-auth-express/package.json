@@ -1,0 +1,24 @@
+{
+  "name": "jwt-auth-express",
+  "version": "1.0.0",
+  "description": "JWT authentication in Node.js with Express: cookies, refresh tokens, revocation and rate limiting",
+  "main": "app.js",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
