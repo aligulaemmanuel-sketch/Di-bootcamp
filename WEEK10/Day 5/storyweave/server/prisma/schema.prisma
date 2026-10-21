@@ -1,0 +1,96 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  bio          String   @default("")
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+
+  stories       Story[]
+  collaborations StoryCollaborator[]
+  comments      Comment[]
+  versions      StoryVersion[]
+  reactions     CommentReaction[]
+}
+
+model Story {
+  id              String   @id @default(cuid())
+  title           String
+  content         String   @default("")
+  genre           String   @default("General")
+  commentsEnabled Boolean  @default(true)
+  shareToken      String   @unique @default(cuid())
+  authorId        String
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  collaborators StoryCollaborator[]
+  versions      StoryVersion[]
+  comments      Comment[]
+}
+
+enum CollaboratorRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+model StoryCollaborator {
+  storyId String
+  userId  String
+  role    CollaboratorRole @default(EDITOR)
+  story   Story            @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([storyId, userId])
+}
+
+model StoryVersion {
+  id            String   @id @default(cuid())
+  storyId       String
+  versionNumber Int
+  title         String
+  content       String
+  label         String   @default("")
+  savedById     String
+  savedBy       User     @relation(fields: [savedById], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, versionNumber])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  storyId   String
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reactions CommentReaction[]
+}
+
+model CommentReaction {
+  commentId String
+  userId    String
+  emoji     String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([commentId, userId, emoji])
+}

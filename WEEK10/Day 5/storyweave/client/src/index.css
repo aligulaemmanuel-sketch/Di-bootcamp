@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-base-200 min-h-screen;
+}
+
+.editing-caret::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentColor;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
