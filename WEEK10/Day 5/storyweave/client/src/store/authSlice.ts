@@ -51,7 +51,7 @@ export const fetchMe = createAsyncThunk("auth/me", async (_, { rejectWithValue }
 
 export const updateProfile = createAsyncThunk(
   "auth/updateProfile",
-  async (patch: { bio?: string; avatarUrl?: string }, { rejectWithValue }) => {
+  async (patch: { bio?: string; avatarUrl?: string; coverImageUrl?: string | null }, { rejectWithValue }) => {
     try {
       const { data } = await api.patch("/auth/me", patch);
       return data;

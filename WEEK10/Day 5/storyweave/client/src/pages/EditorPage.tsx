@@ -92,7 +92,7 @@ export default function EditorPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between gap-2 flex-wrap mb-4">
-        <Link to={`/story/${id}`} className="btn btn-ghost btn-sm">← Back to story</Link>
+        <Link to={`/story/${id}`} className="btn btn-ghost btn-sm">Back to story</Link>
         <div className="flex items-center gap-3">
           {saved && <span className="text-success text-sm">✓ Version saved</span>}
           <div className="flex -space-x-2">

@@ -12,6 +12,9 @@ import StoryPage from "./pages/StoryPage";
 import EditorPage from "./pages/EditorPage";
 import ProfilePage from "./pages/ProfilePage";
 import SharePage from "./pages/SharePage";
+import LandingPage from "./pages/LandingPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { token } = useAppSelector((s) => s.auth);
@@ -34,14 +37,16 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen app-shell">
       {token && <Navbar user={user} onLogout={handleLogout} />}
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className={token ? "app-main" : ""}>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
           <Route path="/share/:token" element={<SharePage />} />
-          <Route path="/" element={<RequireAuth><FeedPage /></RequireAuth>} />
+          <Route path="/" element={token ? <RequireAuth><FeedPage /></RequireAuth> : <LandingPage />} />
           <Route path="/new" element={<RequireAuth><NewStoryPage /></RequireAuth>} />
           <Route path="/story/:id" element={<RequireAuth><StoryPage /></RequireAuth>} />
           <Route path="/story/:id/edit" element={<RequireAuth><EditorPage /></RequireAuth>} />

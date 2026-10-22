@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { registerSchema, passwordSchema } from "../lib/validate";
+import { passwordResetRequestSchema, passwordResetSchema, registerSchema, passwordSchema } from "../lib/validate";
 
 describe("registerSchema", () => {
   it("accepts a valid registration", () => {
@@ -37,5 +37,19 @@ describe("passwordSchema", () => {
     expect(passwordSchema.safeParse("abcdefgh").success).toBe(false);
     expect(passwordSchema.safeParse("12345678").success).toBe(false);
     expect(passwordSchema.safeParse("abcd1234").success).toBe(true);
+  });
+});
+
+describe("password reset schemas", () => {
+  it("normalizes the recovery email", () => {
+    expect(passwordResetRequestSchema.parse({ email: " Writer@Example.com " }).email)
+      .toBe("writer@example.com");
+  });
+
+  it("rejects weak replacement passwords", () => {
+    expect(passwordResetSchema.safeParse({ token: "reset-token", password: "letters-only" }).success)
+      .toBe(false);
+    expect(passwordResetSchema.safeParse({ token: "reset-token", password: "words1234" }).success)
+      .toBe(true);
   });
 });

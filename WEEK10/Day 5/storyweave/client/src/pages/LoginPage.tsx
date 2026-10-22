@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { login } from "../store/authSlice";
+import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
 
 export default function LoginPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { status, error, token } = useAppSelector((s) => s.auth);
+  const notice = (location.state as { message?: string } | null)?.message;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,28 +23,32 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-16">
-      <h1 className="text-3xl font-bold text-center">Story<span className="text-primary">Weave</span></h1>
-      <p className="text-center text-base-content/60 mt-1 mb-8">Write together, in real time.</p>
-      <form onSubmit={submit} className="card bg-base-100 shadow p-6 space-y-4">
+    <AuthLayout
+      eyebrow="Your story is waiting"
+      title="Welcome back."
+      description="Pick up right where the good part left off."
+      footer={<>New around here? <Link to="/register" className="auth-inline-link">Make yourself at home</Link></>}
+    >
+      <form onSubmit={submit} className="auth-form">
+        {notice && <p className="auth-notice" role="status">{notice}</p>}
         <label className="form-control">
-          <span className="label-text mb-1">Email</span>
-          <input className="input input-bordered" type="email" required value={email}
+          <span className="label-text">Email address</span>
+          <input className="input input-bordered" type="email" autoComplete="email" required value={email}
             onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
         </label>
         <label className="form-control">
-          <span className="label-text mb-1">Password</span>
-          <input className="input input-bordered" type="password" required value={password}
-            onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+          <span className="label-text">Password</span>
+          <PasswordInput autoComplete="current-password" required value={password}
+            onChange={(e) => setPassword(e.target.value)} placeholder="Your password" />
         </label>
-        {error && <p className="text-error text-sm">{error}</p>}
-        <button className="btn btn-primary w-full" disabled={status === "loading"}>
-          {status === "loading" ? "Signing in…" : "Sign in"}
+        <div className="auth-forgot-row">
+          <Link to="/forgot-password" className="auth-inline-link">Forgot your password?</Link>
+        </div>
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <button className="btn btn-primary auth-submit" disabled={status === "loading"}>
+          {status === "loading" ? <><span className="loading loading-spinner loading-sm" /> Signing you in…</> : "Sign in"}
         </button>
-        <p className="text-sm text-center">
-          No account? <Link to="/register" className="link link-primary">Register</Link>
-        </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }

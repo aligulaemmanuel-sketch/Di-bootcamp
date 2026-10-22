@@ -9,6 +9,7 @@ import { storiesRouter, shareRouter } from "./routes/stories";
 import { commentsRouter, commentActionsRouter } from "./routes/comments";
 import { versionsRouter, versionActionsRouter } from "./routes/versions";
 import { uploadRouter } from "./routes/upload";
+import { invitationsRouter, storyInvitationsRouter } from "./routes/invitations";
 import { notFound, errorHandler } from "./middleware/error";
 import { setupCollab } from "./ws/collab";
 import { setIO } from "./ws/io";
@@ -21,6 +22,8 @@ app.use(express.json({ limit: "1mb" }));
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/stories", storiesRouter);
+app.use("/api/stories", storyInvitationsRouter);
+app.use("/api/invitations", invitationsRouter);
 app.use("/api/stories", commentsRouter);        // nested: /api/stories/:id/comments
 app.use("/api/comments", commentActionsRouter); // /api/comments/:id (+/reactions)
 app.use("/api/versions", versionActionsRouter); // /api/versions/:id/restore

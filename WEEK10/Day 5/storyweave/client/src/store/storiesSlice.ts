@@ -101,9 +101,16 @@ const storiesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchStories.pending, (state) => { state.status = "loading"; state.error = null; })
+      .addCase(fetchStories.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
       .addCase(fetchStories.fulfilled, (state, action) => {
         state.list = action.payload.stories;
         state.filter = action.payload.filter;
+        state.status = "idle";
+        state.error = null;
       })
       .addCase(fetchStory.fulfilled, (state, action) => {
         state.current = action.payload.story;

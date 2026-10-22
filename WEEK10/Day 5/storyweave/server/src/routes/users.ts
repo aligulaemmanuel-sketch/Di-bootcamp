@@ -8,7 +8,7 @@ export const usersRouter = Router();
 usersRouter.get("/:username", ah(async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { username: req.params.username },
-    select: { id: true, username: true, bio: true, avatarUrl: true, createdAt: true },
+    select: { id: true, username: true, bio: true, avatarUrl: true, coverImageUrl: true, createdAt: true },
   });
   if (!user) return res.status(404).json({ error: "User not found." });
 

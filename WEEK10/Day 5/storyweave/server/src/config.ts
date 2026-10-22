@@ -19,4 +19,10 @@ export const config = {
     apiKey: process.env.CLOUDINARY_API_KEY || "",
     apiSecret: process.env.CLOUDINARY_API_SECRET || "",
   },
+  googleClientId: process.env.GOOGLE_CLIENT_ID || "",
+  gmail: {
+    user: process.env.GMAIL_USER || "",
+    appPassword: process.env.GMAIL_APP_PASSWORD || "",
+    from: process.env.GMAIL_FROM || process.env.GMAIL_USER || "",
+  },
 };

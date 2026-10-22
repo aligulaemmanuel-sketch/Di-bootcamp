@@ -11,9 +11,11 @@ model User {
   id           String   @id @default(cuid())
   email        String   @unique
   username     String   @unique
-  passwordHash String
+  passwordHash String?
+  googleId     String?  @unique
   bio          String   @default("")
   avatarUrl    String?
+  coverImageUrl String?
   createdAt    DateTime @default(now())
 
   stories       Story[]
@@ -21,6 +23,8 @@ model User {
   comments      Comment[]
   versions      StoryVersion[]
   reactions     CommentReaction[]
+  invitationsSent StoryInvitation[]
+  passwordResets PasswordResetToken[]
 }
 
 model Story {
@@ -38,6 +42,7 @@ model Story {
   collaborators StoryCollaborator[]
   versions      StoryVersion[]
   comments      Comment[]
+  invitations   StoryInvitation[]
 }
 
 enum CollaboratorRole {
@@ -54,6 +59,36 @@ model StoryCollaborator {
   user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([storyId, userId])
+}
+
+model StoryInvitation {
+  id          String           @id @default(cuid())
+  storyId     String
+  invitedById String
+  email       String
+  role        CollaboratorRole @default(EDITOR)
+  tokenHash   String           @unique
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime         @default(now())
+
+  story     Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  invitedBy User  @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([storyId, email])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }
 
 model StoryVersion {

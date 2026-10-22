@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { register } from "../store/authSlice";
+import AuthLayout from "../components/AuthLayout";
+import PasswordInput from "../components/PasswordInput";
 
 export default function RegisterPage() {
   const dispatch = useAppDispatch();
@@ -18,34 +20,37 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-16">
-      <h1 className="text-3xl font-bold text-center">Join Story<span className="text-primary">Weave</span></h1>
-      <form onSubmit={submit} className="card bg-base-100 shadow p-6 space-y-4 mt-6">
+    <AuthLayout
+      eyebrow="A blank page is a beginning"
+      title="Your story starts here."
+      description="Make a little space for the ideas you can’t wait to share."
+      footer={<>Already have a space? <Link to="/login" className="auth-inline-link">Sign in</Link></>}
+    >
+      <form onSubmit={submit} className="auth-form">
         <label className="form-control">
-          <span className="label-text mb-1">Username</span>
-          <input className="input input-bordered" required minLength={3} maxLength={30}
+          <span className="label-text">Your pen name</span>
+          <input className="input input-bordered" autoComplete="username" required minLength={3} maxLength={30}
             value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
-            placeholder="writer_42" />
+            placeholder="writer_42" pattern="[a-zA-Z0-9_]+" title="Use letters, numbers, and underscores only." />
         </label>
         <label className="form-control">
-          <span className="label-text mb-1">Email</span>
-          <input className="input input-bordered" type="email" required value={form.email}
+          <span className="label-text">Email address</span>
+          <input className="input input-bordered" type="email" autoComplete="email" required value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" />
         </label>
         <label className="form-control">
-          <span className="label-text mb-1">Password</span>
-          <input className="input input-bordered" type="password" required minLength={8}
+          <span className="label-text">Create a password</span>
+          <PasswordInput autoComplete="new-password" required minLength={8}
             value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-            placeholder="8+ chars, letters & numbers" />
+            placeholder="At least 8 characters" pattern="(?=.*[A-Za-z])(?=.*[0-9]).{8,}"
+            title="Use at least 8 characters, including a letter and a number." />
+          <span className="auth-hint">At least 8 characters, with a letter and a number.</span>
         </label>
-        {error && <p className="text-error text-sm">{error}</p>}
-        <button className="btn btn-primary w-full" disabled={status === "loading"}>
-          {status === "loading" ? "Creating account…" : "Create account"}
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <button className="btn btn-primary auth-submit" disabled={status === "loading"}>
+          {status === "loading" ? <><span className="loading loading-spinner loading-sm" /> Making your space…</> : "Create my space"}
         </button>
-        <p className="text-sm text-center">
-          Have an account? <Link to="/login" className="link link-primary">Sign in</Link>
-        </p>
       </form>
-    </div>
+    </AuthLayout>
   );
 }

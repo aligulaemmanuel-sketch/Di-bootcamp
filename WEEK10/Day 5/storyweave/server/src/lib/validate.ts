@@ -23,3 +23,12 @@ export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
 });
+
+export const passwordResetRequestSchema = z.object({
+  email: z.string().trim().email("Invalid email address").max(254).transform((email) => email.toLowerCase()),
+});
+
+export const passwordResetSchema = z.object({
+  token: z.string().min(1),
+  password: passwordSchema,
+});

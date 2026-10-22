@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { createStory } from "../store/storiesSlice";
+import { STORY_GENRES } from "../data/storyGenres";
 
 export default function NewStoryPage() {
   const dispatch = useAppDispatch();
@@ -30,7 +31,7 @@ export default function NewStoryPage() {
         <label className="form-control">
           <span className="label-text mb-1">Genre</span>
           <select className="select select-bordered" value={genre} onChange={(e) => setGenre(e.target.value)}>
-            {["General", "Fantasy", "Sci-Fi", "Mystery", "Romance", "Horror", "Non-fiction"].map((g) => (
+            {STORY_GENRES.map((g) => (
               <option key={g} value={g}>{g}</option>
             ))}
           </select>
