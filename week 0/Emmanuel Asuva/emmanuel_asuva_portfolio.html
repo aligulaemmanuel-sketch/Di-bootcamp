@@ -639,6 +639,49 @@
             .mission-layout { grid-template-columns: 1fr; gap: 28px; }
             .mission-layout .mission-text { text-align: center; }
             .mission-portrait { max-width: 360px; margin: 0 auto; }
+            #skills .row,
+            #projects .row {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 20px;
+                margin: 0;
+            }
+            #skills .row > .col,
+            #projects .row > .col {
+                width: auto;
+                padding: 0;
+                margin: 0;
+                float: none;
+            }
+            .skill-card,
+            .project-card {
+                height: auto;
+                margin: 0;
+            }
+            .skill-card .card-content,
+            .project-card .card-content {
+                padding: 20px 18px;
+            }
+            .skill-card p,
+            .project-card p {
+                font-size: 16px;
+                line-height: 1.65;
+            }
+            .project-visual { height: 160px; }
+            .project-card .card-title {
+                display: block;
+                font-size: clamp(1.3rem, 5vw, 1.5rem) !important;
+                line-height: 1.3;
+            }
+            .project-tags { gap: 8px; }
+            .project-tag {
+                padding: 5px 9px;
+                font-size: 0.78rem;
+            }
+            .project-card .card-action a {
+                white-space: normal;
+                line-height: 1.5;
+            }
         }
 
         /* Glassmorphism visual layer */
