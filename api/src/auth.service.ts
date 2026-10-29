@@ -1,0 +1,256 @@
+import {
+  ConflictException,
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { compare, hash } from "bcryptjs";
+import { PrismaService } from "./prisma.service";
+import { AcceptInvitationDto, LoginDto, RegisterDto, RequestPasswordResetDto, ResetPasswordDto } from "./auth.dto";
+import { createOpaqueToken, hashInvitationToken } from "./invitation-token";
+import { MailService } from "./mail.service";
+
+@Injectable()
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(JwtService) private readonly jwt: JwtService,
+    @Inject(MailService) private readonly mail: MailService,
+  ) {}
+
+  async register(input: RegisterDto) {
+    const email = input.email.trim().toLowerCase();
+    if (Boolean(input.groupName) !== Boolean(input.phone)) {
+      throw new BadRequestException("Enter both a group name and phone number to create a group, or leave both blank for a personal account.");
+    }
+    if (input.groupType === "SACCO" && !input.groupName) {
+      throw new BadRequestException("Enter a SACCO name and phone number to create a SACCO workspace.");
+    }
+    const phone = input.phone
+      ? input.phone.startsWith("+") ? input.phone : input.phone.startsWith("0") ? `+254${input.phone.slice(1)}` : `+${input.phone}`
+      : null;
+    const passwordHash = await hash(input.password, 12);
+    try {
+      const user = await this.prisma.$transaction(async (tx) => {
+        const createdUser = await tx.user.create({
+          data: { email, name: input.name.trim(), passwordHash, phone },
+        });
+        if (input.groupName && phone) {
+          const groupType = input.groupType ?? "CHAMA";
+          const group = await tx.group.create({
+            data: {
+              name: input.groupName.trim(),
+              type: groupType,
+              members: {
+                create: {
+                  userId: createdUser.id,
+                  name: createdUser.name,
+                  phone,
+                  role: groupType === "SACCO" ? "CHAIRPERSON" : "OWNER",
+                },
+              },
+            },
+          });
+          await tx.auditEvent.create({
+            data: {
+              groupId: group.id,
+              actorId: createdUser.id,
+              action: groupType === "SACCO" ? "SACCO_CREATED" : "GROUP_CREATED",
+              entityType: "Group",
+              entityId: group.id,
+            },
+          });
+        }
+        return createdUser;
+      });
+      return {
+        token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
+        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
+      };
+    } catch (error) {
+      if (this.isUniqueError(error)) throw new ConflictException("An account with that email or phone already exists.");
+      throw error;
+    }
+  }
+
+  async login(input: LoginDto) {
+    const user = await this.prisma.user.findUnique({ where: { email: input.email.trim().toLowerCase() } });
+    if (!user || !(await compare(input.password, user.passwordHash))) {
+      throw new UnauthorizedException("Email or password is incorrect.");
+    }
+    return {
+      token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
+      user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
+    };
+  }
+
+  async acceptInvitation(input: AcceptInvitationDto) {
+    const tokenHash = hashInvitationToken(input.token);
+    const now = new Date();
+    try {
+      const user = await this.prisma.$transaction(async (tx) => {
+        const invitation = await tx.memberInvitation.findUnique({
+          where: { tokenHash },
+          include: { group: true },
+        });
+        if (!invitation || invitation.acceptedAt || invitation.expiresAt <= now) {
+          throw new UnauthorizedException("This invitation is invalid, expired, or already used.");
+        }
+
+        let acceptedUser = await tx.user.findUnique({ where: { email: invitation.email } });
+        if (acceptedUser) {
+          if (!(await compare(input.password, acceptedUser.passwordHash))) {
+            throw new UnauthorizedException("Email or password is incorrect.");
+          }
+        } else {
+          acceptedUser = await tx.user.create({
+            data: {
+              email: invitation.email,
+              name: invitation.name,
+              passwordHash: await hash(input.password, 12),
+              phone: invitation.phone,
+            },
+          });
+        }
+
+        const claimed = await tx.memberInvitation.updateMany({
+          where: { id: invitation.id, acceptedAt: null, expiresAt: { gt: now } },
+          data: { acceptedAt: now, acceptedUserId: acceptedUser.id },
+        });
+        if (claimed.count !== 1) {
+          throw new UnauthorizedException("This invitation is invalid, expired, or already used.");
+        }
+
+        const member = await tx.groupMember.create({
+          data: {
+            groupId: invitation.groupId,
+            userId: acceptedUser.id,
+            name: invitation.name,
+            phone: invitation.phone,
+            role: invitation.role,
+          },
+        });
+        await tx.auditEvent.create({
+          data: {
+            groupId: invitation.groupId,
+            actorId: acceptedUser.id,
+            action: "MEMBER_INVITATION_ACCEPTED",
+            entityType: "GroupMember",
+            entityId: member.id,
+          },
+        });
+        return acceptedUser;
+      });
+
+      return {
+        token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
+        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
+      };
+    } catch (error) {
+      if (this.isUniqueError(error)) {
+        throw new ConflictException("This account could not be added. Contact your group administrator.");
+      }
+      throw error;
+    }
+  }
+
+  async requestPasswordReset(input: RequestPasswordResetDto) {
+    const appUrl = process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000";
+    let resetUrl: URL;
+    try {
+      resetUrl = new URL("/", appUrl);
+    } catch {
+      throw new Error("APP_URL must be a valid absolute URL for password reset links.");
+    }
+    if (
+      (resetUrl.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && resetUrl.protocol === "http:")) ||
+      resetUrl.username ||
+      resetUrl.password
+    ) {
+      throw new Error("APP_URL must use HTTPS in production.");
+    }
+
+    const email = input.email.trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, name: true, email: true },
+    });
+    if (!user) return;
+
+    const { token, tokenHash } = createOpaqueToken();
+    const now = new Date();
+    await this.prisma.$transaction(async (tx) => {
+      await tx.passwordResetToken.deleteMany({ where: { userId: user.id } });
+      await tx.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash,
+          expiresAt: new Date(now.getTime() + 60 * 60 * 1000),
+        },
+      });
+    });
+
+    resetUrl.searchParams.set("reset", token);
+    try {
+      await this.mail.sendPasswordReset({ email: user.email, name: user.name, resetUrl: resetUrl.toString() });
+    } catch (error) {
+      if (!(error instanceof ServiceUnavailableException)) throw error;
+      await this.prisma.passwordResetToken.deleteMany({ where: { tokenHash } });
+      this.logger.error("Password reset email delivery failed.");
+    }
+  }
+
+  async resetPassword(input: ResetPasswordDto) {
+    const now = new Date();
+    const tokenHash = hashInvitationToken(input.token);
+    const passwordHash = await hash(input.password, 12);
+
+    await this.prisma.$transaction(async (tx) => {
+      const reset = await tx.passwordResetToken.findUnique({
+        where: { tokenHash },
+        select: { id: true, userId: true, expiresAt: true, usedAt: true },
+      });
+      if (!reset || reset.usedAt || reset.expiresAt <= now) {
+        throw new UnauthorizedException("This password reset link is invalid, expired, or already used.");
+      }
+
+      const claimed = await tx.passwordResetToken.updateMany({
+        where: { id: reset.id, usedAt: null, expiresAt: { gt: now } },
+        data: { usedAt: now },
+      });
+      if (claimed.count !== 1) {
+        throw new UnauthorizedException("This password reset link is invalid, expired, or already used.");
+      }
+
+      await tx.user.update({
+        where: { id: reset.userId },
+        data: { passwordHash, tokenVersion: { increment: 1 } },
+      });
+      await tx.passwordResetToken.deleteMany({
+        where: { userId: reset.userId, id: { not: reset.id } },
+      });
+      const memberships = await tx.groupMember.findMany({
+        where: { userId: reset.userId },
+        select: { groupId: true },
+      });
+      for (const membership of memberships) {
+        await tx.auditEvent.create({
+          data: {
+            groupId: membership.groupId,
+            actorId: reset.userId,
+            action: "PASSWORD_RESET",
+            entityType: "User",
+            entityId: reset.userId,
+          },
+        });
+      }
+    });
+  }
+
+  private isUniqueError(error: 

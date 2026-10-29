@@ -1,0 +1,427 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum GroupRole {
+  OWNER
+  ADMIN
+  TREASURER
+  CHAIRPERSON
+  SECRETARY
+  CREDIT_OFFICER
+  MEMBER
+}
+
+enum GroupType {
+  CHAMA
+  SACCO
+}
+
+enum SaccoEntryKind {
+  SHARE_CAPITAL
+  DEPOSIT
+  WITHDRAWAL
+}
+
+enum SaccoAccountType {
+  BOSA
+  FOSA
+}
+
+enum LoanCalculationMethod {
+  FLAT
+  REDUCING_BALANCE
+}
+
+enum PersonalActivityKind {
+  SAVING
+  INVESTMENT
+  INCOME
+  EXPENSE
+}
+
+enum PaymentMethod {
+  MPESA
+  BANK
+  CASH
+}
+
+enum LoanStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum DarajaPaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum DarajaShortcodeType {
+  PAYBILL
+  TILL
+}
+
+enum LedgerSide {
+  DEBIT
+  CREDIT
+}
+
+enum LedgerAccount {
+  GROUP_CASH
+  MEMBER_CONTRIBUTIONS
+}
+
+model User {
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  name                String
+  phone               String?
+  passwordHash        String
+  profilePhotoData    String?              @db.Text
+  tokenVersion        Int                  @default(0)
+  createdAt           DateTime             @default(now())
+  memberships         GroupMember[]
+  contributions       Contribution[]       @relation("RecordedContributions")
+  loanDecisions       Loan[]               @relation("LoanDecisions")
+  auditEvents         AuditEvent[]
+  invitations         MemberInvitation[]   @relation("InvitedMembers")
+  sentInvitations     MemberInvitation[]   @relation("InvitationSenders")
+  initiatedPayments   DarajaPayment[]      @relation("DarajaPaymentInitiator")
+  passwordResetTokens PasswordResetToken[]
+  personalGoals       PersonalGoal[]
+  personalActivities  PersonalActivity[]
+  remindersCreated    Reminder[]           @relation("ReminderCreator")
+  notifications       UserNotification[]
+  saccoEntries        SaccoEntry[]         @relation("RecordedSaccoEntries")
+  saccoLoanProducts   SaccoLoanProduct[]   @relation("CreatedSaccoLoanProducts")
+}
+
+model Group {
+  id                  String               @id @default(uuid())
+  name                String
+  type                GroupType            @default(CHAMA)
+  currency            String               @default("KES")
+  createdAt           DateTime             @default(now())
+  members             GroupMember[]
+  contributions       Contribution[]
+  loans               Loan[]
+  savingsGoals        SavingsGoal[]
+  ledger              LedgerTransaction[]
+  auditEvents         AuditEvent[]
+  invitations         MemberInvitation[]
+  darajaConfiguration DarajaConfiguration?
+  darajaPayments      DarajaPayment[]
+  reminders           Reminder[]
+  saccoEntries        SaccoEntry[]
+  saccoLoanProducts   SaccoLoanProduct[]
+}
+
+model GroupMember {
+  id             String          @id @default(uuid())
+  groupId        String
+  userId         String?
+  name           String
+  phone          String
+  role           GroupRole       @default(MEMBER)
+  joinedAt       DateTime        @default(now())
+  group          Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  contributions  Contribution[]
+  loans          Loan[]
+  savingsGoals   SavingsGoal[]
+  darajaPayments DarajaPayment[]
+  saccoEntries   SaccoEntry[]
+
+  @@unique([groupId, phone])
+  @@index([groupId, name])
+  @@index([userId])
+}
+
+model SaccoEntry {
+  id             String           @id @default(uuid())
+  groupId        String
+  memberId       String
+  recordedById   String
+  kind           SaccoEntryKind
+  accountType    SaccoAccountType
+  amountMinor    BigInt
+  reference      String           @unique
+  idempotencyKey String           @unique
+  note           String?
+  createdAt      DateTime         @default(now())
+  group          Group            @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  member         GroupMember      @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  recordedBy     User             @relation("RecordedSaccoEntries", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@index([groupId, createdAt])
+  @@index([memberId, createdAt])
+  @@index([groupId, kind, createdAt])
+}
+
+model SaccoLoanProduct {
+  id                String                @id @default(uuid())
+  groupId           String
+  name              String                @db.VarChar(100)
+  calculationMethod LoanCalculationMethod
+  annualInterestBps Int
+  termMonths        Int
+  createdById       String
+  createdAt         DateTime              @default(now())
+  group             Group                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy         User                  @relation("CreatedSaccoLoanProducts", fields: [createdById], references: [id], onDelete: Restrict)
+  loans             Loan[]
+
+  @@unique([groupId, name])
+  @@index([groupId, createdAt])
+}
+
+model MemberInvitation {
+  id             String    @id @default(uuid())
+  groupId        String
+  invitedById    String
+  email          String
+  name           String
+  phone          String
+  role           GroupRole @default(MEMBER)
+  tokenHash      String    @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  group          Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invitedBy      User      @relation("InvitationSenders", fields: [invitedById], references: [id], onDelete: Restrict)
+  acceptedUser   User?     @relation("InvitedMembers", fields: [acceptedUserId], references: [id], onDelete: SetNull)
+  acceptedUserId String?
+
+  @@index([groupId, email, expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model PersonalGoal {
+  id          String               @id @default(uuid())
+  userId      String
+  title       String               @db.VarChar(100)
+  kind        PersonalActivityKind
+  targetMinor BigInt
+  targetDate  DateTime
+  createdAt   DateTime             @default(now())
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities  PersonalActivity[]
+
+  @@index([userId, targetDate])
+}
+
+model PersonalActivity {
+  id          String               @id @default(uuid())
+  userId      String
+  goalId      String?
+  title       String               @db.VarChar(120)
+  kind        PersonalActivityKind
+  amountMinor BigInt
+  occurredAt  DateTime             @default(now())
+  createdAt   DateTime             @default(now())
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal        PersonalGoal?        @relation(fields: [goalId], references: [id], onDelete: SetNull)
+
+  @@index([userId, occurredAt])
+  @@index([goalId])
+}
+
+model Reminder {
+  id            String             @id @default(uuid())
+  creatorId     String
+  groupId       String?
+  title         String             @db.VarChar(120)
+  message       String             @db.VarChar(500)
+  dueAt         DateTime
+  emailEnabled  Boolean            @default(false)
+  smsEnabled    Boolean            @default(false)
+  processedAt   DateTime?
+  createdAt     DateTime           @default(now())
+  creator       User               @relation("ReminderCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  group         Group?             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  notifications UserNotification[]
+
+  @@index([processedAt, dueAt])
+  @@index([groupId, dueAt])
+  @@index([creatorId, dueAt])
+}
+
+model UserNotification {
+  id                  String    @id @default(uuid())
+  userId              String
+  reminderId          String?
+  title               String    @db.VarChar(120)
+  message             String    @db.VarChar(500)
+  emailEnabled        Boolean   @default(false)
+  smsEnabled          Boolean   @default(false)
+  emailSentAt         DateTime?
+  smsSentAt           DateTime?
+  deliveryAttemptedAt DateTime?
+  deliveryError       String?   @db.VarChar(500)
+  readAt              DateTime?
+  createdAt           DateTime  @default(now())
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminder            Reminder? @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([emailEnabled, emailSentAt])
+  @@index([smsEnabled, smsSentAt])
+}
+
+model Contribution {
+  id              String         @id @default(uuid())
+  groupId         String
+  memberId        String
+  savingsGoalId   String?
+  recordedById    String
+  amountMinor     BigInt
+  method          PaymentMethod
+  reference       String         @unique
+  idempotencyKey  String         @unique
+  note            String?
+  darajaPaymentId String?        @unique
+  createdAt       DateTime       @default(now())
+  group           Group          @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  member          GroupMember    @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  savingsGoal     SavingsGoal?   @relation(fields: [savingsGoalId], references: [id], onDelete: SetNull)
+  recordedBy      User           @relation("RecordedContributions", fields: [recordedById], references: [id], onDelete: Restrict)
+  darajaPayment   DarajaPayment? @relation(fields: [darajaPaymentId], references: [id], onDelete: Restrict)
+
+  @@index([groupId, createdAt])
+  @@index([memberId, createdAt])
+  @@index([savingsGoalId])
+}
+
+model DarajaConfiguration {
+  id                      String              @id @default(uuid())
+  groupId                 String              @unique
+  shortcode               String
+  shortcodeType           DarajaShortcodeType @default(PAYBILL)
+  consumerKeyEncrypted    String
+  consumerSecretEncrypted String
+  passkeyEncrypted        String
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  group                   Group               @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model DarajaPayment {
+  id                  String              @id @default(uuid())
+  groupId             String
+  memberId            String
+  initiatedById       String
+  savingsGoalId       String?
+  amountMinor         BigInt
+  phone               String
+  callbackToken       String              @unique
+  merchantRequestId   String?
+  checkoutRequestId   String?             @unique
+  callbackResultCode  Int?
+  callbackAmountMinor BigInt?
+  callbackPhone       String?
+  callbackReceipt     String?
+  status              DarajaPaymentStatus @default(PENDING)
+  resultDescription   String?
+  mpesaReceipt        String?             @unique
+  createdAt           DateTime            @default(now())
+  completedAt         DateTime?
+  group               Group               @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  member              GroupMember         @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  initiatedBy         User                @relation("DarajaPaymentInitiator", fields: [initiatedById], references: [id], onDelete: Restrict)
+  savingsGoal         SavingsGoal?        @relation(fields: [savingsGoalId], references: [id], onDelete: SetNull)
+  contribution        Contribution?
+
+  @@index([groupId, createdAt])
+  @@index([memberId, createdAt])
+}
+
+model Loan {
+  id          String            @id @default(uuid())
+  groupId     String
+  memberId    String
+  amountMinor BigInt
+  purpose     String
+  status      LoanStatus        @default(PENDING)
+  createdAt   DateTime          @default(now())
+  decidedAt   DateTime?
+  decidedById String?
+  productId   String?
+  group       Group             @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  member      GroupMember       @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  decidedBy   User?             @relation("LoanDecisions", fields: [decidedById], references: [id], onDelete: Restrict)
+  product     SaccoLoanProduct? @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([groupId, status, createdAt])
+}
+
+model SavingsGoal {
+  id             String          @id @default(uuid())
+  groupId        String
+  memberId       String?
+  title          String          @db.VarChar(80)
+  targetMinor    BigInt
+  startsAt       DateTime
+  deadline       DateTime
+  createdAt      DateTime        @default(now())
+  group          Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  member         GroupMember?    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  contributions  Contribution[]
+  darajaPayments DarajaPayment[]
+
+  @@index([groupId, deadline])
+  @@index([memberId, deadline])
+}
+
+model LedgerTransaction {
+  id          String        @id @default(uuid())
+  groupId     String
+  reference   String        @unique
+  description String
+  currency    String
+  amountMinor BigInt
+  createdAt   DateTime      @default(now())
+  group       Group         @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  entries     LedgerEntry[]
+
+  @@index([groupId, createdAt])
+}
+
+model LedgerEntry {
+  id            String            @id @default(uuid())
+  transactionId String
+  account       LedgerAccount
+  side          LedgerSide
+  amountMinor   BigInt
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+
+  @@index([transactionId])
+}
+
+model AuditEvent {
+  id         String   @id @default(uuid())
+  groupId    String
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  createdAt  DateTime @default(now())
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  actor      User     @relation(fields: [acto
