@@ -250,7 +250,17 @@ export type HomeInitialData = {
   saccoLoanProducts: SaccoLoanProduct[];
 };
 
-export default function Home({ initialData }: { initialData: HomeInitialData }) {
+export default function Home({
+  initialData,
+  initialAuthMode,
+  initialLoadError,
+  initialShowLanding,
+}: {
+  initialData: HomeInitialData;
+  initialAuthMode: "login" | "register";
+  initialLoadError: string | null;
+  initialShowLanding: boolean;
+}) {
   const [account, setAccount] = useState<Account | null>(initialData.user);
   const [workspace, setWorkspace] = useState<Workspace | null>(initialData.workspace);
   const [memberInvitations, setMemberInvitations] = useState<MemberInvitation[] | null>(null);
@@ -263,7 +273,8 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
   const [saccoWorkspace, setSaccoWorkspace] = useState<SaccoWorkspace>(initialData.saccoWorkspace);
   const [saccoLoanProducts, setSaccoLoanProducts] = useState<SaccoLoanProduct[]>(initialData.saccoLoanProducts);
   const [authState, setAuthState] = useState<"signed-out" | "signed-in">(initialData.user ? "signed-in" : "signed-out");
-  const [authMode, setAuthMode] = useState<"login" | "register" | "reset">("login");
+  const [authMode, setAuthMode] = useState<"login" | "register" | "reset">(initialAuthMode);
+  const [showLanding, setShowLanding] = useState(initialShowLanding);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [darajaConfig, setDarajaConfig] = useState<DarajaConfig | null>(null);
@@ -278,7 +289,7 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
   const [modal, setModal] = useState<ModalKind>(null);
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(initialLoadError ?? "");
   const [authMessage, setAuthMessage] = useState("");
   const [passwordResetToken, setPasswordResetToken] = useState("");
   const [busy, setBusy] = useState(false);
@@ -586,6 +597,7 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
   const pageTitle = section === "Overview" ? `Welcome, ${account?.name.split(" ")[0] ?? ""}` : section;
 
   function flipAuthCard(mode: "login" | "register" | "reset") {
+    setShowLanding(false);
     setAuthMode(mode);
     setError("");
     setAuthMessage("");
@@ -1034,8 +1046,60 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
   }
 
   if (authState === "signed-out") {
+    if (showLanding) {
+      return (
+        <main className="landing-screen">
+          <header className="landing-header">
+            <Brand />
+            <nav aria-label="Main navigation" className="landing-nav">
+              <a href="#how-it-works">How it works</a>
+              <a href="#features">What you can do</a>
+            </nav>
+            <div className="landing-actions">
+              <button className="landing-login" onClick={() => flipAuthCard("login")} type="button">Sign in</button>
+              <button className="button button-primary landing-signup" onClick={() => flipAuthCard("register")} type="button">Get started <ArrowRight size={15} /></button>
+            </div>
+          </header>
+          <section className="landing-hero">
+            <div className="landing-copy">
+              <span className="landing-kicker"><span /> A clearer way to grow together</span>
+              <h1>Make good money habits a <em>group effort.</em></h1>
+              <p>Bring your chama, SACCO, and personal plans into one calm, clear workspace. Track what matters, celebrate progress, and keep everyone moving in the same direction.</p>
+              {initialLoadError && <p className="landing-load-error" role="alert">{initialLoadError}</p>}
+              <div className="landing-hero-actions">
+                <button className="button button-primary landing-cta" onClick={() => flipAuthCard("register")} type="button">Create your free workspace <ArrowRight size={17} /></button>
+                <button className="landing-secondary-cta" onClick={() => flipAuthCard("login")} type="button">I already have an account</button>
+              </div>
+              <div className="landing-trust"><ShieldCheck size={16} /><span>Your records stay private to your account and workspace.</span></div>
+            </div>
+            <div aria-label="A preview of a group savings dashboard" className="landing-preview">
+              <div className="preview-topline"><span className="preview-brand-mark"><span /><span /><span /><span /></span><span>JIRANI CIRCLE</span><span className="preview-status"><i /> ON TRACK</span></div>
+              <div className="preview-title"><div><small>GROUP OVERVIEW</small><strong>Good progress, together.</strong></div><span className="preview-period">THIS MONTH</span></div>
+              <div className="preview-total"><small>CONTRIBUTIONS RECORDED</small><strong>KES 84,500</strong><span><CheckCircle2 size={14} /> 12 members contributing</span></div>
+              <div className="preview-chart" aria-hidden="true"><div className="preview-chart-labels"><span>Progress this month</span><span>+18%</span></div><div className="preview-bars">{[38, 51, 45, 68, 61, 82, 72, 100].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div><div className="preview-chart-axis"><span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span></div></div>
+              <div className="preview-goal"><span className="preview-goal-icon"><Target size={17} /></span><span><small>SHARED SAVINGS GOAL</small><strong>December getaway</strong></span><span className="preview-goal-progress"><strong>68%</strong><i><b /></i></span></div>
+              <div className="preview-caption"><Users size={15} /> Built for real groups, clear records, and shared goals.</div>
+            </div>
+          </section>
+          <section className="landing-benefits" id="features">
+            <div className="landing-section-heading"><span className="eyebrow">EVERYTHING IN ONE PLACE</span><h2>Less chasing. More progress.</h2><p>Useful tools for managing money together and building your own financial habits.</p></div>
+            <div className="landing-benefit-grid">
+              <article><span className="landing-benefit-icon"><Users size={19} /></span><h3>Keep your group in sync</h3><p>See members, contributions, and loan requests together, with clear roles and records.</p></article>
+              <article><span className="landing-benefit-icon"><Target size={19} /></span><h3>Make goals feel achievable</h3><p>Set personal or shared savings targets and follow progress over time.</p></article>
+              <article><span className="landing-benefit-icon"><Wallet size={19} /></span><h3>Understand your activity</h3><p>Keep personal finances separate, and review the activity that matters to you.</p></article>
+            </div>
+          </section>
+          <section className="landing-how" id="how-it-works">
+            <div><span className="eyebrow">GET STARTED IN MINUTES</span><h2>Your next step is simple.</h2><p>Create an account, choose how you want to use Wealth Sketch, and invite your group when you’re ready.</p></div>
+            <ol><li><span>01</span><div><strong>Create your account</strong><p>Sign up with your email and set up a secure password.</p></div></li><li><span>02</span><div><strong>Start personal or group tracking</strong><p>Build your own plan, or create a Chama or SACCO workspace.</p></div></li><li><span>03</span><div><strong>Grow together</strong><p>Record activity, set goals, and keep your members in the loop.</p></div></li></ol>
+          </section>
+          <footer className="landing-footer"><Brand /><span>Clearer records. Stronger money habits.</span><button onClick={() => flipAuthCard("register")} type="button">Get started <ArrowRight size={14} /></button></footer>
+        </main>
+      );
+    }
     return (
       <div className="auth-screen">
+        {initialLoadError && <div className="error-banner auth-load-error" role="alert">{initialLoadError}</div>}
         <div className="auth-flip">
           <div className={`auth-flip-inner ${authMode !== "login" ? "auth-flip-turned" : ""}`}>
             <section aria-hidden={authMode !== "login"} className={`auth-card-face auth-card-face-front ${authMode !== "login" ? "auth-card-face-inactive" : ""}`} inert={authMode !== "login"}>

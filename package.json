@@ -12,7 +12,7 @@
     "start": "concurrently -k -n API,WEB -c green,blue \"npm:start:api\" \"npm:start:web\"",
     "start:api": "npm --prefix api run start",
     "start:web": "next start",
-    "db:generate": "npm --prefix api run db:generate",
+    "db:generate": "node -e \"const fs=require('fs');const path=require('path');const dirs=[path.join(process.cwd(),'node_modules','.prisma','client'),path.join(process.cwd(),'api','node_modules','.prisma','client')];for (const dir of dirs) { if (!fs.existsSync(dir)) continue; for (const entry of fs.readdirSync(dir)) { if (entry.includes('.tmp')) fs.rmSync(path.join(dir, entry), { recursive: true, force: true }); } }\" && npm --prefix api run db:generate",
     "db:migrate": "npm --prefix api run db:migrate",
     "db:deploy": "npm --prefix api run db:deploy",
     "lint": "eslint ."

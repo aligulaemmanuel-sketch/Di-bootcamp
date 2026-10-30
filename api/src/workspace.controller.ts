@@ -733,7 +733,6 @@ export class WorkspaceController {
         createdAt: true,
         expiresAt: true,
         acceptedAt: true,
-        revokedAt: true,
       },
     });
     const now = new Date();
@@ -741,8 +740,6 @@ export class WorkspaceController {
       ...invitation,
       status: invitation.acceptedAt
         ? "ACCEPTED"
-        : invitation.revokedAt
-          ? "REVOKED"
         : invitation.expiresAt <= now
           ? "EXPIRED"
           : "PENDING",
@@ -1145,7 +1142,7 @@ export class WorkspaceController {
     }
     const membership = await this.prisma.groupMember.findFirst({
       where: { userId: user.sub, revokedAt: null, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
-t      orderBy: { joinedAt: "asc" },
+      orderBy: { joinedAt: "asc" },
       include: { group: true },
     });
     if (!membership) throw new NotFoundException("Your account is not linked to a group.");

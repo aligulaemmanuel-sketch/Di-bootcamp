@@ -105,9 +105,28 @@ async function getInitialData(resetRequested: boolean): Promise<HomeInitialData>
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ reset?: string | string[] }>;
+  searchParams: Promise<{ auth?: string | string[]; invite?: string | string[]; reset?: string | string[] }>;
 }) {
   const params = await searchParams;
-  const initialData = await getInitialData(Boolean(params.reset));
-  return <Home initialData={initialData} />;
+  let initialData: HomeInitialData;
+  let initialLoadError: string | null = null;
+  try {
+    initialData = await getInitialData(Boolean(params.reset));
+  } catch (reason) {
+    initialData = emptyInitialData();
+    initialLoadError = reason instanceof Error
+      ? reason.message
+      : "We couldn't load your account right now. Please try again.";
+  }
+  const requestedAuth = Array.isArray(params.auth) ? params.auth[0] : params.auth;
+  const initialAuthMode = requestedAuth === "register" || requestedAuth === "signup" ? "register" : "login";
+  const hasAuthIntent = Boolean(params.reset || params.invite || requestedAuth);
+  return (
+    <Home
+      initialAuthMode={initialAuthMode}
+      initialData={initialData}
+      initialLoadError={initialLoadError}
+      initialShowLanding={!initialData.user && !hasAuthIntent}
+    />
+  );
 }

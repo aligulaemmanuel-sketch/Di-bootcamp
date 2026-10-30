@@ -49,10 +49,12 @@ function createInvitationService(expiresAt: Date, existingUser?: {
       },
     },
     groupMember: {
+      findFirst: async () => null,
       create: async ({ data }: { data: typeof members[number] }) => {
         members.push(data);
         return data;
       },
+      updateMany: async () => ({ count: 1 }),
     },
     auditEvent: {
       create: async ({ data }: { data: typeof auditEvents[number] }) => {
