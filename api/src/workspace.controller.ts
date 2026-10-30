@@ -20,7 +20,7 @@ import { randomUUID } from "node:crypto";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
 import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, UpdateProfileDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
-import { Prisma } from "@prisma/client";
+import { GroupRole, Prisma } from "@prisma/client";
 import { calculateGoalDiscipline } from "./savings-goals";
 import { createInvitationToken } from "./invitation-token";
 import { MailService } from "./mail.service";
@@ -91,6 +91,9 @@ export class WorkspaceController {
 
   @Post("groups")
   async createGroup(@CurrentUser() user: SessionUser, @Body() input: CreateGroupDto) {
+    if (input.constitutionSigned !== true) {
+      throw new BadRequestException("A Chama or SACCO workspace must be signed by the designated officials before it can be created.");
+    }
     const account = await this.prisma.user.findUnique({
       where: { id: user.sub },
       select: { name: true },
@@ -760,7 +763,7 @@ export class WorkspaceController {
     });
     if (!target) throw new NotFoundException("Active group member not found.");
 
-    const managerRoles = group.type === "SACCO"
+    const managerRoles: GroupRole[] = group.type === "SACCO"
       ? ["CHAIRPERSON", "SECRETARY"]
       : ["OWNER", "ADMIN", "TREASURER"];
     if (managerRoles.includes(target.role)) {

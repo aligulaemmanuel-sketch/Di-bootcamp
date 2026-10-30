@@ -30,6 +30,10 @@ export class RegisterDto {
   @IsString()
   @Matches(/^(CHAMA|SACCO)$/)
   groupType?: "CHAMA" | "SACCO";
+
+  @IsOptional()
+  @IsBoolean()
+  constitutionSigned?: boolean;
 }
 
 export class CreateGroupDto {
@@ -45,6 +49,9 @@ export class CreateGroupDto {
   @IsString()
   @Matches(/^(?:\+?254|0)?[17]\d{8}$/)
   phone!: string;
+
+  @IsBoolean()
+  constitutionSigned!: boolean;
 }
 
 export class CreateSaccoEntryDto {

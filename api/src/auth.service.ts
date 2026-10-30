@@ -32,6 +32,9 @@ export class AuthService {
     if (input.groupType === "SACCO" && !input.groupName) {
       throw new BadRequestException("Enter a SACCO name and phone number to create a SACCO workspace.");
     }
+    if (input.groupName && input.phone && input.constitutionSigned !== true) {
+      throw new BadRequestException("Confirm that the Chama or SACCO constitution or bylaws have been signed by the designated officials before creating the workspace.");
+    }
     const phone = input.phone
       ? input.phone.startsWith("+") ? input.phone : input.phone.startsWith("0") ? `+254${input.phone.slice(1)}` : `+${input.phone}`
       : null;

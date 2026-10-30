@@ -745,7 +745,7 @@ export default function Home({
     setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const body: Record<string, string> = Object.fromEntries(
+      const body: Record<string, string | boolean> = Object.fromEntries(
         [...form.entries()].map(([key, value]) => [key, String(value)]),
       );
       const confirmation = body.confirmPassword;
@@ -757,8 +757,13 @@ export default function Home({
         delete body.groupName;
         delete body.phone;
         delete body.groupType;
+        delete body.constitutionSigned;
       } else if (authMode === "register" && !invitationToken) {
         body.groupType = signupGroupType;
+        body.constitutionSigned = body.constitutionSigned === "on" || body.constitutionSigned === "true";
+        if (body.groupName && body.phone && body.constitutionSigned !== true) {
+          throw new Error("Confirm that the Chama or SACCO constitution or bylaws have been signed before creating the workspace.");
+        }
       }
       if (invitationToken) body.token = invitationToken;
       const endpoint = invitationToken
@@ -978,12 +983,17 @@ export default function Home({
   async function submitGroupWorkspace(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const signed = form.get("constitutionSigned") === "on" || form.get("constitutionSigned") === "true";
+    if (!signed) {
+      setError("Confirm that the Chama or SACCO constitution or bylaws have been signed before creating the workspace.");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
       const created = await api<GroupWorkspace>("groups", {
         method: "POST",
-        body: JSON.stringify(Object.fromEntries(form.entries())),
+        body: JSON.stringify({ ...Object.fromEntries(form.entries()), constitutionSigned: true }),
       });
       await loadAccountWorkspaces();
       await selectWorkspace(created.id);
@@ -1132,6 +1142,7 @@ export default function Home({
                       <label>Organization type<select onChange={(event) => setSignupGroupType(event.target.value as "CHAMA" | "SACCO")} value={signupGroupType}><option value="CHAMA">Chama</option><option value="SACCO">SACCO</option></select></label>
                       <label>{signupGroupType === "SACCO" ? "SACCO name" : "Chama name"}<input autoComplete="organization" name="groupName" placeholder={signupGroupType === "SACCO" ? "e.g. Upendo SACCO" : "e.g. Jirani Investment Circle"} required /></label>
                       <label>Phone number<input autoComplete="tel" name="phone" placeholder="0712 345 678" required /></label>
+                      <label className="checkbox-field"><input name="constitutionSigned" required type="checkbox" /> I confirm this {signupGroupType === "SACCO" ? "SACCO" : "Chama"} has a signed constitution or bylaws and designated officials.</label>
                     </>}
                     <label>Email address<input autoComplete="email" name="email" placeholder="you@example.com" required type="email" /></label>
                   </>}
@@ -1519,6 +1530,7 @@ export default function Home({
         <label>Organization type<select defaultValue="CHAMA" name="type"><option value="CHAMA">Chama</option><option value="SACCO">SACCO</option></select></label>
         <label>Organization name<input autoFocus maxLength={100} minLength={2} name="name" placeholder="e.g. Upendo SACCO" required /></label>
         <label>Contact phone<input autoComplete="tel" name="phone" placeholder="0712 345 678" required /></label>
+        <label className="checkbox-field"><input name="constitutionSigned" required type="checkbox" /> I confirm this Chama or SACCO has a signed constitution or bylaws and designated officials.</label>
         <p className="form-note"><ShieldCheck size={15} /> Chama workspaces and SACCO workspaces have separate records and role permissions.</p>
         {error && <p className="inline-error" role="alert">{error}</p>}
         <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled={busy} type="submit"><Plus size={15} /> Create workspace</button></div>
