@@ -56,7 +56,7 @@ export class SessionGuard implements CanActivate {
       request.user.selectedGroupId = null;
     } else if (selectedWorkspace) {
       const membership = await this.prisma.groupMember.findFirst({
-        where: { userId: request.user.sub, groupId: selectedWorkspace },
+        where: { userId: request.user.sub, groupId: selectedWorkspace, revokedAt: null },
         select: { groupId: true },
       });
       if (!membership) throw new ForbiddenException("You do not belong to the selected group workspace.");
@@ -64,7 +64,7 @@ export class SessionGuard implements CanActivate {
       request.user.personalWorkspace = false;
     } else {
       const membership = await this.prisma.groupMember.findFirst({
-        where: { userId: request.user.sub },
+        where: { userId: request.user.sub, revokedAt: null },
         orderBy: { joinedAt: "asc" },
         select: { groupId: true },
       });

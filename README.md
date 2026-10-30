@@ -5,7 +5,10 @@ Wealth Sketch is a server-backed group finance application built with a Next.js 
 ## Current capabilities
 
 - Personal-only accounts and multiple group memberships, with an explicit workspace switcher
-- Group-scoped Owner, Admin, Treasurer, and Member roles and authorization checks
+- Secure HTTP-only session cookie and access token expire after seven days
+- Group-scoped Chama roles and SACCO Chairperson, Secretary, Treasurer, Credit Officer, and Member permissions
+- Separate SACCO workspaces with manually tracked BOSA/FOSA share-capital, deposit, and withdrawal entries
+- Configurable SACCO loan products and member loan applications with recorded approval decisions
 - One-time, expiring email password-reset links with session revocation
 - Group-scoped member roster and email invitations that can add existing accounts to another group
 - Manual contribution records persisted with balanced double-entry ledger entries and an audit record
@@ -22,6 +25,8 @@ Daraja support is **sandbox-only** and does not process live payments. A contrib
 Savings-goal progress includes only contribution records explicitly assigned to that goal and within its date range. Each contribution can be assigned to at most one goal. The discipline score compares recorded savings with the amount expected by the current date; the suggested weekly pace and projected completion date are estimates based on the remaining target and observed pace. These are planning aids, not live or independently verified cash balances.
 
 Personal finance entries are private tracking records, not bank balances, investment valuations, or executed transactions. Reminders are one-time and user-scheduled; group-wide reminders are restricted to group managers. In-app alerts need no external provider. Email reminders use the SMTP settings; SMS reminders require `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_FROM_NUMBER`. Delivery errors remain visible in the alert panel and API logs.
+
+SACCO workspaces are isolated from Chama contribution and payment flows. BOSA/FOSA values are manual records, not verified account balances; share capital is accepted only under BOSA, but withdrawals and account eligibility rules are not enforced. Loan products retain a stated method, annual interest rate, and term for reference only. The MVP does not calculate amortization or interest, manage guarantors or payroll check-off, post SACCO double-entry journals, reconcile transactions, or generate SASRA/regulatory returns. KYC documents and sensitive identity data are not collected. Production payment collection and disbursements are not available for SACCOs.
 
 ## Requirements
 
@@ -70,7 +75,7 @@ Personal finance entries are private tracking records, not bank balances, invest
    npm run db:migrate
    ```
 
-   The migrations include the initial schema, savings goals, member invitations, Daraja STK Push payments, and password reset. For a **new, empty database**, run the commands above as shown. For a database that already has Wealth Sketch tables but no Prisma migration history, do not run migrations blindly: take a verified backup and compare the live schema with `20261026090000_initial_schema` first. Only if it exactly matches that baseline, mark it as applied from the `api` directory with `npx prisma migrate resolve --applied 20261026090000_initial_schema`, then run `npx prisma migrate deploy` to apply later migrations. If the schema differs, stop and reconcile it before deploying; do not mark the baseline applied based on assumption.
+   The migrations include the initial schema, savings goals, member invitations, Daraja STK Push payments, password reset, and SACCO workspaces. For a **new, empty database**, run the commands above as shown. For a database that already has Wealth Sketch tables but no Prisma migration history, do not run migrations blindly: take a verified backup and compare the live schema with `20261026090000_initial_schema` first. Only if it exactly matches that baseline, mark it as applied from the `api` directory with `npx prisma migrate resolve --applied 20261026090000_initial_schema`, then run `npx prisma migrate deploy` to apply later migrations. If the schema differs, stop and reconcile it before deploying; do not mark the baseline applied based on assumption.
 
 4. Start the web application and API:
 

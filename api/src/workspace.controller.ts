@@ -47,7 +47,7 @@ export class WorkspaceController {
       : undefined;
 
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub },
+      where: { userId: user.sub, revokedAt: null },
       select: { groupId: true },
     });
     const updated = await this.prisma.$transaction(async (tx) => {
@@ -61,7 +61,7 @@ export class WorkspaceController {
         select: { id: true, name: true, email: true, phone: true, profilePhotoData: true },
       });
       if (name !== undefined) {
-        await tx.groupMember.updateMany({ where: { userId: user.sub }, data: { name } });
+        await tx.groupMember.updateMany({ where: { userId: user.sub, revokedAt: null }, data: { name } });
       }
       for (const membership of memberships) {
         await tx.auditEvent.create({
@@ -82,7 +82,7 @@ export class WorkspaceController {
   @Get("workspaces")
   async listWorkspaces(@CurrentUser() user: SessionUser) {
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub },
+      where: { userId: user.sub, revokedAt: null },
       orderBy: { joinedAt: "asc" },
       select: { groupId: true, role: true, group: { select: { id: true, name: true, currency: true, type: true } } },
     });
@@ -409,7 +409,7 @@ export class WorkspaceController {
     const { group, role, member } = await this.getMembership(user);
     const [members, contributions, loans, contributionTotal, contributionCount, pendingLoans] = await Promise.all([
       this.prisma.groupMember.findMany({
-        where: { groupId: group.id },
+        where: { groupId: group.id, revokedAt: null },
         orderBy: [{ joinedAt: "asc" }],
         select: { id: true, name: true, phone: true, role: true, joinedAt: true },
       }),
@@ -536,7 +536,7 @@ export class WorkspaceController {
         _count: { _all: true },
       }),
       this.prisma.groupMember.findMany({
-        where: { groupId: group.id },
+        where: { groupId: group.id, revokedAt: null },
         select: { id: true, name: true },
       }),
     ]);
@@ -657,7 +657,7 @@ export class WorkspaceController {
     }
     const title = input.title.trim();
     if (title.length < 2) throw new BadRequestException("The goal name must contain at least two characters.");
-    if (input.memberId && !(await this.prisma.groupMember.findFirst({ where: { id: input.memberId, groupId: group.id }, select: { id: true } }))) {
+    if (input.memberId && !(await this.prisma.groupMember.findFirst({ where: { id: input.memberId, groupId: group.id, revokedAt: null }, select: { id: true } }))) {
       throw new BadRequestException("Choose a member of your group.");
     }
     const goal = await this.prisma.$transaction(async (tx) => {
@@ -707,10 +707,91 @@ export class WorkspaceController {
   async listMembers(@CurrentUser() user: SessionUser) {
     const { group } = await this.getMembership(user);
     return this.prisma.groupMember.findMany({
-      where: { groupId: group.id },
+      where: { groupId: group.id, revokedAt: null },
       orderBy: { joinedAt: "desc" },
       select: { id: true, name: true, phone: true, role: true, joinedAt: true },
     });
+  }
+
+  @Get("invitations")
+  async listInvitations(@CurrentUser() user: SessionUser) {
+    const { group, role } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+
+    const invitations = await this.prisma.memberInvitation.findMany({
+      where: { groupId: group.id },
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: 100,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
+        expiresAt: true,
+        acceptedAt: true,
+        revokedAt: true,
+      },
+    });
+    const now = new Date();
+    return invitations.map((invitation) => ({
+      ...invitation,
+      status: invitation.acceptedAt
+        ? "ACCEPTED"
+        : invitation.revokedAt
+          ? "REVOKED"
+        : invitation.expiresAt <= now
+          ? "EXPIRED"
+          : "PENDING",
+    }));
+  }
+
+  @Delete("members/:id")
+  async revokeMember(@CurrentUser() user: SessionUser, @Param("id") id: string) {
+    const { group, role, member: actor } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+    if (id === actor.id) throw new BadRequestException("You cannot remove your own membership.");
+
+    const target = await this.prisma.groupMember.findFirst({
+      where: { id, groupId: group.id, revokedAt: null },
+      select: { id: true, userId: true, role: true },
+    });
+    if (!target) throw new NotFoundException("Active group member not found.");
+
+    const managerRoles = group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"];
+    if (managerRoles.includes(target.role)) {
+      const activeManagers = await this.prisma.groupMember.count({
+        where: { groupId: group.id, revokedAt: null, role: { in: managerRoles } },
+      });
+      if (activeManagers <= 1) {
+        throw new ConflictException("The last member who can manage this workspace cannot be removed.");
+      }
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      const revoked = await tx.groupMember.updateMany({
+        where: { id: target.id, groupId: group.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+      if (revoked.count !== 1) throw new ConflictException("This membership has already been revoked.");
+      await tx.auditEvent.create({
+        data: {
+          groupId: group.id,
+          actorId: user.sub,
+          action: "MEMBER_ACCESS_REVOKED",
+          entityType: "GroupMember",
+          entityId: target.id,
+        },
+      });
+    });
+    return { success: true };
   }
 
   @Post("members")
@@ -744,7 +825,7 @@ export class WorkspaceController {
     const email = input.email.trim().toLowerCase();
     const phone = this.normalizePhone(input.phone);
     const existingMember = await this.prisma.groupMember.findFirst({
-      where: { groupId: group.id, phone },
+      where: { groupId: group.id, phone, revokedAt: null },
       select: { id: true },
     });
     if (existingMember) throw new ConflictException("That phone number is already in this group.");
@@ -808,6 +889,40 @@ export class WorkspaceController {
     return { success: true, email };
   }
 
+  @Delete("invitations/:id")
+  async revokeInvitation(@CurrentUser() user: SessionUser, @Param("id") id: string) {
+    const { group, role } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+    const invitation = await this.prisma.memberInvitation.findFirst({
+      where: { id, groupId: group.id },
+      select: { id: true, acceptedAt: true, revokedAt: true, expiresAt: true },
+    });
+    if (!invitation) throw new NotFoundException("Invitation not found.");
+    if (invitation.acceptedAt) throw new ConflictException("An accepted invitation cannot be revoked. Remove the member's access instead.");
+    if (invitation.revokedAt) return { success: true };
+    if (invitation.expiresAt <= new Date()) throw new ConflictException("This invitation has expired.");
+
+    await this.prisma.$transaction(async (tx) => {
+      const revoked = await tx.memberInvitation.updateMany({
+        where: { id: invitation.id, groupId: group.id, acceptedAt: null, revokedAt: null, expiresAt: { gt: new Date() } },
+        data: { revokedAt: new Date() },
+      });
+      if (revoked.count !== 1) throw new ConflictException("This invitation is no longer pending.");
+      await tx.auditEvent.create({
+        data: {
+          groupId: group.id,
+          actorId: user.sub,
+          action: "MEMBER_INVITATION_REVOKED",
+          entityType: "MemberInvitation",
+          entityId: invitation.id,
+        },
+      });
+    });
+    return { success: true };
+  }
+
   @Get("contributions")
   async listContributions(@CurrentUser() user: SessionUser) {
     const { group } = await this.getMembership(user);
@@ -841,7 +956,7 @@ export class WorkspaceController {
     const amountMinor = amountKes * 100n;
     const note = input.note.trim() || null;
     const member = await this.prisma.groupMember.findFirst({
-      where: { id: input.memberId, groupId: group.id },
+      where: { id: input.memberId, groupId: group.id, revokedAt: null },
       select: { id: true },
     });
     if (!member) throw new BadRequestException("Choose a member of your group.");
@@ -968,7 +1083,7 @@ export class WorkspaceController {
     if (input.productId && !product) throw new BadRequestException("Choose a loan product in this SACCO.");
     const chosenMemberId = ["OWNER", "ADMIN", "TREASURER", "CHAIRPERSON"].includes(role) ? input.memberId : ownMembership.id;
     const member = await this.prisma.groupMember.findFirst({
-      where: { id: chosenMemberId, groupId: group.id },
+      where: { id: chosenMemberId, groupId: group.id, revokedAt: null },
       select: { id: true },
     });
     if (!member) throw new BadRequestException("Choose a member of your group.");
@@ -1029,8 +1144,8 @@ export class WorkspaceController {
       throw new BadRequestException("Select a group workspace to access group records.");
     }
     const membership = await this.prisma.groupMember.findFirst({
-      where: { userId: user.sub, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
-      orderBy: { joinedAt: "asc" },
+      where: { userId: user.sub, revokedAt: null, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
+t      orderBy: { joinedAt: "asc" },
       include: { group: true },
     });
     if (!membership) throw new NotFoundException("Your account is not linked to a group.");

@@ -59,7 +59,7 @@ export class ReminderService implements OnModuleInit, OnModuleDestroy {
 
       const groupMemberships = reminder.groupId
         ? await tx.groupMember.findMany({
-          where: { groupId: reminder.groupId, userId: { not: null } },
+          where: { groupId: reminder.groupId, userId: { not: null }, revokedAt: null },
           select: { userId: true },
         })
         : [];

@@ -75,7 +75,7 @@ export class DarajaController {
       throw new BadRequestException("Select a group workspace to access M-Pesa payments.");
     }
     const membership = await this.prisma.groupMember.findFirst({
-      where: { userId: user.sub, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
+      where: { userId: user.sub, revokedAt: null, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
       orderBy: { joinedAt: "asc" },
       select: { id: true, groupId: true, role: true, group: { select: { type: true } } },
     });

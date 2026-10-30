@@ -16,7 +16,7 @@ import { ReminderService } from "./reminder.service";
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: "8h" },
+      signOptions: { expiresIn: "7d" },
     }),
   ],
   controllers: [AuthController, WorkspaceController, DarajaController],

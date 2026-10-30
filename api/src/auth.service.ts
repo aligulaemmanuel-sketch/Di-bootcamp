@@ -99,7 +99,7 @@ export class AuthService {
           where: { tokenHash },
           include: { group: true },
         });
-        if (!invitation || invitation.acceptedAt || invitation.expiresAt <= now) {
+        if (!invitation || invitation.acceptedAt || invitation.revokedAt || invitation.expiresAt <= now) {
           throw new UnauthorizedException("This invitation is invalid, expired, or already used.");
         }
 
@@ -120,22 +120,46 @@ export class AuthService {
         }
 
         const claimed = await tx.memberInvitation.updateMany({
-          where: { id: invitation.id, acceptedAt: null, expiresAt: { gt: now } },
+          where: { id: invitation.id, acceptedAt: null, revokedAt: null, expiresAt: { gt: now } },
           data: { acceptedAt: now, acceptedUserId: acceptedUser.id },
         });
         if (claimed.count !== 1) {
           throw new UnauthorizedException("This invitation is invalid, expired, or already used.");
         }
 
-        const member = await tx.groupMember.create({
-          data: {
-            groupId: invitation.groupId,
-            userId: acceptedUser.id,
-            name: invitation.name,
-            phone: invitation.phone,
-            role: invitation.role,
-          },
+        const previousMembership = await tx.groupMember.findFirst({
+          where: { groupId: invitation.groupId, phone: invitation.phone },
+          select: { id: true, revokedAt: true },
         });
+        let member: { id: string };
+        if (previousMembership) {
+          if (!previousMembership.revokedAt) {
+            throw new ConflictException("This account is already an active member of the group.");
+          }
+          const restored = await tx.groupMember.updateMany({
+            where: { id: previousMembership.id, revokedAt: { not: null } },
+            data: {
+              userId: acceptedUser.id,
+              name: invitation.name,
+              role: invitation.role,
+              revokedAt: null,
+            },
+          });
+          if (restored.count !== 1) {
+            throw new ConflictException("This membership changed while the invitation was being accepted. Try again.");
+          }
+          member = { id: previousMembership.id };
+        } else {
+          member = await tx.groupMember.create({
+            data: {
+              groupId: invitation.groupId,
+              userId: acceptedUser.id,
+              name: invitation.name,
+              phone: invitation.phone,
+              role: invitation.role,
+            },
+          });
+        }
         await tx.auditEvent.create({
           data: {
             groupId: invitation.groupId,
@@ -236,7 +260,7 @@ export class AuthService {
         where: { userId: reset.userId, id: { not: reset.id } },
       });
       const memberships = await tx.groupMember.findMany({
-        where: { userId: reset.userId },
+        where: { userId: reset.userId, revokedAt: null },
         select: { groupId: true },
       });
       for (const membership of memberships) {
@@ -253,4 +277,7 @@ export class AuthService {
     });
   }
 
-  private isUniqueError(error: 
+  private isUniqueError(error: unknown): boolean {
+    return typeof error === "object" && error !== null && "code" in error && error.code === "P2002";
+  }
+}

@@ -12,7 +12,7 @@ const cookieOptions = (secure: boolean) => ({
   secure,
   sameSite: "lax" as const,
   path: "/",
-  maxAge: 8 * 60 * 60 * 1000,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
 @Controller("api/auth")
@@ -102,7 +102,7 @@ export class AuthController {
     });
     if (!account) return { user: null };
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub },
+      where: { userId: user.sub, revokedAt: null },
       orderBy: { joinedAt: "asc" },
       select: { group: { select: { id: true, name: true, currency: true, type: true } }, role: true },
     });

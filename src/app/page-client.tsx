@@ -47,6 +47,18 @@ type Member = {
   joinedAt: string;
 };
 
+type MemberInvitation = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: Member["role"];
+  createdAt: string;
+  expiresAt: string;
+  acceptedAt: string | null;
+  status: "PENDING" | "ACCEPTED" | "EXPIRED";
+};
+
 type Contribution = {
   id: string;
   reference: string;
@@ -241,6 +253,7 @@ export type HomeInitialData = {
 export default function Home({ initialData }: { initialData: HomeInitialData }) {
   const [account, setAccount] = useState<Account | null>(initialData.user);
   const [workspace, setWorkspace] = useState<Workspace | null>(initialData.workspace);
+  const [memberInvitations, setMemberInvitations] = useState<MemberInvitation[] | null>(null);
   const [groupWorkspaces, setGroupWorkspaces] = useState<GroupWorkspace[]>(initialData.workspaces);
   const [activeWorkspace, setActiveWorkspace] = useState(initialData.activeWorkspace);
   const [goals, setGoals] = useState<SavingsGoal[]>(initialData.goals);
@@ -316,6 +329,11 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
     }
     return response;
   }, [refreshSaccoWorkspace]);
+
+  const refreshMemberInvitations = useCallback(async () => {
+    const invitations = await api<MemberInvitation[]>("invitations");
+    setMemberInvitations(invitations);
+  }, []);
 
   const refreshAnalytics = useCallback(async (range: AnalyticsRange, signal?: AbortSignal) => {
     const result = await api<DashboardAnalyticsData>(`analytics?range=${range}`, { signal });
@@ -399,6 +417,21 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
     setProfilePhone(account.phone ?? "");
     setProfilePhoto(account.profilePhotoData);
   }, [account]);
+
+  useEffect(() => {
+    if (section !== "Members" || !workspace?.canManageMembers) {
+      setMemberInvitations(null);
+      return;
+    }
+    let active = true;
+    setMemberInvitations(null);
+    api<MemberInvitation[]>("invitations")
+      .then((invitations) => { if (active) setMemberInvitations(invitations); })
+      .catch((reason: unknown) => {
+        if (active) setError(reason instanceof Error ? reason.message : "Unable to load member invitations.");
+      });
+    return () => { active = false; };
+  }, [activeWorkspace, section, workspace?.canManageMembers]);
 
   useEffect(() => {
     window.localStorage.setItem("maliwise-dashboard-theme", dashboardTheme);
@@ -582,6 +615,7 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
         const selected = await refreshWorkspace();
         await Promise.all([
           ...(selected.group.type === "SACCO" ? [] : [refreshAnalytics(analyticsRange)]),
+          ...(section === "Members" && selected.canManageMembers ? [refreshMemberInvitations()] : []),
           refreshReminders(),
         ]);
       }
@@ -1310,11 +1344,17 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
             </div>}
           </section>}
 
-          {section === "Members" && workspace && <section className="panel full-panel">
-            <div className="panel-heading"><div><h2>Your members <span className="heading-count">{workspace.members.length}</span></h2><p>{workspace.group.type === "SACCO" ? "SACCO membership roster and assigned officer roles." : "Members with an active account in your group."}</p></div>{workspace.canManageMembers && <button className="button button-primary" onClick={() => setModal("member")}><Mail size={16} /> Invite member</button>}</div>
-            <div className="table-toolbar"><SearchField value={search} onChange={setSearch} label="Search members" /><span className="muted-small">{workspace.members.length} {workspace.group.type === "SACCO" ? "SACCO" : "group"} members</span></div>
-            <div className="table-wrap"><table><thead><tr><th>MEMBER</th><th>ROLE</th><th>PHONE</th><th>JOINED</th></tr></thead><tbody>{filteredMembers.map((member, index) => <tr key={member.id}><td><PersonCell name={member.name} detail={member.id} index={index} /></td><td><RolePill role={member.role} /></td><td>{member.phone}</td><td>{displayDate(member.joinedAt)}</td></tr>)}</tbody></table>{filteredMembers.length === 0 && <div className="empty-state">No members match your search.</div>}</div>
-          </section>}
+          {section === "Members" && workspace && <>
+            <section className="panel full-panel">
+              <div className="panel-heading"><div><h2>Your members <span className="heading-count">{workspace.members.length}</span></h2><p>{workspace.group.type === "SACCO" ? "SACCO membership roster and assigned officer roles." : "Members with an active account in your group."}</p></div>{workspace.canManageMembers && <button className="button button-primary" onClick={() => setModal("member")}><Mail size={16} /> Invite member</button>}</div>
+              <div className="table-toolbar"><SearchField value={search} onChange={setSearch} label="Search members" /><span className="muted-small">{workspace.members.length} {workspace.group.type === "SACCO" ? "SACCO" : "group"} members</span></div>
+              <div className="table-wrap"><table><thead><tr><th>MEMBER</th><th>ROLE</th><th>PHONE</th><th>JOINED</th></tr></thead><tbody>{filteredMembers.map((member, index) => <tr key={member.id}><td><PersonCell name={member.name} detail={member.id} index={index} /></td><td><RolePill role={member.role} /></td><td>{member.phone}</td><td>{displayDate(member.joinedAt)}</td></tr>)}</tbody></table>{filteredMembers.length === 0 && <div className="empty-state">No members match your search.</div>}</div>
+            </section>
+            {workspace.canManageMembers && <section className="panel full-panel">
+              <div className="panel-heading"><div><h2>Member invitations <span className="heading-count">{memberInvitations?.filter((invitation) => invitation.status === "PENDING").length ?? 0} pending</span></h2><p>Track sent invitations and whether the recipient has joined.</p></div><button className="icon-button" aria-label="Refresh invitations" disabled={memberInvitations === null} onClick={() => void refreshMemberInvitations().catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to refresh invitations."))}><RefreshCw size={17} /></button></div>
+              {memberInvitations === null ? <div className="empty-state">Loading member invitations…</div> : memberInvitations.length === 0 ? <div className="empty-state">No member invitations have been sent for this workspace.</div> : <div className="table-wrap"><table><thead><tr><th>INVITEE</th><th>ROLE</th><th>STATUS</th><th>SENT</th><th>EXPIRES</th></tr></thead><tbody>{memberInvitations.map((invitation, index) => <tr key={invitation.id}><td><PersonCell name={invitation.name} detail={invitation.email} index={index} /></td><td><RolePill role={invitation.role} /></td><td><span className={`status-pill ${invitation.status === "ACCEPTED" ? "status-success" : invitation.status === "EXPIRED" ? "status-danger" : "status-warning"}`}><i />{invitation.status === "ACCEPTED" ? "Joined" : invitation.status === "EXPIRED" ? "Expired" : "Pending"}</span></td><td>{displayDate(invitation.createdAt)}</td><td>{invitation.acceptedAt ? `Joined ${displayDate(invitation.acceptedAt)}` : displayDate(invitation.expiresAt)}</td></tr>)}</tbody></table></div>}
+            </section>}
+          </>}
 
           {section === "Sacco accounts" && workspace?.group.type === "SACCO" && <section className="panel full-panel">
             <div className="panel-heading"><div><h2>BOSA & FOSA account tracking</h2><p>Manual register only. Share-capital entries are restricted to BOSA; deposit entries may use either account type.</p></div>{workspace.canRecordSaccoEntries && <button className="button button-primary" onClick={() => setModal("saccoEntry")}><Plus size={16} /> Record manual entry</button>}</div>
@@ -1466,4 +1506,95 @@ export default function Home({ initialData }: { initialData: HomeInitialData }) 
         <label>Target date<input defaultValue={inputDate(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000))} name="targetDate" required type="date" /></label>
         <p className="form-note"><ShieldCheck size={15} /> Only your private entries count toward personal goal progress.</p>
         {error && <p className="inline-error" role="alert">{error}</p>}
-        <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled=
+        <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled={busy} type="submit">Create personal goal</button></div>
+      </form></Modal>}
+      {modal === "reminder" && <Modal title="Schedule a reminder" onClose={() => setModal(null)}><form className="modal-form" onSubmit={submitReminder}>
+        <label>Reminder title<input autoFocus maxLength={120} minLength={2} name="title" placeholder="e.g. Monthly contribution due" required /></label>
+        <label>Details<input maxLength={500} name="message" placeholder="Add any useful notes" /></label>
+        <label>Date and time<input defaultValue={inputDateTime(new Date(Date.now() + 24 * 60 * 60 * 1000))} min={inputDateTime(new Date())} name="dueAt" required type="datetime-local" /></label>
+        <fieldset className="reminder-channel-options"><legend>Notify me by</legend><label className="checkbox-field"><input name="emailEnabled" type="checkbox" /> Email</label><label className="checkbox-field"><input name="smsEnabled" type="checkbox" /> SMS</label><small>In-app alerts are always on. Email needs SMTP; SMS needs Twilio and a saved phone number.</small></fieldset>
+        {activeWorkspace !== "personal" && workspace?.canManageGoals && <label className="checkbox-field"><input name="sharedWithGroup" type="checkbox" /> Share this reminder with the {workspace.group.type === "SACCO" ? "SACCO" : "chama"}</label>}
+        {error && <p className="inline-error" role="alert">{error}</p>}
+        <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled={busy} type="submit">Schedule reminder</button></div>
+      </form></Modal>}
+      {workspace && modal === "goal" && <Modal title="Create a savings goal" onClose={() => setModal(null)}><form className="modal-form" onSubmit={submitGoal}>
+        <label>Goal name<input autoFocus maxLength={80} minLength={2} name="title" placeholder="e.g. Emergency fund" required /></label>
+        <label>Target amount (KES)<input min="1" max="999999999999" name="targetKes" placeholder="e.g. 50,000" required step="1" type="number" /></label>
+        {workspace.canManageGoals ? <label>Goal for<select defaultValue="" name="memberId"><option value="">Whole group</option>{workspace.members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label> : <><input name="memberId" type="hidden" value={workspace.currentMemberId ?? ""} /><p className="form-note">This personal goal tracks your recorded contributions.</p></>}
+        <div className="goal-date-fields"><label>Start date<input defaultValue={inputDate()} max="9999-12-31" name="startsAt" required type="date" /></label><label>Target date<input defaultValue={inputDate(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000))} name="deadline" required type="date" /></label></div>
+        <p className="form-note"><ShieldCheck size={15} /> Only contributions explicitly assigned to this goal count. This does not verify or move money.</p>
+        {error && <p className="inline-error" role="alert">{error}</p>}
+        <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled={busy} type="submit"><Target size={15} /> Create goal</button></div>
+      </form></Modal>}
+      {workspace && modal === "loan" && <Modal title={workspace.group.type === "SACCO" ? "Apply for a SACCO loan" : "Create a loan request"} onClose={() => setModal(null)}><form className="modal-form" onSubmit={submitLoan}>
+        {canChooseLoanMember ? <label>Requesting member<select defaultValue="" name="memberId" required><option disabled value="">Choose a member</option>{workspace.members.map((member) => <option key={member.id} value={member.id}>{member.name}</option>)}</select></label> : <input name="memberId" type="hidden" value={workspace.currentMemberId ?? ""} />}
+        {workspace.group.type === "SACCO" && <label>Loan product<select defaultValue="" name="productId" required><option disabled value="">Choose a loan product</option>{saccoLoanProducts.map((product) => <option key={product.id} value={product.id}>{product.name} · {product.calculationMethod === "FLAT" ? "Flat" : "Reducing balance"} · {(product.annualInterestBps / 100).toFixed(2)}% · {product.termMonths} months</option>)}</select></label>}
+        <label>Purpose<input maxLength={250} minLength={3} name="purpose" placeholder="e.g. School fees" required /></label>
+        <label>Amount (KES)<input min="1" max="999999999999" name="amountKes" placeholder="e.g. 10,000" required step="1" type="number" /></label>
+        <p className="form-note"><Clock3 size={15} /> {workspace.group.type === "SACCO" ? "This is an application record only. Product terms do not calculate repayments or authorize a disbursement." : "Approval is recorded, but does not move money or disburse the loan."}</p>
+        {workspace.group.type === "SACCO" && saccoLoanProducts.length === 0 && <p className="inline-error" role="alert">A SACCO officer must configure a loan product before applications can be submitted.</p>}
+        {error && <p className="inline-error" role="alert">{error}</p>}
+        <div className="modal-actions"><button className="button button-quiet" onClick={() => { setModal(null); setError(""); }} type="button">Cancel</button><button className="button button-primary" disabled={busy || (workspace.group.type === "SACCO" && saccoLoanProducts.length === 0)} type="submit"><Plus size={15} /> {workspace.group.type === "SACCO" ? "Submit application" : "Submit request"}</button></div>
+      </form></Modal>}
+      {notice && <div className="toast" role="status"><CheckCircle2 size={17} /><span>{notice}</span><button aria-label="Dismiss message" onClick={() => setNotice("")}><X size={15} /></button></div>}
+    </div>
+  );
+}
+
+function Brand() {
+  return <Link className="brand" href="/" aria-label="Wealth Sketch home"><span className="brand-mark"><span /><span /><span /><span /></span><span className="brand-name">wealth sketch<span className="brand-period">.</span><small>GROUP WEALTH, GROWING</small></span></Link>;
+}
+
+function StatCard({ icon, label, value, foot }: { icon: React.ReactNode; label: string; value: string; foot: string }) {
+  return <article className="stat-card"><div className="stat-top"><span>{label}</span><span className="stat-icon balance-icon">{icon}</span></div><div className="stat-value">{value}</div><div className="stat-foot">{foot}</div></article>;
+}
+
+function GoalProgress({ goal, index }: { goal: SavingsGoal; index: number }) {
+  return <div className="goal-overview-item" style={{ animationDelay: `${index * 100}ms` }}>
+    <div className="goal-overview-row"><strong>{goal.title}</strong><span>{goal.member?.name ?? "Group"}</span></div>
+    <div aria-label={`${goal.progressPercent}% complete`} aria-valuemax={100} aria-valuemin={0} aria-valuenow={goal.progressPercent} className="goal-progress-track" role="progressbar"><span style={{ width: `${goal.progressPercent}%` }} /></div>
+    <div className="goal-overview-foot"><span>{kes(goal.savedMinor)} of {kes(goal.targetMinor)}</span><span>{goal.hasStarted ? `Score ${goal.disciplineScore}` : "Not started"}</span></div>
+  </div>;
+}
+
+function SearchField({ value, onChange, label }: { value: string; onChange: (value: string) => void; label: string }) {
+  return <label className="search-box"><Search size={16} /><input aria-label={label} onChange={(event) => onChange(event.target.value)} placeholder={label} value={value} /></label>;
+}
+
+function PersonCell({ name, detail, index }: { name: string; detail: string; index: number }) {
+  return <div className="person-cell"><span className={`avatar avatar-${index % 4}`}>{initials(name)}</span><span><strong>{name}</strong><small>{detail}</small></span></div>;
+}
+
+function ProfileAvatar({ name, photo, className }: { name: string; photo: string | null; className: string }) {
+  return <div className={className}>{photo ? <Image alt="" height={58} src={photo} unoptimized width={58} /> : initials(name)}</div>;
+}
+
+function RolePill({ role }: { role: Member["role"] }) {
+  const label = roleLabel(role);
+  return <span className={`role-pill role-${role.toLowerCase()}`}>{label}</span>;
+}
+
+function roleLabel(role: Member["role"]) {
+  return role === "OWNER" ? "Owner" : role === "ADMIN" ? "Admin" : role === "TREASURER" ? "Treasurer" : role === "CHAIRPERSON" ? "Chairperson" : role === "SECRETARY" ? "Secretary" : role === "CREDIT_OFFICER" ? "Credit officer" : "Member";
+}
+
+function saccoEntryLabel(kind: SaccoEntry["kind"]) {
+  return kind === "SHARE_CAPITAL" ? "Share capital" : kind === "DEPOSIT" ? "Deposit" : "Withdrawal";
+}
+
+function activityKindLabel(kind: PersonalActivity["kind"]) {
+  return kind === "SAVING" ? "Saving" : kind === "INVESTMENT" ? "Investment" : kind === "INCOME" ? "Income" : "Expense";
+}
+
+function StatusPill({ status }: { status: Loan["status"] }) {
+  const label = status === "PENDING" ? "Awaiting approval" : status === "APPROVED" ? "Approved" : "Declined";
+  const className = status === "APPROVED" ? "status-pill status-success" : status === "DECLINED" ? "status-pill status-danger" : "status-pill status-warning";
+  return <span className={className}><i />{label}</span>;
+}
+
+function ContributionTable({ items, extended = false }: { items: Contribution[]; extended?: boolean }) {
+  if (items.length === 0) return <div className="empty-state">No contribution records yet. Add one after confirming the payment was received.</div>;
+  return <table><thead><tr><th>MEMBER</th><th>AMOUNT</th><th>RECORDED</th>{extended && <><th>METHOD</th><th>SAVINGS GOAL</th></>}<th>REFERENCE</th></tr></thead><tbody>
+    {items.map((item, index) => <tr key={item.id}><td><PersonCell name={item.member.name} detail={extended ? item.reference : displayDate(item.createdAt)} index={index} /></td><td className="amount-cell">{kes(item.amountMinor)}</td><td>{displayDate(item.createdAt)}</td>{extended && <><td><span className="method-label">{item.method === "MPESA" ? "M-Pesa" : item.method === "BANK" ? "Bank" : "Cash"}</span></td><td>{item.savingsGoal?.title ?? "—"}</td></>}<td className="reference-cell">{item.reference}</td></tr>)}
+  </tbody></table>;
+}

@@ -89,4 +89,25 @@ async function getInitialData(resetRequested: boolean): Promise<HomeInitialData>
     if (!saccoWorkspace || !saccoLoanProducts) return emptyInitialData();
     return { ...data, workspace, goals, reminders, notifications, saccoWorkspace, saccoLoanProducts };
   }
-  const 
+  const analyticsData = await fetchApi<NonNullable<HomeInitialData["analyticsData"]>>("analytics?range=30d", activeWorkspace);
+  if (!analyticsData) return emptyInitialData();
+  return {
+    ...data,
+    workspace,
+    goals,
+    analyticsData,
+    analyticsUpdatedAt: new Date().toISOString(),
+    reminders,
+    notifications,
+  };
+}
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ reset?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const initialData = await getInitialData(Boolean(params.reset));
+  return <Home initialData={initialData} />;
+}

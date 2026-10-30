@@ -131,6 +131,7 @@ model GroupMember {
   phone          String
   role           GroupRole       @default(MEMBER)
   joinedAt       DateTime        @default(now())
+  revokedAt      DateTime?
   group          Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
   user           User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   contributions  Contribution[]
@@ -193,6 +194,7 @@ model MemberInvitation {
   tokenHash      String    @unique
   expiresAt      DateTime
   acceptedAt     DateTime?
+  revokedAt      DateTime?
   createdAt      DateTime  @default(now())
   group          Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
   invitedBy      User      @relation("InvitationSenders", fields: [invitedById], references: [id], onDelete: Restrict)
@@ -424,4 +426,7 @@ model AuditEvent {
   entityId   String
   createdAt  DateTime @default(now())
   group      Group    @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  actor      User     @relation(fields: [acto
+  actor      User     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([groupId, createdAt])
+}
