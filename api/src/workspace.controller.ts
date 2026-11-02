@@ -18,7 +18,7 @@ import {
 import { isUUID } from "class-validator";
 import { randomUUID } from "node:crypto";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
-import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, UpdateProfileDto } from "./auth.dto";
+import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, DecideMembershipDto, UpdateProfileDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
 import { GroupRole, Prisma } from "@prisma/client";
 import { calculateGoalDiscipline } from "./savings-goals";
@@ -47,7 +47,7 @@ export class WorkspaceController {
       : undefined;
 
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub, revokedAt: null },
+      where: { userId: user.sub, revokedAt: null, status: "APPROVED" },
       select: { groupId: true },
     });
     const updated = await this.prisma.$transaction(async (tx) => {
@@ -82,7 +82,7 @@ export class WorkspaceController {
   @Get("workspaces")
   async listWorkspaces(@CurrentUser() user: SessionUser) {
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub, revokedAt: null },
+      where: { userId: user.sub, revokedAt: null, status: "APPROVED" },
       orderBy: { joinedAt: "asc" },
       select: { groupId: true, role: true, group: { select: { id: true, name: true, currency: true, type: true } } },
     });
@@ -412,7 +412,7 @@ export class WorkspaceController {
     const { group, role, member } = await this.getMembership(user);
     const [members, contributions, loans, contributionTotal, contributionCount, pendingLoans] = await Promise.all([
       this.prisma.groupMember.findMany({
-        where: { groupId: group.id, revokedAt: null },
+        where: { groupId: group.id, revokedAt: null, status: "APPROVED" },
         orderBy: [{ joinedAt: "asc" }],
         select: { id: true, name: true, phone: true, role: true, joinedAt: true },
       }),
@@ -539,7 +539,7 @@ export class WorkspaceController {
         _count: { _all: true },
       }),
       this.prisma.groupMember.findMany({
-        where: { groupId: group.id, revokedAt: null },
+        where: { groupId: group.id, revokedAt: null, status: "APPROVED" },
         select: { id: true, name: true },
       }),
     ]);
@@ -660,7 +660,7 @@ export class WorkspaceController {
     }
     const title = input.title.trim();
     if (title.length < 2) throw new BadRequestException("The goal name must contain at least two characters.");
-    if (input.memberId && !(await this.prisma.groupMember.findFirst({ where: { id: input.memberId, groupId: group.id, revokedAt: null }, select: { id: true } }))) {
+    if (input.memberId && !(await this.prisma.groupMember.findFirst({ where: { id: input.memberId, groupId: group.id, revokedAt: null, status: "APPROVED" }, select: { id: true } }))) {
       throw new BadRequestException("Choose a member of your group.");
     }
     const goal = await this.prisma.$transaction(async (tx) => {
@@ -710,10 +710,72 @@ export class WorkspaceController {
   async listMembers(@CurrentUser() user: SessionUser) {
     const { group } = await this.getMembership(user);
     return this.prisma.groupMember.findMany({
-      where: { groupId: group.id, revokedAt: null },
+      where: { groupId: group.id, revokedAt: null, status: "APPROVED" },
       orderBy: { joinedAt: "desc" },
       select: { id: true, name: true, phone: true, role: true, joinedAt: true },
     });
+  }
+
+  @Get("membership-requests")
+  async listMembershipRequests(@CurrentUser() user: SessionUser) {
+    const { group, role } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+    return this.prisma.groupMember.findMany({
+      where: { groupId: group.id, revokedAt: null, status: "PENDING_APPROVAL" },
+      orderBy: [{ joinedAt: "asc" }, { id: "asc" }],
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        role: true,
+        joinedAt: true,
+        user: { select: { email: true } },
+      },
+    }).then((requests) => requests.map(({ user: memberUser, ...request }) => ({
+      ...request,
+      email: memberUser?.email ?? null,
+    })));
+  }
+
+  @Patch("membership-requests/:id")
+  async decideMembershipRequest(
+    @CurrentUser() user: SessionUser,
+    @Param("id") id: string,
+    @Body() input: DecideMembershipDto,
+  ) {
+    const { group, role } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+    const membership = await this.prisma.groupMember.findFirst({
+      where: { id, groupId: group.id, revokedAt: null, status: "PENDING_APPROVAL" },
+      select: { id: true },
+    });
+    if (!membership) throw new NotFoundException("Pending membership request not found.");
+
+    const status = input.decision === "APPROVE" ? "APPROVED" : "REJECTED";
+    await this.prisma.$transaction(async (tx) => {
+      const decided = await tx.groupMember.updateMany({
+        where: { id: membership.id, groupId: group.id, revokedAt: null, status: "PENDING_APPROVAL" },
+        data: {
+          status,
+          ...(input.decision === "REJECT" ? { revokedAt: new Date() } : {}),
+        },
+      });
+      if (decided.count !== 1) throw new ConflictException("This membership request has already been reviewed.");
+      await tx.auditEvent.create({
+        data: {
+          groupId: group.id,
+          actorId: user.sub,
+          action: input.decision === "APPROVE" ? "MEMBER_MEMBERSHIP_APPROVED" : "MEMBER_MEMBERSHIP_REJECTED",
+          entityType: "GroupMember",
+          entityId: membership.id,
+        },
+      });
+    });
+    return { success: true, status };
   }
 
   @Get("invitations")
@@ -736,17 +798,35 @@ export class WorkspaceController {
         createdAt: true,
         expiresAt: true,
         acceptedAt: true,
+        acceptedUserId: true,
       },
     });
+    const acceptedUserIds = invitations.flatMap((invitation) => invitation.acceptedUserId ? [invitation.acceptedUserId] : []);
+    const memberships = acceptedUserIds.length
+      ? await this.prisma.groupMember.findMany({
+        where: { groupId: group.id, userId: { in: acceptedUserIds } },
+        select: { userId: true, status: true },
+      })
+      : [];
+    const membershipByUser = new Map(memberships.map((membership) => [membership.userId, membership.status]));
     const now = new Date();
-    return invitations.map((invitation) => ({
-      ...invitation,
-      status: invitation.acceptedAt
-        ? "ACCEPTED"
-        : invitation.expiresAt <= now
-          ? "EXPIRED"
-          : "PENDING",
-    }));
+    return invitations.map(({ acceptedUserId, ...invitation }) => {
+      const membershipStatus = acceptedUserId ? membershipByUser.get(acceptedUserId) : undefined;
+      return {
+        ...invitation,
+        status: membershipStatus === "APPROVED"
+          ? "ACCEPTED"
+          : membershipStatus === "PENDING_APPROVAL"
+            ? "REVIEW"
+            : membershipStatus === "REJECTED"
+              ? "REJECTED"
+              : invitation.expiresAt <= now && !invitation.acceptedAt
+                ? "EXPIRED"
+                : invitation.acceptedAt
+                  ? "REJECTED"
+                  : "PENDING",
+      };
+    });
   }
 
   @Delete("members/:id")
@@ -758,7 +838,7 @@ export class WorkspaceController {
     if (id === actor.id) throw new BadRequestException("You cannot remove your own membership.");
 
     const target = await this.prisma.groupMember.findFirst({
-      where: { id, groupId: group.id, revokedAt: null },
+      where: { id, groupId: group.id, revokedAt: null, status: "APPROVED" },
       select: { id: true, userId: true, role: true },
     });
     if (!target) throw new NotFoundException("Active group member not found.");
@@ -768,7 +848,7 @@ export class WorkspaceController {
       : ["OWNER", "ADMIN", "TREASURER"];
     if (managerRoles.includes(target.role)) {
       const activeManagers = await this.prisma.groupMember.count({
-        where: { groupId: group.id, revokedAt: null, role: { in: managerRoles } },
+        where: { groupId: group.id, revokedAt: null, status: "APPROVED", role: { in: managerRoles } },
       });
       if (activeManagers <= 1) {
         throw new ConflictException("The last member who can manage this workspace cannot be removed.");
@@ -956,7 +1036,7 @@ export class WorkspaceController {
     const amountMinor = amountKes * 100n;
     const note = input.note.trim() || null;
     const member = await this.prisma.groupMember.findFirst({
-      where: { id: input.memberId, groupId: group.id, revokedAt: null },
+      where: { id: input.memberId, groupId: group.id, revokedAt: null, status: "APPROVED" },
       select: { id: true },
     });
     if (!member) throw new BadRequestException("Choose a member of your group.");
@@ -1083,7 +1163,7 @@ export class WorkspaceController {
     if (input.productId && !product) throw new BadRequestException("Choose a loan product in this SACCO.");
     const chosenMemberId = ["OWNER", "ADMIN", "TREASURER", "CHAIRPERSON"].includes(role) ? input.memberId : ownMembership.id;
     const member = await this.prisma.groupMember.findFirst({
-      where: { id: chosenMemberId, groupId: group.id, revokedAt: null },
+      where: { id: chosenMemberId, groupId: group.id, revokedAt: null, status: "APPROVED" },
       select: { id: true },
     });
     if (!member) throw new BadRequestException("Choose a member of your group.");
@@ -1144,7 +1224,7 @@ export class WorkspaceController {
       throw new BadRequestException("Select a group workspace to access group records.");
     }
     const membership = await this.prisma.groupMember.findFirst({
-      where: { userId: user.sub, revokedAt: null, ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
+      where: { userId: user.sub, revokedAt: null, status: "APPROVED", ...(user.selectedGroupId ? { groupId: user.selectedGroupId } : {}) },
       orderBy: { joinedAt: "asc" },
       include: { group: true },
     });

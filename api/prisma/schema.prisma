@@ -22,6 +22,12 @@ enum GroupType {
   SACCO
 }
 
+enum MembershipStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
 enum SaccoEntryKind {
   SHARE_CAPITAL
   DEPOSIT
@@ -86,6 +92,9 @@ model User {
   passwordHash        String
   profilePhotoData    String?              @db.Text
   tokenVersion        Int                  @default(0)
+  emailVerifiedAt     DateTime?
+  emailVerificationTokenHash String?        @unique
+  emailVerificationExpiresAt DateTime?
   createdAt           DateTime             @default(now())
   memberships         GroupMember[]
   contributions       Contribution[]       @relation("RecordedContributions")
@@ -130,6 +139,7 @@ model GroupMember {
   name           String
   phone          String
   role           GroupRole       @default(MEMBER)
+  status         MembershipStatus @default(APPROVED)
   joinedAt       DateTime        @default(now())
   revokedAt      DateTime?
   group          Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)

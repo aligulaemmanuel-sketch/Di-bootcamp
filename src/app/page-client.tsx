@@ -56,7 +56,16 @@ type MemberInvitation = {
   createdAt: string;
   expiresAt: string;
   acceptedAt: string | null;
-  status: "PENDING" | "ACCEPTED" | "EXPIRED";
+  status: "PENDING" | "REVIEW" | "ACCEPTED" | "REJECTED" | "EXPIRED";
+};
+
+type MembershipRequest = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string;
+  role: Member["role"];
+  joinedAt: string;
 };
 
 type Contribution = {
@@ -238,6 +247,7 @@ function Modal({
 export type HomeInitialData = {
   user: Account | null;
   workspaces: GroupWorkspace[];
+  pendingMemberships: { id: string; name: string; type: "CHAMA" | "SACCO" }[];
   activeWorkspace: string;
   workspace: Workspace | null;
   goals: SavingsGoal[];
@@ -264,6 +274,8 @@ export default function Home({
   const [account, setAccount] = useState<Account | null>(initialData.user);
   const [workspace, setWorkspace] = useState<Workspace | null>(initialData.workspace);
   const [memberInvitations, setMemberInvitations] = useState<MemberInvitation[] | null>(null);
+  const [membershipRequests, setMembershipRequests] = useState<MembershipRequest[] | null>(null);
+  const [pendingMemberships, setPendingMemberships] = useState(initialData.pendingMemberships);
   const [groupWorkspaces, setGroupWorkspaces] = useState<GroupWorkspace[]>(initialData.workspaces);
   const [activeWorkspace, setActiveWorkspace] = useState(initialData.activeWorkspace);
   const [goals, setGoals] = useState<SavingsGoal[]>(initialData.goals);
@@ -291,6 +303,7 @@ export default function Home({
   const [notice, setNotice] = useState("");
   const [error, setError] = useState(initialLoadError ?? "");
   const [authMessage, setAuthMessage] = useState("");
+  const [canResendVerification, setCanResendVerification] = useState(false);
   const [passwordResetToken, setPasswordResetToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -346,6 +359,11 @@ export default function Home({
     setMemberInvitations(invitations);
   }, []);
 
+  const refreshMembershipRequests = useCallback(async () => {
+    const requests = await api<MembershipRequest[]>("membership-requests");
+    setMembershipRequests(requests);
+  }, []);
+
   const refreshAnalytics = useCallback(async (range: AnalyticsRange, signal?: AbortSignal) => {
     const result = await api<DashboardAnalyticsData>(`analytics?range=${range}`, { signal });
     setAnalyticsData(result);
@@ -367,11 +385,16 @@ export default function Home({
   }, []);
 
   const loadAccountWorkspaces = useCallback(async () => {
-    const result = await api<{ user: Account | null; workspaces: GroupWorkspace[] }>("auth/me", {
+    const result = await api<{
+      user: Account | null;
+      workspaces: GroupWorkspace[];
+      pendingMemberships: { id: string; name: string; type: "CHAMA" | "SACCO" }[];
+    }>("auth/me", {
       headers: { "X-Maliwise-Workspace": "" },
     });
     if (!result.user) throw new Error("Please sign in to continue.");
     setAccount(result.user);
+    setPendingMemberships(result.pendingMemberships ?? []);
     const available = result.workspaces ?? [];
     setGroupWorkspaces(available);
     const saved = window.localStorage.getItem("maliwise-active-workspace");
@@ -432,14 +455,21 @@ export default function Home({
   useEffect(() => {
     if (section !== "Members" || !workspace?.canManageMembers) {
       setMemberInvitations(null);
+      setMembershipRequests(null);
       return;
     }
     let active = true;
     setMemberInvitations(null);
-    api<MemberInvitation[]>("invitations")
-      .then((invitations) => { if (active) setMemberInvitations(invitations); })
+    setMembershipRequests(null);
+    Promise.all([api<MemberInvitation[]>("invitations"), api<MembershipRequest[]>("membership-requests")])
+      .then(([invitations, requests]) => {
+        if (active) {
+          setMemberInvitations(invitations);
+          setMembershipRequests(requests);
+        }
+      })
       .catch((reason: unknown) => {
-        if (active) setError(reason instanceof Error ? reason.message : "Unable to load member invitations.");
+        if (active) setError(reason instanceof Error ? reason.message : "Unable to load member review information.");
       });
     return () => { active = false; };
   }, [activeWorkspace, section, workspace?.canManageMembers]);
@@ -504,6 +534,7 @@ export default function Home({
     const params = new URLSearchParams(window.location.search);
     const invite = params.get("invite");
     const reset = params.get("reset");
+    const verifyEmail = params.get("verifyEmail");
     if (invite) {
       setInvitationToken(invite);
       setAuthMode("register");
@@ -511,6 +542,16 @@ export default function Home({
       api<{ email: string; name: string; groupName: string }>(`auth/invitation/${encodeURIComponent(invite)}`)
         .then(setInvitation)
         .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "This invitation could not be verified."));
+    } else if (verifyEmail) {
+      setShowLanding(false);
+      setAuthMode("login");
+      window.history.replaceState({}, "", window.location.pathname);
+      api<{ message: string }>("auth/email-verification/confirm", {
+        method: "POST",
+        body: JSON.stringify({ token: verifyEmail }),
+      })
+        .then((result) => setAuthMessage(result.message))
+        .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "This email verification link could not be verified."));
     } else if (reset) {
       setPasswordResetToken(reset);
       setAuthMode("reset");
@@ -627,7 +668,7 @@ export default function Home({
         const selected = await refreshWorkspace();
         await Promise.all([
           ...(selected.group.type === "SACCO" ? [] : [refreshAnalytics(analyticsRange)]),
-          ...(section === "Members" && selected.canManageMembers ? [refreshMemberInvitations()] : []),
+          ...(section === "Members" && selected.canManageMembers ? [refreshMemberInvitations(), refreshMembershipRequests()] : []),
           refreshReminders(),
         ]);
       }
@@ -769,12 +810,22 @@ export default function Home({
       const endpoint = invitationToken
         ? "auth/accept-invitation"
         : `auth/${authMode === "register" ? "register" : "login"}`;
-      await api<{ user: Account }>(endpoint, {
+      await api<unknown>(endpoint, {
         method: "POST",
         body: JSON.stringify(body),
       });
+      if (authMode === "register" && !invitationToken) {
+        const email = String(body.email ?? "").trim();
+        if (loginEmailInput.current && email) loginEmailInput.current.value = email;
+        setAuthMode("login");
+        setAuthMessage(`Account created for ${email}. Check your inbox for a verification link. You can resend it below if it does not arrive.`);
+        setCanResendVerification(true);
+        setPasswordVisible(false);
+        return;
+      }
       await loadAccountWorkspaces();
       setAuthState("signed-in");
+      setCanResendVerification(false);
       if (invitationToken) {
         const url = new URL(window.location.href);
         url.searchParams.delete("invite");
@@ -783,7 +834,33 @@ export default function Home({
         setInvitation(null);
       }
     } catch (reason) {
+      if (authMode === "login" && reason instanceof ApiError && reason.status === 401 && reason.message.toLowerCase().includes("verify your email")) {
+        setCanResendVerification(true);
+      }
       setError(reason instanceof Error ? reason.message : "Unable to sign in.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function resendEmailVerification() {
+    setError("");
+    setAuthMessage("");
+    const email = loginEmailInput.current?.value.trim();
+    if (!email) {
+      setError("Enter your email address first.");
+      loginEmailInput.current?.focus();
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await api<{ message: string }>("auth/email-verification/request", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      setAuthMessage(result.message);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to resend the verification email.");
     } finally {
       setBusy(false);
     }
@@ -857,6 +934,16 @@ export default function Home({
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     await runAction(() => api("invitations", { method: "POST", body: JSON.stringify(Object.fromEntries(form.entries())) }), "Invitation email sent.");
+  }
+
+  async function decideMembership(id: string, decision: "APPROVE" | "REJECT") {
+    await runAction(
+      () => api(`membership-requests/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ decision }),
+      }),
+      decision === "APPROVE" ? "Membership approved." : "Membership request rejected.",
+    );
   }
 
   async function submitContribution(event: FormEvent<HTMLFormElement>) {
@@ -1124,6 +1211,7 @@ export default function Home({
                 <div className="auth-password-field"><label>Password<div className="password-input-wrap"><input autoComplete="current-password" name="password" placeholder="Your password" required type={passwordVisible ? "text" : "password"} /><button aria-label={passwordVisible ? "Hide password" : "Show password"} aria-pressed={passwordVisible} className="password-visibility-toggle" onClick={() => setPasswordVisible(!passwordVisible)} type="button">{passwordVisible ? <EyeOff aria-hidden="true" size={16} /> : <Eye aria-hidden="true" size={16} />}</button></div></label><button className="auth-recovery-link" onClick={() => flipAuthCard("reset")} type="button">Forgot password?</button></div>
                 <button className="button button-primary auth-submit" disabled={busy} type="submit">{busy ? "Please wait…" : "Sign in"} <ArrowRight size={16} /></button>
               </form>
+              {canResendVerification && <button className="auth-recovery-link" disabled={busy} onClick={() => void resendEmailVerification()} type="button">Resend verification email</button>}
               <p className="auth-switch">New to Wealth Sketch? <button onClick={() => flipAuthCard("register")} type="button">Create an account</button></p>
             </section>
             <section aria-hidden={authMode === "login"} className={`auth-card-face auth-card-face-back ${authMode === "login" ? "auth-card-face-inactive" : ""}`} inert={authMode === "login"}>
@@ -1252,6 +1340,7 @@ export default function Home({
 
         <div className="content">
           {error && <div className="error-banner content-error" role="alert"><span>{error}</span><button aria-label="Dismiss error" onClick={() => setError("")}><X size={15} /></button></div>}
+          {pendingMemberships.length > 0 && <div className="form-note" role="status"><Clock3 size={15} /> Your membership request{pendingMemberships.length === 1 ? "" : "s"} for {pendingMemberships.map(({ name }) => name).join(", ")} {pendingMemberships.length === 1 ? "is" : "are"} awaiting admin approval. Access will be available once approved. This confirms your email and admin review only; membership is not checked against official SACCO records.</div>}
           <section className="page-heading">
             <div>
               <div className="date-line"><span className="date-dot" /> {new Intl.DateTimeFormat("en-KE", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Nairobi" }).format(new Date()).toUpperCase()}</div>
@@ -1426,8 +1515,12 @@ export default function Home({
               <div className="table-wrap"><table><thead><tr><th>MEMBER</th><th>ROLE</th><th>PHONE</th><th>JOINED</th></tr></thead><tbody>{filteredMembers.map((member, index) => <tr key={member.id}><td><PersonCell name={member.name} detail={member.id} index={index} /></td><td><RolePill role={member.role} /></td><td>{member.phone}</td><td>{displayDate(member.joinedAt)}</td></tr>)}</tbody></table>{filteredMembers.length === 0 && <div className="empty-state">No members match your search.</div>}</div>
             </section>
             {workspace.canManageMembers && <section className="panel full-panel">
-              <div className="panel-heading"><div><h2>Member invitations <span className="heading-count">{memberInvitations?.filter((invitation) => invitation.status === "PENDING").length ?? 0} pending</span></h2><p>Track sent invitations and whether the recipient has joined.</p></div><button className="icon-button" aria-label="Refresh invitations" disabled={memberInvitations === null} onClick={() => void refreshMemberInvitations().catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to refresh invitations."))}><RefreshCw size={17} /></button></div>
-              {memberInvitations === null ? <div className="empty-state">Loading member invitations…</div> : memberInvitations.length === 0 ? <div className="empty-state">No member invitations have been sent for this workspace.</div> : <div className="table-wrap"><table><thead><tr><th>INVITEE</th><th>ROLE</th><th>STATUS</th><th>SENT</th><th>EXPIRES</th></tr></thead><tbody>{memberInvitations.map((invitation, index) => <tr key={invitation.id}><td><PersonCell name={invitation.name} detail={invitation.email} index={index} /></td><td><RolePill role={invitation.role} /></td><td><span className={`status-pill ${invitation.status === "ACCEPTED" ? "status-success" : invitation.status === "EXPIRED" ? "status-danger" : "status-warning"}`}><i />{invitation.status === "ACCEPTED" ? "Joined" : invitation.status === "EXPIRED" ? "Expired" : "Pending"}</span></td><td>{displayDate(invitation.createdAt)}</td><td>{invitation.acceptedAt ? `Joined ${displayDate(invitation.acceptedAt)}` : displayDate(invitation.expiresAt)}</td></tr>)}</tbody></table></div>}
+            <div className="panel-heading"><div><h2>Member invitations <span className="heading-count">{memberInvitations?.filter((invitation) => invitation.status === "PENDING").length ?? 0} pending</span></h2><p>Track invitations through email confirmation and administrator review.</p></div><button className="icon-button" aria-label="Refresh invitations" disabled={memberInvitations === null} onClick={() => void Promise.all([refreshMemberInvitations(), refreshMembershipRequests()]).catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to refresh member review information."))}><RefreshCw size={17} /></button></div>
+            {memberInvitations === null ? <div className="empty-state">Loading member invitations…</div> : memberInvitations.length === 0 ? <div className="empty-state">No member invitations have been sent for this workspace.</div> : <div className="table-wrap"><table><thead><tr><th>INVITEE</th><th>ROLE</th><th>STATUS</th><th>SENT</th><th>UPDATED</th></tr></thead><tbody>{memberInvitations.map((invitation, index) => <tr key={invitation.id}><td><PersonCell name={invitation.name} detail={invitation.email} index={index} /></td><td><RolePill role={invitation.role} /></td><td><span className={`status-pill ${invitation.status === "ACCEPTED" ? "status-success" : invitation.status === "EXPIRED" || invitation.status === "REJECTED" ? "status-danger" : "status-warning"}`}><i />{invitation.status === "ACCEPTED" ? "Approved" : invitation.status === "REVIEW" ? "Awaiting approval" : invitation.status === "REJECTED" ? "Rejected" : invitation.status === "EXPIRED" ? "Expired" : "Awaiting response"}</span></td><td>{displayDate(invitation.createdAt)}</td><td>{invitation.acceptedAt ? invitation.status === "ACCEPTED" ? `Approved ${displayDate(invitation.acceptedAt)}` : `Responded ${displayDate(invitation.acceptedAt)}` : displayDate(invitation.expiresAt)}</td></tr>)}</tbody></table></div>}
+            </section>}
+            {workspace.canManageMembers && <section className="panel full-panel">
+              <div className="panel-heading"><div><h2>Membership requests <span className="heading-count">{membershipRequests?.length ?? 0} pending</span></h2><p>Review members who accepted an invitation. Approval grants access to this workspace.</p></div><button className="icon-button" aria-label="Refresh membership requests" disabled={membershipRequests === null} onClick={() => void refreshMembershipRequests().catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to refresh membership requests."))}><RefreshCw size={17} /></button></div>
+              {membershipRequests === null ? <div className="empty-state">Loading membership requests…</div> : membershipRequests.length === 0 ? <div className="empty-state">No membership requests need review.</div> : <div className="table-wrap"><table><thead><tr><th>APPLICANT</th><th>ROLE</th><th>PHONE</th><th>REQUESTED</th><th>REVIEW</th></tr></thead><tbody>{membershipRequests.map((request) => <tr key={request.id}><td><PersonCell name={request.name} detail={request.email ?? "Email unavailable"} index={0} /></td><td><RolePill role={request.role} /></td><td>{request.phone}</td><td>{displayDate(request.joinedAt)}</td><td><div className="heading-actions"><button className="button button-primary" disabled={busy} onClick={() => void decideMembership(request.id, "APPROVE")} type="button">Approve</button><button className="button button-quiet" disabled={busy} onClick={() => void decideMembership(request.id, "REJECT")} type="button">Reject</button></div></td></tr>)}</tbody></table></div>}
             </section>}
           </>}
 

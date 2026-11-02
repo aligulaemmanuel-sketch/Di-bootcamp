@@ -45,9 +45,9 @@ export class SessionGuard implements CanActivate {
     }
     const current = await this.prisma.user.findUnique({
       where: { id: request.user.sub },
-      select: { tokenVersion: true },
+      select: { tokenVersion: true, emailVerifiedAt: true },
     });
-    if (!current || (request.user.ver ?? 0) !== current.tokenVersion) {
+    if (!current || current.emailVerifiedAt === null || (request.user.ver ?? 0) !== current.tokenVersion) {
       throw new UnauthorizedException("Your session has expired. Please sign in again.");
     }
     const selectedWorkspace = request.get("x-maliwise-workspace");
@@ -56,7 +56,7 @@ export class SessionGuard implements CanActivate {
       request.user.selectedGroupId = null;
     } else if (selectedWorkspace) {
       const membership = await this.prisma.groupMember.findFirst({
-        where: { userId: request.user.sub, groupId: selectedWorkspace, revokedAt: null },
+        where: { userId: request.user.sub, groupId: selectedWorkspace, revokedAt: null, status: "APPROVED" },
         select: { groupId: true },
       });
       if (!membership) throw new ForbiddenException("You do not belong to the selected group workspace.");
@@ -64,7 +64,7 @@ export class SessionGuard implements CanActivate {
       request.user.personalWorkspace = false;
     } else {
       const membership = await this.prisma.groupMember.findFirst({
-        where: { userId: request.user.sub, revokedAt: null },
+        where: { userId: request.user.sub, revokedAt: null, status: "APPROVED" },
         orderBy: { joinedAt: "asc" },
         select: { groupId: true },
       });

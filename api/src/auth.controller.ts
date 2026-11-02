@@ -3,7 +3,7 @@ import { Throttle } from "@nestjs/throttler";
 import type { Response } from "express";
 import { AuthService } from "./auth.service";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
-import { AcceptInvitationDto, LoginDto, RegisterDto, RequestPasswordResetDto, ResetPasswordDto } from "./auth.dto";
+import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
 import { hashInvitationToken } from "./invitation-token";
 
@@ -24,10 +24,8 @@ export class AuthController {
 
   @Post("register")
   @Throttle({ default: { limit: 8, ttl: 60_000 } })
-  async register(@Body() input: RegisterDto, @Res({ passthrough: true }) response: Response) {
-    const { token, user } = await this.auth.register(input);
-    response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
-    return { user };
+  async register(@Body() input: RegisterDto) {
+    return this.auth.register(input);
   }
 
   @Post("login")
@@ -43,6 +41,19 @@ export class AuthController {
   async requestPasswordReset(@Body() input: RequestPasswordResetDto) {
     await this.auth.requestPasswordReset(input);
     return { message: "If an account exists for that email, a password reset link will be sent shortly." };
+  }
+
+  @Post("email-verification/request")
+  @Throttle({ default: { limit: 3, ttl: 60_000 } })
+  async requestEmailVerification(@Body() input: RequestEmailVerificationDto) {
+    await this.auth.requestEmailVerification(input);
+    return { message: "If an account needs email verification, a verification link will be sent shortly." };
+  }
+
+  @Post("email-verification/confirm")
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  async verifyEmail(@Body() input: VerifyEmailDto) {
+    return this.auth.verifyEmail(input);
   }
 
   @Post("password-reset/confirm")
@@ -98,11 +109,11 @@ export class AuthController {
   async me(@CurrentUser() user: SessionUser) {
     const account = await this.prisma.user.findUnique({
       where: { id: user.sub },
-      select: { id: true, name: true, email: true, phone: true, profilePhotoData: true },
+      select: { id: true, name: true, email: true, phone: true, profilePhotoData: true, emailVerifiedAt: true },
     });
     if (!account) return { user: null };
     const memberships = await this.prisma.groupMember.findMany({
-      where: { userId: user.sub, revokedAt: null },
+      where: { userId: user.sub, revokedAt: null, status: "APPROVED" },
       orderBy: { joinedAt: "asc" },
       select: { group: { select: { id: true, name: true, currency: true, type: true } }, role: true },
     });
@@ -110,6 +121,10 @@ export class AuthController {
       user: account,
       group: memberships[0]?.group ?? null,
       workspaces: memberships.map(({ group, role }) => ({ ...group, role })),
+      pendingMemberships: await this.prisma.groupMember.findMany({
+        where: { userId: user.sub, revokedAt: null, status: "PENDING_APPROVAL" },
+        select: { group: { select: { id: true, name: true, type: true } } },
+      }).then((pending) => pending.map(({ group }) => group)),
     };
   }
 }

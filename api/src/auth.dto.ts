@@ -113,6 +113,18 @@ export class RequestPasswordResetDto {
   email!: string;
 }
 
+export class RequestEmailVerificationDto {
+  @IsEmail()
+  @MaxLength(254)
+  email!: string;
+}
+
+export class VerifyEmailDto {
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{43}$/)
+  token!: string;
+}
+
 export class ResetPasswordDto {
   @IsString()
   @Matches(/^[A-Za-z0-9_-]{43}$/)
@@ -255,6 +267,12 @@ export class DecideLoanDto {
   @IsString()
   @Matches(/^(APPROVED|DECLINED)$/)
   status!: "APPROVED" | "DECLINED";
+}
+
+export class DecideMembershipDto {
+  @IsString()
+  @Matches(/^(APPROVE|REJECT)$/)
+  decision!: "APPROVE" | "REJECT";
 }
 
 export class UpdateProfileDto {

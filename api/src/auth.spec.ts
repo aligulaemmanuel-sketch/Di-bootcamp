@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ExecutionContext, ForbiddenException } from "@nestjs/common";
+import { ExecutionContext, ForbiddenException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { SessionGuard, SessionUser } from "./auth";
 import { PrismaService } from "./prisma.service";
 
-function createGuard(memberships: string[]) {
+function createGuard(memberships: string[], emailVerifiedAt: Date | null = new Date()) {
   const prisma = {
-    user: { findUnique: async () => ({ tokenVersion: 0 }) },
+    user: { findUnique: async () => ({ tokenVersion: 0, emailVerifiedAt }) },
     groupMember: {
       findFirst: async ({ where }: { where: { userId: string; groupId?: string } }) =>
         memberships.includes(where.groupId ?? memberships[0] ?? "")
@@ -58,5 +58,12 @@ describe("SessionGuard workspace isolation", () => {
 
     assert.equal(requestContext.request.user?.selectedGroupId, null);
     assert.equal(requestContext.request.user?.personalWorkspace, true);
+  });
+
+  it("rejects sessions for accounts without a verified email", async () => {
+    const { guard } = createGuard(["group-a"], null);
+    const requestContext = context("group-a");
+
+    await assert.rejects(guard.canActivate(requestContext.executionContext), UnauthorizedException);
   });
 });

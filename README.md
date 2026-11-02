@@ -10,7 +10,7 @@ Wealth Sketch is a server-backed group finance application built with a Next.js 
 - Separate SACCO workspaces with manually tracked BOSA/FOSA share-capital, deposit, and withdrawal entries
 - Configurable SACCO loan products and member loan applications with recorded approval decisions
 - One-time, expiring email password-reset links with session revocation
-- Group-scoped member roster and email invitations that can add existing accounts to another group
+- Group-scoped member roster with email verification, invitations, and manager approval for new membership
 - Manual contribution records persisted with balanced double-entry ledger entries and an audit record
 - Group and individual savings goals with progress based on recorded contribution entries
 - Private personal savings, investment, income, and expense tracking, separate from all group ledgers
@@ -24,7 +24,7 @@ Daraja support is **sandbox-only** and does not process live payments. A contrib
 
 Savings-goal progress includes only contribution records explicitly assigned to that goal and within its date range. Each contribution can be assigned to at most one goal. The discipline score compares recorded savings with the amount expected by the current date; the suggested weekly pace and projected completion date are estimates based on the remaining target and observed pace. These are planning aids, not live or independently verified cash balances.
 
-Personal finance entries are private tracking records, not bank balances, investment valuations, or executed transactions. Reminders are one-time and user-scheduled; group-wide reminders are restricted to group managers. In-app alerts need no external provider. Email reminders use the SMTP settings; SMS reminders require `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_FROM_NUMBER`. Delivery errors remain visible in the alert panel and API logs.
+New accounts must verify their email before signing in. Members accepting a group invitation request membership; an authorized group manager must approve it before group records become accessible. This verifies email control and records an administrator decision only; it does not validate membership against official SACCO records. Personal finance entries are private tracking records, not bank balances, investment valuations, or executed transactions. Reminders are one-time and user-scheduled; group-wide reminders are restricted to group managers. In-app alerts need no external provider. Email reminders use the SMTP settings; SMS reminders require `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_FROM_NUMBER`. Delivery errors remain visible in the alert panel and API logs.
 
 SACCO workspaces are isolated from Chama contribution and payment flows. BOSA/FOSA values are manual records, not verified account balances; share capital is accepted only under BOSA, but withdrawals and account eligibility rules are not enforced. Loan products retain a stated method, annual interest rate, and term for reference only. The MVP does not calculate amortization or interest, manage guarantors or payroll check-off, post SACCO double-entry journals, reconcile transactions, or generate SASRA/regulatory returns. KYC documents and sensitive identity data are not collected. Production payment collection and disbursements are not available for SACCOs.
 
@@ -63,9 +63,9 @@ SACCO workspaces are isolated from Chama contribution and payment flows. BOSA/FO
 
    Store that key in the API secret manager and keep it stable: group Daraja credentials are encrypted with it and cannot be decrypted if it is lost. Each group administrator enters that group’s sandbox shortcode, shortcode type (Paybill or Till), consumer key, consumer secret, and Lipa na M-Pesa passkey under **Settings**. Use only credentials from the Safaricom Daraja sandbox.
 
-   To send member invitations, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `SMTP_FROM` in `api/.env` with credentials from your mail provider. Set `APP_URL` to the browser-accessible web URL and `WEB_ORIGIN` to that exact origin, including its port (for example, `http://localhost:3000`, or `http://localhost:3001` if Next.js selected port 3001). `WEB_ORIGIN` is checked on signed-in write requests, so it must match the URL you use to open the app. Invitation delivery fails explicitly when SMTP is not configured.
+   To send account verification links, member invitations, and reminders, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `SMTP_FROM` in `api/.env` with credentials from your mail provider. Set `APP_URL` to the browser-accessible web URL and `WEB_ORIGIN` to that exact origin, including its port (for example, `http://localhost:3000`, or `http://localhost:3001` if Next.js selected port 3001). `WEB_ORIGIN` is checked on signed-in write requests, so it must match the URL you use to open the app. Email delivery fails explicitly when SMTP is not configured.
 
-   Password recovery uses the same SMTP settings and `APP_URL`. Reset links expire after one hour, are stored as hashes, and can be used once; changing the password revokes existing sessions. For privacy, the request screen always confirms generically whether or not an account exists for the email.
+   Password recovery and email verification use the same SMTP settings and `APP_URL`. Reset and verification links expire after one hour, are stored as hashes, and can be used once; changing the password revokes existing sessions. For privacy, email resend screens always confirm generically whether or not an account needs verification.
 
 3. Install dependencies and prepare the database:
 
@@ -75,7 +75,7 @@ SACCO workspaces are isolated from Chama contribution and payment flows. BOSA/FO
    npm run db:migrate
    ```
 
-   The migrations include the initial schema, savings goals, member invitations, Daraja STK Push payments, password reset, and SACCO workspaces. For a **new, empty database**, run the commands above as shown. For a database that already has Wealth Sketch tables but no Prisma migration history, do not run migrations blindly: take a verified backup and compare the live schema with `20261026090000_initial_schema` first. Only if it exactly matches that baseline, mark it as applied from the `api` directory with `npx prisma migrate resolve --applied 20261026090000_initial_schema`, then run `npx prisma migrate deploy` to apply later migrations. If the schema differs, stop and reconcile it before deploying; do not mark the baseline applied based on assumption.
+   The migrations include the initial schema, savings goals, member invitations, Daraja STK Push payments, password reset, SACCO workspaces, email verification, and membership approval. For a **new, empty database**, run the commands above as shown. For a database that already has Wealth Sketch tables but no Prisma migration history, do not run migrations blindly: take a verified backup and compare the live schema with `20261026090000_initial_schema` first. Only if it exactly matches that baseline, mark it as applied from the `api` directory with `npx prisma migrate resolve --applied 20261026090000_initial_schema`, then run `npx prisma migrate deploy` to apply later migrations. If the schema differs, stop and reconcile it before deploying; do not mark the baseline applied based on assumption.
 
 4. Start the web application and API:
 

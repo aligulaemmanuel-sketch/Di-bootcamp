@@ -6,11 +6,13 @@ export const dynamic = "force-dynamic";
 type AccountResponse = {
   user: HomeInitialData["user"];
   workspaces: HomeInitialData["workspaces"];
+  pendingMemberships: HomeInitialData["pendingMemberships"];
 };
 
 const emptyInitialData = (): HomeInitialData => ({
   user: null,
   workspaces: [],
+  pendingMemberships: [],
   activeWorkspace: "personal",
   workspace: null,
   goals: [],
@@ -61,6 +63,7 @@ async function getInitialData(resetRequested: boolean): Promise<HomeInitialData>
     ...emptyInitialData(),
     user: account.user,
     workspaces,
+    pendingMemberships: account.pendingMemberships ?? [],
     activeWorkspace,
   };
 
@@ -105,7 +108,7 @@ async function getInitialData(resetRequested: boolean): Promise<HomeInitialData>
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ auth?: string | string[]; invite?: string | string[]; reset?: string | string[] }>;
+  searchParams: Promise<{ auth?: string | string[]; invite?: string | string[]; reset?: string | string[]; verifyEmail?: string | string[] }>;
 }) {
   const params = await searchParams;
   let initialData: HomeInitialData;
@@ -120,7 +123,7 @@ export default async function Page({
   }
   const requestedAuth = Array.isArray(params.auth) ? params.auth[0] : params.auth;
   const initialAuthMode = requestedAuth === "register" || requestedAuth === "signup" ? "register" : "login";
-  const hasAuthIntent = Boolean(params.reset || params.invite || requestedAuth);
+  const hasAuthIntent = Boolean(params.reset || params.invite || params.verifyEmail || requestedAuth);
   return (
     <Home
       initialAuthMode={initialAuthMode}

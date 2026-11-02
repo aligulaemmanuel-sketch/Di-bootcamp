@@ -10,7 +10,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { compare, hash } from "bcryptjs";
 import { PrismaService } from "./prisma.service";
-import { AcceptInvitationDto, LoginDto, RegisterDto, RequestPasswordResetDto, ResetPasswordDto } from "./auth.dto";
+import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { createOpaqueToken, hashInvitationToken } from "./invitation-token";
 import { MailService } from "./mail.service";
 
@@ -72,10 +72,8 @@ export class AuthService {
         }
         return createdUser;
       });
-      return {
-        token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
-        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
-      };
+      await this.sendVerificationEmail(user);
+      return { message: "Account created. Check your email for a verification link before signing in." };
     } catch (error) {
       if (this.isUniqueError(error)) throw new ConflictException("An account with that email or phone already exists.");
       throw error;
@@ -87,10 +85,42 @@ export class AuthService {
     if (!user || !(await compare(input.password, user.passwordHash))) {
       throw new UnauthorizedException("Email or password is incorrect.");
     }
+    if (!user.emailVerifiedAt) {
+      throw new UnauthorizedException("Verify your email address before signing in. Use the resend verification email option if needed.");
+    }
     return {
       token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
       user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
     };
+  }
+
+  async requestEmailVerification(input: RequestEmailVerificationDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: input.email.trim().toLowerCase() },
+      select: { id: true, name: true, email: true, emailVerifiedAt: true },
+    });
+    if (!user || user.emailVerifiedAt) return;
+    await this.sendVerificationEmail(user);
+  }
+
+  async verifyEmail(input: VerifyEmailDto) {
+    const now = new Date();
+    const tokenHash = hashInvitationToken(input.token);
+    const user = await this.prisma.user.findUnique({
+      where: { emailVerificationTokenHash: tokenHash },
+      select: { id: true, emailVerifiedAt: true, emailVerificationExpiresAt: true },
+    });
+    if (!user || user.emailVerifiedAt || !user.emailVerificationExpiresAt || user.emailVerificationExpiresAt <= now) {
+      throw new UnauthorizedException("This email verification link is invalid, expired, or already used.");
+    }
+    const updated = await this.prisma.user.updateMany({
+      where: { id: user.id, emailVerifiedAt: null, emailVerificationTokenHash: tokenHash, emailVerificationExpiresAt: { gt: now } },
+      data: { emailVerifiedAt: now, emailVerificationTokenHash: null, emailVerificationExpiresAt: null },
+    });
+    if (updated.count !== 1) {
+      throw new UnauthorizedException("This email verification link is invalid, expired, or already used.");
+    }
+    return { message: "Email verified. You can now sign in." };
   }
 
   async acceptInvitation(input: AcceptInvitationDto) {
@@ -111,6 +141,12 @@ export class AuthService {
           if (!(await compare(input.password, acceptedUser.passwordHash))) {
             throw new UnauthorizedException("Email or password is incorrect.");
           }
+          if (!acceptedUser.emailVerifiedAt) {
+            acceptedUser = await tx.user.update({
+              where: { id: acceptedUser.id },
+              data: { emailVerifiedAt: now, emailVerificationTokenHash: null, emailVerificationExpiresAt: null },
+            });
+          }
         } else {
           acceptedUser = await tx.user.create({
             data: {
@@ -118,6 +154,7 @@ export class AuthService {
               name: invitation.name,
               passwordHash: await hash(input.password, 12),
               phone: invitation.phone,
+              emailVerifiedAt: now,
             },
           });
         }
@@ -146,6 +183,7 @@ export class AuthService {
               name: invitation.name,
               role: invitation.role,
               revokedAt: null,
+              status: "PENDING_APPROVAL",
             },
           });
           if (restored.count !== 1) {
@@ -160,6 +198,7 @@ export class AuthService {
               name: invitation.name,
               phone: invitation.phone,
               role: invitation.role,
+              status: "PENDING_APPROVAL",
             },
           });
         }
@@ -183,6 +222,41 @@ export class AuthService {
       if (this.isUniqueError(error)) {
         throw new ConflictException("This account could not be added. Contact your group administrator.");
       }
+      throw error;
+    }
+  }
+
+  private async sendVerificationEmail(user: { id: string; name: string; email: string }) {
+    let verificationUrl: URL;
+    try {
+      verificationUrl = new URL("/", process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000");
+    } catch {
+      throw new Error("APP_URL must be a valid absolute URL for email verification links.");
+    }
+    if (
+      (verificationUrl.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && verificationUrl.protocol === "http:")) ||
+      verificationUrl.username ||
+      verificationUrl.password
+    ) {
+      throw new Error("APP_URL must use HTTPS in production.");
+    }
+    const { token, tokenHash } = createOpaqueToken();
+    const now = new Date();
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationTokenHash: tokenHash,
+        emailVerificationExpiresAt: new Date(now.getTime() + 60 * 60 * 1000),
+      },
+    });
+    verificationUrl.searchParams.set("verifyEmail", token);
+    try {
+      await this.mail.sendEmailVerification({ email: user.email, name: user.name, verificationUrl: verificationUrl.toString() });
+    } catch (error) {
+      await this.prisma.user.updateMany({
+        where: { id: user.id, emailVerificationTokenHash: tokenHash },
+        data: { emailVerificationTokenHash: null, emailVerificationExpiresAt: null },
+      });
       throw error;
     }
   }

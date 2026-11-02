@@ -19,6 +19,9 @@ export class MailService {
     if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password || !from) {
       throw new ServiceUnavailableException("Email delivery is not configured. Set the SMTP settings and try again.");
     }
+    if (host.includes("gmail.com") && /google mail|replace-with-gmail-app-password|no-reply@example.com/i.test(password)) {
+      throw new ServiceUnavailableException("Gmail requires a real App Password in SMTP_PASSWORD. Update the value in api/.env and try again.");
+    }
 
     const transporter = nodemailer.createTransport({
       host,
@@ -49,6 +52,9 @@ export class MailService {
     if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password || !from) {
       throw new ServiceUnavailableException("Email delivery is not configured.");
     }
+    if (host.includes("gmail.com") && /google mail|replace-with-gmail-app-password|no-reply@example.com/i.test(password)) {
+      throw new ServiceUnavailableException("Gmail requires a real App Password in SMTP_PASSWORD. Update the value in api/.env and try again.");
+    }
 
     const transporter = nodemailer.createTransport({
       host,
@@ -69,6 +75,39 @@ export class MailService {
     }
   }
 
+  async sendEmailVerification(input: { email: string; name: string; verificationUrl: string }) {
+    const host = process.env.SMTP_HOST;
+    const port = Number(process.env.SMTP_PORT ?? 587);
+    const user = process.env.SMTP_USER;
+    const password = process.env.SMTP_PASSWORD;
+    const from = process.env.SMTP_FROM;
+    if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password || !from) {
+      throw new ServiceUnavailableException("Email delivery is not configured.");
+    }
+    if (host.includes("gmail.com") && /google mail|replace-with-gmail-app-password|no-reply@example.com/i.test(password)) {
+      throw new ServiceUnavailableException("Gmail requires a real App Password in SMTP_PASSWORD. Update the value in api/.env and try again.");
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass: password },
+    });
+    try {
+      await transporter.sendMail({
+        from,
+        to: input.email,
+        subject: "Verify your Wealth Sketch email",
+        text: `Hello ${input.name},\n\nVerify your email address to activate your Wealth Sketch account:\n\n${input.verificationUrl}\n\nThis link expires in one hour. If you did not create this account, you can ignore this email.`,
+        html: `<p>Hello ${escapeHtml(input.name)},</p><p>Verify your email address to activate your Wealth Sketch account:</p><p><a href="${escapeHtml(input.verificationUrl)}">Verify your email</a></p><p>This link expires in one hour. If you did not create this account, you can ignore this email.</p>`,
+      });
+    } catch (error) {
+      this.logger.error("Email verification delivery failed.", error instanceof Error ? error.stack : undefined);
+      throw new ServiceUnavailableException("The verification email could not be delivered. Check SMTP configuration and try again.");
+    }
+  }
+
   async sendReminder(input: { email: string; name: string; title: string; message: string; dueAt: Date }) {
     const host = process.env.SMTP_HOST;
     const port = Number(process.env.SMTP_PORT ?? 587);
@@ -77,6 +116,9 @@ export class MailService {
     const from = process.env.SMTP_FROM;
     if (!host || !Number.isInteger(port) || port < 1 || port > 65535 || !user || !password || !from) {
       throw new ServiceUnavailableException("Email delivery is not configured. Set the SMTP settings to send reminder emails.");
+    }
+    if (host.includes("gmail.com") && /google mail|replace-with-gmail-app-password|no-reply@example.com/i.test(password)) {
+      throw new ServiceUnavailableException("Gmail requires a real App Password in SMTP_PASSWORD. Update the value in api/.env and try again.");
     }
 
     const transporter = nodemailer.createTransport({

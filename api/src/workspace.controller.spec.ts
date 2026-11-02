@@ -38,9 +38,10 @@ describe("personal finance data isolation", () => {
       it("returns only invitations for the selected group with derived status", async () => {
         const now = new Date();
         const invitations = [
-          { id: "pending", name: "Pending User", email: "pending@example.com", phone: "+254700000001", role: "MEMBER", createdAt: now, expiresAt: new Date(now.getTime() + 60_000), acceptedAt: null },
-          { id: "accepted", name: "Joined User", email: "joined@example.com", phone: "+254700000002", role: "TREASURER", createdAt: now, expiresAt: new Date(now.getTime() + 60_000), acceptedAt: now },
-          { id: "expired", name: "Expired User", email: "expired@example.com", phone: "+254700000003", role: "MEMBER", createdAt: now, expiresAt: new Date(now.getTime() - 60_000), acceptedAt: null },
+          { id: "pending", name: "Pending User", email: "pending@example.com", phone: "+254700000001", role: "MEMBER", createdAt: now, expiresAt: new Date(now.getTime() + 60_000), acceptedAt: null, acceptedUserId: null },
+          { id: "accepted", name: "Joined User", email: "joined@example.com", phone: "+254700000002", role: "TREASURER", createdAt: now, expiresAt: new Date(now.getTime() + 60_000), acceptedAt: now, acceptedUserId: "accepted-user" },
+          { id: "review", name: "Review User", email: "review@example.com", phone: "+254700000005", role: "MEMBER", createdAt: now, expiresAt: new Date(now.getTime() + 60_000), acceptedAt: now, acceptedUserId: "review-user" },
+          { id: "expired", name: "Expired User", email: "expired@example.com", phone: "+254700000003", role: "MEMBER", createdAt: now, expiresAt: new Date(now.getTime() - 60_000), acceptedAt: null, acceptedUserId: null },
         ];
         let query: unknown;
         const prisma = {
@@ -51,6 +52,10 @@ describe("personal finance data isolation", () => {
               groupId: "chama-a",
               group: { id: "chama-a", type: "CHAMA" },
             }),
+              findMany: async () => [
+                { userId: "accepted-user", status: "APPROVED" },
+                { userId: "review-user", status: "PENDING_APPROVAL" },
+              ],
           },
           memberInvitation: {
             findMany: async (value: unknown) => { query = value; return invitations; },
@@ -73,10 +78,103 @@ describe("personal finance data isolation", () => {
             createdAt: true,
             expiresAt: true,
             acceptedAt: true,
+            acceptedUserId: true,
           },
         });
-        assert.deepEqual(result.map((invitation) => invitation.status), ["PENDING", "ACCEPTED", "EXPIRED"]);
+        assert.deepEqual(result.map((invitation) => invitation.status), ["PENDING", "ACCEPTED", "REVIEW", "EXPIRED"]);
         assert.equal("tokenHash" in result[0], false);
+      });
+
+      it("returns pending requests only to authorized managers", async () => {
+        const request = {
+          id: "request-id",
+          name: "New member",
+          phone: "+254700000004",
+          role: "MEMBER",
+          joinedAt: new Date(),
+          user: { email: "new@example.com" },
+        };
+        let query: unknown;
+        const prisma = {
+          groupMember: {
+            findFirst: async () => ({
+              id: "manager-membership",
+              role: "OWNER",
+              groupId: "chama-a",
+              group: { id: "chama-a", type: "CHAMA" },
+            }),
+            findMany: async (value: unknown) => { query = value; return [request]; },
+          },
+        } as unknown as PrismaService;
+        const controller = new WorkspaceController(prisma, {} as MailService);
+
+        assert.deepEqual(await controller.listMembershipRequests(manager), [{
+          id: "request-id",
+          name: "New member",
+          phone: "+254700000004",
+          role: "MEMBER",
+          joinedAt: request.joinedAt,
+          email: "new@example.com",
+        }]);
+        assert.deepEqual(query, {
+          where: { groupId: "chama-a", revokedAt: null, status: "PENDING_APPROVAL" },
+          orderBy: [{ joinedAt: "asc" }, { id: "asc" }],
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+            role: true,
+            joinedAt: true,
+            user: { select: { email: true } },
+          },
+        });
+      });
+
+      it("records membership approvals and audit history", async () => {
+        const updates: { status?: string }[] = [];
+        const events: { action: string; entityId: string }[] = [];
+        const tx = {
+          groupMember: {
+            updateMany: async ({ data }: { data: { status: string } }) => {
+              updates.push(data);
+              return { count: 1 };
+            },
+          },
+          auditEvent: {
+            create: async ({ data }: { data: typeof events[number] }) => {
+              events.push(data);
+            },
+          },
+        };
+        let membershipLookup = 0;
+        const prisma = {
+          groupMember: {
+            findMany: async () => [],
+            findFirst: async () => ++membershipLookup === 1
+              ? {
+                id: "manager-membership",
+                role: "OWNER",
+                groupId: "chama-a",
+                group: { id: "chama-a", type: "CHAMA" },
+              }
+              : { id: "pending-member", role: "MEMBER", groupId: "chama-a" },
+          },
+          $transaction: async <T>(callback: (transaction: typeof tx) => Promise<T>) => callback(tx),
+        } as unknown as PrismaService;
+        const controller = new WorkspaceController(prisma, {} as MailService);
+
+        assert.deepEqual(await controller.decideMembershipRequest(manager, "pending-member", { decision: "APPROVE" }), {
+          success: true,
+          status: "APPROVED",
+        });
+        assert.deepEqual(updates, [{ status: "APPROVED" }]);
+        assert.deepEqual(events, [{
+          groupId: "chama-a",
+          actorId: "manager-user",
+          action: "MEMBER_MEMBERSHIP_APPROVED",
+          entityType: "GroupMember",
+          entityId: "pending-member",
+        }]);
       });
 
       it("does not allow regular members to view group invitations", async () => {

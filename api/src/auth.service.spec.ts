@@ -13,6 +13,7 @@ function createInvitationService(expiresAt: Date, existingUser?: {
   passwordHash: string;
   phone: string | null;
   profilePhotoData: null;
+  emailVerifiedAt: Date | null;
 }) {
   const { token, tokenHash } = createInvitationToken();
   const invitation = {
@@ -27,8 +28,8 @@ function createInvitationService(expiresAt: Date, existingUser?: {
     acceptedAt: null as Date | null,
     group: { id: "group-id", name: "Savings group" },
   };
-  const users: { id: string; email: string; name: string; passwordHash: string; phone: string | null; profilePhotoData: null }[] = existingUser ? [existingUser] : [];
-  const members: { groupId: string; userId: string; name: string; phone: string; role: string }[] = [];
+  const users: { id: string; email: string; name: string; passwordHash: string; phone: string | null; profilePhotoData: null; emailVerifiedAt: Date | null }[] = existingUser ? [existingUser] : [];
+  const members: { groupId: string; userId: string; name: string; phone: string; role: string; status: string }[] = [];
   const auditEvents: { action: string; entityType: string; entityId: string }[] = [];
   const tx = {
     memberInvitation: {
@@ -42,9 +43,14 @@ function createInvitationService(expiresAt: Date, existingUser?: {
     },
     user: {
       findUnique: async () => existingUser ?? null,
-      create: async ({ data }: { data: { email: string; name: string; passwordHash: string; phone?: string } }) => {
+      create: async ({ data }: { data: { email: string; name: string; passwordHash: string; phone?: string; emailVerifiedAt: Date } }) => {
         const user = { id: "user-id", ...data, phone: data.phone ?? null, profilePhotoData: null };
         users.push(user);
+        return user;
+      },
+      update: async ({ data }: { data: { emailVerifiedAt: Date } }) => {
+        const user = existingUser!;
+        user.emailVerifiedAt = data.emailVerifiedAt;
         return user;
       },
     },
@@ -182,6 +188,7 @@ describe("AuthService.acceptInvitation", () => {
     assert.notEqual(state.users[0].passwordHash, "a-unique-strong-password");
     assert.equal(state.members[0].groupId, "group-id");
     assert.equal(state.members[0].role, "MEMBER");
+    assert.equal(state.members[0].status, "PENDING_APPROVAL");
     assert.equal(state.auditEvents[0].action, "MEMBER_INVITATION_ACCEPTED");
   });
 
@@ -215,6 +222,7 @@ describe("AuthService.acceptInvitation", () => {
       passwordHash: await hash(password, 4),
       phone: null,
       profilePhotoData: null,
+      emailVerifiedAt: new Date(),
     };
     const state = createInvitationService(new Date(Date.now() + 60_000), existingUser);
 
@@ -234,6 +242,7 @@ describe("AuthService.acceptInvitation", () => {
       passwordHash: await hash("the-account-owners-password", 4),
       phone: null,
       profilePhotoData: null,
+      emailVerifiedAt: new Date(),
     };
     const state = createInvitationService(new Date(Date.now() + 60_000), existingUser);
 
@@ -243,6 +252,47 @@ describe("AuthService.acceptInvitation", () => {
     );
     assert.equal(state.members.length, 0);
     assert.equal(state.auditEvents.length, 0);
+  });
+});
+
+describe("AuthService email verification", () => {
+  it("verifies the matching unexpired token once and stores only its hash", async () => {
+    const { token, tokenHash } = createInvitationToken();
+    const user = {
+      id: "user-id",
+      emailVerifiedAt: null as Date | null,
+      emailVerificationExpiresAt: new Date(Date.now() + 60_000) as Date | null,
+      emailVerificationTokenHash: tokenHash as string | null,
+    };
+    const queries: string[] = [];
+    const prisma = {
+      user: {
+        findUnique: async ({ where }: { where: { emailVerificationTokenHash: string } }) => {
+          queries.push(where.emailVerificationTokenHash);
+          return where.emailVerificationTokenHash === user.emailVerificationTokenHash ? user : null;
+        },
+        updateMany: async ({ where, data }: {
+          where: { id: string; emailVerifiedAt: null; emailVerificationTokenHash: string; emailVerificationExpiresAt: { gt: Date } };
+          data: { emailVerifiedAt: Date; emailVerificationTokenHash: null; emailVerificationExpiresAt: null };
+        }) => {
+          if (where.id !== user.id || where.emailVerificationTokenHash !== user.emailVerificationTokenHash ||
+            !user.emailVerificationExpiresAt || user.emailVerificationExpiresAt <= where.emailVerificationExpiresAt.gt) {
+            return { count: 0 };
+          }
+          user.emailVerifiedAt = data.emailVerifiedAt;
+          user.emailVerificationTokenHash = null;
+          user.emailVerificationExpiresAt = null;
+          return { count: 1 };
+        },
+      },
+    } as unknown as PrismaService;
+    const auth = new AuthService(prisma, {} as JwtService, {} as never);
+
+    assert.deepEqual(await auth.verifyEmail({ token }), { message: "Email verified. You can now sign in." });
+    assert.notEqual(user.emailVerifiedAt, null);
+    assert.equal(user.emailVerificationTokenHash, null);
+    assert.deepEqual(queries, [tokenHash]);
+    await assert.rejects(auth.verifyEmail({ token }), /invalid, expired, or already used/);
   });
 });
 
