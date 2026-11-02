@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Body,
   UseGuards,
@@ -18,7 +19,7 @@ import {
 import { isUUID } from "class-validator";
 import { randomUUID } from "node:crypto";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
-import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, DecideMembershipDto, UpdateProfileDto } from "./auth.dto";
+import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, DecideMembershipDto, GroupFinancialProviderDto, UpdateProfileDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
 import { GroupRole, Prisma } from "@prisma/client";
 import { calculateGoalDiscipline } from "./savings-goals";
@@ -226,6 +227,66 @@ export class WorkspaceController {
       }
       throw error;
     }
+  }
+
+  @Get("financial-providers")
+  async listFinancialProviders(@CurrentUser() user: SessionUser) {
+    const { group } = await this.getMembership(user);
+    return this.prisma.financialProviderSetup.findMany({
+      where: { groupId: group.id },
+      orderBy: { type: "asc" },
+      select: {
+        type: true,
+        providerName: true,
+        maskedIdentifier: true,
+        productName: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  @Put("financial-providers")
+  async saveFinancialProvider(
+    @CurrentUser() user: SessionUser,
+    @Body() input: GroupFinancialProviderDto,
+  ) {
+    const { group, role } = await this.getMembership(user);
+    this.requireRole(role, group.type === "SACCO"
+      ? ["CHAIRPERSON", "SECRETARY"]
+      : ["OWNER", "ADMIN", "TREASURER"]);
+    const providerName = input.providerName.trim();
+    const maskedIdentifier = input.maskedIdentifier?.trim() || null;
+    const productName = input.productName?.trim() || null;
+    if (providerName.length < 2) throw new BadRequestException("Enter a provider name.");
+    if (maskedIdentifier && /\d{5,}/.test(maskedIdentifier.replace(/[\s-]/g, ""))) {
+      throw new BadRequestException("Enter only a masked reference or its last four digits, not a full account number.");
+    }
+
+    const setup = await this.prisma.$transaction(async (tx) => {
+      const saved = await tx.financialProviderSetup.upsert({
+        where: { groupId_type: { groupId: group.id, type: input.type } },
+        create: {
+          groupId: group.id,
+          type: input.type,
+          providerName,
+          maskedIdentifier,
+          productName,
+        },
+        update: { providerName, maskedIdentifier, productName },
+        select: { type: true, providerName: true, maskedIdentifier: true, productName: true, updatedAt: true },
+      });
+      await tx.auditEvent.create({
+        data: {
+          groupId: group.id,
+          actorId: user.sub,
+          action: "FINANCIAL_PROVIDER_SETUP_UPDATED",
+          entityType: "FinancialProviderSetup",
+          entityId: `${group.id}:${input.type}`,
+        },
+      });
+      return saved;
+    });
+    return setup;
   }
 
   @Get("sacco/loan-products")

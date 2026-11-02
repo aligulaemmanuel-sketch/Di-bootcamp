@@ -132,6 +132,13 @@ type SaccoLoanProduct = { id: string; name: string; calculationMethod: "FLAT" | 
 type SaccoEntry = { id: string; kind: "SHARE_CAPITAL" | "DEPOSIT" | "WITHDRAWAL"; accountType: "BOSA" | "FOSA"; amountMinor: string; reference: string; note: string | null; createdAt: string; member: { id: string; name: string } };
 type SaccoTotal = { memberId: string; kind: SaccoEntry["kind"]; accountType: SaccoEntry["accountType"]; amountMinor: string };
 type SaccoWorkspace = { entries: SaccoEntry[]; totals: SaccoTotal[]; isManager: boolean };
+type FinancialProviderSetup = {
+  type: "BANK" | "MMF" | "INVESTMENT";
+  providerName: string;
+  maskedIdentifier: string | null;
+  productName: string | null;
+  updatedAt: string;
+};
 type PersonalActivity = { id: string; title: string; kind: "SAVING" | "INVESTMENT" | "INCOME" | "EXPENSE"; amountMinor: string; occurredAt: string; goal: { id: string; title: string } | null };
 type PersonalGoal = { id: string; title: string; kind: "SAVING" | "INVESTMENT"; targetMinor: string; savedMinor: string; progressPercent: number; targetDate: string };
 type PersonalWorkspace = { goals: PersonalGoal[]; activities: PersonalActivity[] };
@@ -284,6 +291,7 @@ export default function Home({
   const [notifications, setNotifications] = useState<UserNotification[]>(initialData.notifications);
   const [saccoWorkspace, setSaccoWorkspace] = useState<SaccoWorkspace>(initialData.saccoWorkspace);
   const [saccoLoanProducts, setSaccoLoanProducts] = useState<SaccoLoanProduct[]>(initialData.saccoLoanProducts);
+  const [financialProviders, setFinancialProviders] = useState<FinancialProviderSetup[] | null>(null);
   const [authState, setAuthState] = useState<"signed-out" | "signed-in">(initialData.user ? "signed-in" : "signed-out");
   const [authMode, setAuthMode] = useState<"login" | "register" | "reset">(initialAuthMode);
   const [showLanding, setShowLanding] = useState(initialShowLanding);
@@ -473,6 +481,22 @@ export default function Home({
       });
     return () => { active = false; };
   }, [activeWorkspace, section, workspace?.canManageMembers]);
+
+  const settingsGroupId = workspace?.group.id;
+  useEffect(() => {
+    if (section !== "Settings" || !settingsGroupId) {
+      setFinancialProviders(null);
+      return;
+    }
+    let active = true;
+    setFinancialProviders(null);
+    api<FinancialProviderSetup[]>("financial-providers")
+      .then((providers) => { if (active) setFinancialProviders(providers); })
+      .catch((reason: unknown) => {
+        if (active) setError(reason instanceof Error ? reason.message : "Unable to load group provider details.");
+      });
+    return () => { active = false; };
+  }, [activeWorkspace, section, settingsGroupId]);
 
   useEffect(() => {
     window.localStorage.setItem("maliwise-dashboard-theme", dashboardTheme);
@@ -944,6 +968,33 @@ export default function Home({
       }),
       decision === "APPROVE" ? "Membership approved." : "Membership request rejected.",
     );
+  }
+
+  async function submitFinancialProvider(type: FinancialProviderSetup["type"], event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    setBusy(true);
+    setError("");
+    try {
+      const saved = await api<FinancialProviderSetup>("financial-providers", {
+        method: "PUT",
+        body: JSON.stringify({
+          type,
+          providerName: form.get("providerName"),
+          maskedIdentifier: form.get("maskedIdentifier"),
+          productName: form.get("productName"),
+        }),
+      });
+      setFinancialProviders((current) => [
+        ...(current ?? []).filter((provider) => provider.type !== type),
+        saved,
+      ]);
+      setNotice("Provider details saved. Automatic balance syncing is not enabled.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to save provider details.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function submitContribution(event: FormEvent<HTMLFormElement>) {
@@ -1574,6 +1625,29 @@ export default function Home({
 
           {section === "Settings" && <section className="settings-grid">
             {workspace && <article className="panel settings-panel"><div className="panel-heading"><div><h2>Group profile</h2><p>Your group’s workspace details.</p></div></div><div className="settings-row"><span>Organization type</span><strong>{workspace.group.type === "SACCO" ? "SACCO" : "Chama"}</strong></div><div className="settings-row"><span>Group name</span><strong>{workspace.group.name}</strong></div><div className="settings-row"><span>Currency</span><strong>{workspace.group.currency} · Kenyan Shilling</strong></div><div className="settings-row"><span>Members</span><strong>{workspace.summary.memberCount}</strong></div><div className="settings-row"><span>Your role</span><strong>{roleLabel(groupWorkspaces.find((group) => group.id === activeWorkspace)?.role ?? "MEMBER")}</strong></div></article>}
+            {workspace && <article className="panel settings-panel">
+              <div className="panel-heading"><div><h2>Bank, MMF & investment providers</h2><p>Set up provider details for this group.</p></div></div>
+              <p className="form-note"><ShieldCheck size={15} /> Provider details only—no balances are imported and automatic syncing is not active. Never enter PINs, passwords, full account numbers, or API secrets. Details are visible to approved group members and authorized managers.</p>
+              {financialProviders === null ? <div className="empty-state">Loading provider details…</div> : (["BANK", "MMF", "INVESTMENT"] as const).map((type) => {
+                const provider = financialProviders.find((item) => item.type === type);
+                const heading = type === "BANK" ? "Bank account" : type === "MMF" ? "Money market fund (MMF)" : "Investment holding";
+                const identifierLabel = type === "BANK" ? "Masked account identifier" : "Masked member/reference number";
+                const productLabel = type === "BANK" ? null : type === "MMF" ? "Fund name" : "Product or holding";
+                return <div className="provider-setup-block" key={`${activeWorkspace}-${type}`}>
+                  <h3>{heading}</h3>
+                  {workspace.canManageMembers ? <form className="modal-form settings-daraja-form" onSubmit={(event) => void submitFinancialProvider(type, event)}>
+                    <label>Provider name<input autoComplete="organization" defaultValue={provider?.providerName ?? ""} maxLength={100} minLength={2} name="providerName" placeholder={type === "BANK" ? "Bank name" : type === "MMF" ? "Fund manager" : "Investment provider"} required /></label>
+                    <label>{identifierLabel}<input autoComplete="off" defaultValue={provider?.maskedIdentifier ?? ""} maxLength={40} name="maskedIdentifier" placeholder="Optional · e.g. ••••1234" /></label>
+                    {productLabel && <label>{productLabel}<input defaultValue={provider?.productName ?? ""} maxLength={120} name="productName" placeholder={productLabel} /></label>}
+                    <button className="button button-primary button-small" disabled={busy} type="submit">Save {heading.toLowerCase()}</button>
+                  </form> : provider ? <div className="provider-setup-details">
+                    <div className="settings-row"><span>Provider</span><strong>{provider.providerName}</strong></div>
+                    {provider.maskedIdentifier && <div className="settings-row"><span>{identifierLabel}</span><strong>{provider.maskedIdentifier}</strong></div>}
+                    {provider.productName && <div className="settings-row"><span>{productLabel}</span><strong>{provider.productName}</strong></div>}
+                  </div> : <p className="muted-small">No provider details have been added.</p>}
+                </div>;
+              })}
+            </article>}
             {workspace?.group.type === "SACCO" && <article className="panel settings-panel">
               <div className="panel-heading"><div><h2>SACCO loan products</h2><p>Product terms are stored for reference; repayments are not calculated.</p></div>{canManageSaccoProducts && <button className="button button-primary button-small" onClick={() => setModal("saccoProduct")}><Plus size={14} /> Add product</button>}</div>
               {saccoLoanProducts.length ? saccoLoanProducts.map((product) => <div className="settings-row" key={product.id}><span>{product.name}<small className="muted-small">{product.calculationMethod === "FLAT" ? "Flat rate" : "Reducing balance"}</small></span><strong>{(product.annualInterestBps / 100).toFixed(2)}% · {product.termMonths} months</strong></div>) : <div className="empty-state">No products configured yet.</div>}

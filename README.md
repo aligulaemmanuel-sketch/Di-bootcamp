@@ -8,6 +8,7 @@ Wealth Sketch is a server-backed group finance application built with a Next.js 
 - Secure HTTP-only session cookie and access token expire after seven days
 - Group-scoped Chama roles and SACCO Chairperson, Secretary, Treasurer, Credit Officer, and Member permissions
 - Separate SACCO workspaces with manually tracked BOSA/FOSA share-capital, deposit, and withdrawal entries
+- Group-level bank, MMF, and investment provider details with masked references; these are setup records only, not live integrations or balances
 - Configurable SACCO loan products and member loan applications with recorded approval decisions
 - One-time, expiring email password-reset links with session revocation
 - Group-scoped member roster with email verification, invitations, and manager approval for new membership
@@ -27,6 +28,8 @@ Savings-goal progress includes only contribution records explicitly assigned to 
 New accounts must verify their email before signing in. Members accepting a group invitation request membership; an authorized group manager must approve it before group records become accessible. This verifies email control and records an administrator decision only; it does not validate membership against official SACCO records. Personal finance entries are private tracking records, not bank balances, investment valuations, or executed transactions. Reminders are one-time and user-scheduled; group-wide reminders are restricted to group managers. In-app alerts need no external provider. Email reminders use the SMTP settings; SMS reminders require `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_FROM_NUMBER`. Delivery errors remain visible in the alert panel and API logs.
 
 SACCO workspaces are isolated from Chama contribution and payment flows. BOSA/FOSA values are manual records, not verified account balances; share capital is accepted only under BOSA, but withdrawals and account eligibility rules are not enforced. Loan products retain a stated method, annual interest rate, and term for reference only. The MVP does not calculate amortization or interest, manage guarantors or payroll check-off, post SACCO double-entry journals, reconcile transactions, or generate SASRA/regulatory returns. KYC documents and sensitive identity data are not collected. Production payment collection and disbursements are not available for SACCOs.
+
+Bank, MMF, and investment provider details are group-level setup metadata, visible to approved members and authorized managers. Only provider names, masked references, and product/holding labels are stored. Balances, provider credentials, and automated syncing are not supported; integrate a provider only after obtaining its official API documentation and authorization requirements.
 
 ## Requirements
 

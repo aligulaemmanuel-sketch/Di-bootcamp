@@ -27,6 +27,135 @@ describe("personal finance data isolation", () => {
       include: { activities: { where: { userId: "alice" }, select: { amountMinor: true } } },
     });
 
+    describe("group financial provider setup", () => {
+      const member: SessionUser = {
+        sub: "member-user",
+        email: "member@example.com",
+        selectedGroupId: "sacco-a",
+        personalWorkspace: false,
+      };
+
+      it("shows only provider setup metadata to approved group members", async () => {
+        const setup = {
+          type: "MMF",
+          providerName: "Example Fund",
+          maskedIdentifier: "••••1234",
+          productName: "Money Market Fund",
+          updatedAt: new Date(),
+        };
+        let query: unknown;
+        const prisma = {
+          groupMember: {
+            findFirst: async () => ({
+              id: "member-a",
+              role: "MEMBER",
+              groupId: "sacco-a",
+              group: { id: "sacco-a", type: "SACCO" },
+            }),
+          },
+          financialProviderSetup: {
+            findMany: async (value: unknown) => { query = value; return [setup]; },
+          },
+        } as unknown as PrismaService;
+        const controller = new WorkspaceController(prisma, {} as MailService);
+
+        assert.deepEqual(await controller.listFinancialProviders(member), [setup]);
+        assert.deepEqual(query, {
+          where: { groupId: "sacco-a" },
+          orderBy: { type: "asc" },
+          select: { type: true, providerName: true, maskedIdentifier: true, productName: true, updatedAt: true },
+        });
+      });
+
+      it("lets authorized managers save masked provider details and audits the setup", async () => {
+        const manager = { ...member, sub: "chairperson" };
+        const saved = {
+          type: "INVESTMENT",
+          providerName: "Example Investments",
+          maskedIdentifier: "••••1234",
+          productName: "Balanced Fund",
+          updatedAt: new Date(),
+        };
+        const writes: unknown[] = [];
+        const events: unknown[] = [];
+        const tx = {
+          financialProviderSetup: {
+            upsert: async (value: unknown) => { writes.push(value); return saved; },
+          },
+          auditEvent: {
+            create: async (value: unknown) => { events.push(value); },
+          },
+        };
+        const prisma = {
+          groupMember: {
+            findFirst: async () => ({
+              id: "chairperson-membership",
+              role: "CHAIRPERSON",
+              groupId: "sacco-a",
+              group: { id: "sacco-a", type: "SACCO" },
+            }),
+          },
+          $transaction: async <T>(callback: (transaction: typeof tx) => Promise<T>) => callback(tx),
+        } as unknown as PrismaService;
+        const controller = new WorkspaceController(prisma, {} as MailService);
+
+        assert.deepEqual(await controller.saveFinancialProvider(manager, {
+          type: "INVESTMENT",
+          providerName: " Example Investments ",
+          maskedIdentifier: " ••••1234 ",
+          productName: " Balanced Fund ",
+        }), saved);
+        assert.deepEqual(writes, [{
+          where: { groupId_type: { groupId: "sacco-a", type: "INVESTMENT" } },
+          create: {
+            groupId: "sacco-a",
+            type: "INVESTMENT",
+            providerName: "Example Investments",
+            maskedIdentifier: "••••1234",
+            productName: "Balanced Fund",
+          },
+          update: {
+            providerName: "Example Investments",
+            maskedIdentifier: "••••1234",
+            productName: "Balanced Fund",
+          },
+          select: { type: true, providerName: true, maskedIdentifier: true, productName: true, updatedAt: true },
+        }]);
+        assert.deepEqual(events, [{
+          data: {
+            groupId: "sacco-a",
+            actorId: "chairperson",
+            action: "FINANCIAL_PROVIDER_SETUP_UPDATED",
+            entityType: "FinancialProviderSetup",
+            entityId: "sacco-a:INVESTMENT",
+          },
+        }]);
+      });
+
+      it("rejects unmasked account-number-like references", async () => {
+        let databaseAccessed = false;
+        const prisma = {
+          groupMember: {
+            findFirst: async () => ({
+              id: "chairperson-membership",
+              role: "CHAIRPERSON",
+              groupId: "sacco-a",
+              group: { id: "sacco-a", type: "SACCO" },
+            }),
+          },
+          $transaction: async () => { databaseAccessed = true; },
+        } as unknown as PrismaService;
+        const controller = new WorkspaceController(prisma, {} as MailService);
+
+        await assert.rejects(controller.saveFinancialProvider({ ...member, sub: "chairperson" }, {
+          type: "BANK",
+          providerName: "Example Bank",
+          maskedIdentifier: "123456789",
+        }), /masked reference or its last four digits/);
+        assert.equal(databaseAccessed, false);
+      });
+    });
+
     describe("member invitation tracking", () => {
       const manager: SessionUser = {
         sub: "manager-user",

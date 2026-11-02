@@ -28,6 +28,12 @@ enum MembershipStatus {
   REJECTED
 }
 
+enum FinancialProviderType {
+  BANK
+  MMF
+  INVESTMENT
+}
+
 enum SaccoEntryKind {
   SHARE_CAPITAL
   DEPOSIT
@@ -130,6 +136,7 @@ model Group {
   reminders           Reminder[]
   saccoEntries        SaccoEntry[]
   saccoLoanProducts   SaccoLoanProduct[]
+  financialProviders FinancialProviderSetup[]
 }
 
 model GroupMember {
@@ -174,6 +181,20 @@ model SaccoEntry {
   @@index([groupId, createdAt])
   @@index([memberId, createdAt])
   @@index([groupId, kind, createdAt])
+}
+
+model FinancialProviderSetup {
+  id               String                @id @default(uuid())
+  groupId          String
+  type             FinancialProviderType
+  providerName     String                @db.VarChar(100)
+  maskedIdentifier String?               @db.VarChar(40)
+  productName      String?               @db.VarChar(120)
+  updatedAt        DateTime              @updatedAt
+  group            Group                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, type])
+  @@index([groupId])
 }
 
 model SaccoLoanProduct {

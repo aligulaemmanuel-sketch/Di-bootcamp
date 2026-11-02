@@ -77,6 +77,27 @@ export class CreateSaccoEntryDto {
   note?: string;
 }
 
+export class GroupFinancialProviderDto {
+  @IsString()
+  @Matches(/^(BANK|MMF|INVESTMENT)$/)
+  type!: "BANK" | "MMF" | "INVESTMENT";
+
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  providerName!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  maskedIdentifier?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  productName?: string;
+}
+
 export class CreateSaccoLoanProductDto {
   @IsString()
   @MinLength(2)
