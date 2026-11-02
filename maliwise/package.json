@@ -1,0 +1,38 @@
+{
+  "name": "maliwise",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["api"],
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c green,blue \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "next dev",
+    "build": "npm run db:generate && npm run build:api && next build",
+    "build:api": "npm --prefix api run build",
+    "start": "concurrently -k -n API,WEB -c green,blue \"npm:start:api\" \"npm:start:web\"",
+    "start:api": "npm --prefix api run start",
+    "start:web": "next start",
+    "db:generate": "node -e \"const fs=require('fs');const path=require('path');const dirs=[path.join(process.cwd(),'node_modules','.prisma','client'),path.join(process.cwd(),'api','node_modules','.prisma','client')];for (const dir of dirs) { if (!fs.existsSync(dir)) continue; for (const entry of fs.readdirSync(dir)) { if (entry.includes('.tmp')) fs.rmSync(path.join(dir, entry), { recursive: true, force: true }); } }\" && npm --prefix api run db:generate",
+    "db:migrate": "npm --prefix api run db:migrate",
+    "db:deploy": "npm --prefix api run db:deploy",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "concurrently": "^9.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.6.1",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.7.2"
+  }
+}
