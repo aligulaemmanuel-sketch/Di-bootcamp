@@ -1,11 +1,14 @@
-import { Body, Controller, Get, Inject, NotFoundException, Param, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Logger, NotFoundException, Param, Post, Query, Req, Res, UseGuards } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
 import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
 import { hashInvitationToken } from "./invitation-token";
+import { OAuthProvider, OAuthService } from "./oauth.service";
+
+const oauthStateCookieName = (provider: OAuthProvider) => `maliwise_oauth_${provider}`;
 
 const cookieOptions = (secure: boolean) => ({
   httpOnly: true,
@@ -17,9 +20,12 @@ const cookieOptions = (secure: boolean) => ({
 
 @Controller("api/auth")
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     @Inject(AuthService) private readonly auth: AuthService,
     @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(OAuthService) private readonly oauth: OAuthService,
   ) {}
 
   @Post("register")
@@ -34,6 +40,62 @@ export class AuthController {
     const { token, user } = await this.auth.login(input);
     response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
     return { user };
+  }
+
+  @Get("oauth/:provider")
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  async beginOAuth(@Param("provider") value: string, @Res() response: Response) {
+    const provider = this.oauth.getProvider(value);
+    const { authorizationUrl, stateCookie, callbackPath, secure } = await this.oauth.begin(provider);
+    response.cookie(oauthStateCookieName(provider), stateCookie, {
+      httpOnly: true,
+      secure,
+      sameSite: "lax",
+      path: callbackPath,
+      maxAge: 10 * 60 * 1000,
+    });
+    response.redirect(302, authorizationUrl);
+  }
+
+  @Get("oauth/:provider/callback")
+  @Throttle({ default: { limit: 20, ttl: 60_000 } })
+  async completeOAuth(
+    @Param("provider") value: string,
+    @Query("code") code: string | undefined,
+    @Query("state") state: string | undefined,
+    @Query("error") providerError: string | undefined,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    const provider = this.oauth.getProvider(value);
+    const appUrl = this.oauth.getAppUrl();
+    const stateCookie = request.cookies?.[oauthStateCookieName(provider)] as string | undefined;
+    response.clearCookie(oauthStateCookieName(provider), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production" || (process.env.WEB_ORIGIN ?? "").startsWith("https://"),
+      sameSite: "lax",
+      path: `/api/auth/oauth/${provider}/callback`,
+    });
+    if (providerError || !code || !state) {
+      appUrl.searchParams.set("auth", "login");
+      appUrl.searchParams.set("oauth_error", "1");
+      response.redirect(302, appUrl.toString());
+      return;
+    }
+
+    try {
+      const { token, user } = await this.oauth.complete(provider, { code, state, stateCookie });
+      response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
+      appUrl.searchParams.delete("auth");
+      appUrl.searchParams.delete("oauth_error");
+      response.redirect(302, appUrl.toString());
+      return user;
+    } catch (error) {
+      this.logger.error(`${provider} sign-in failed.`);
+      appUrl.searchParams.set("auth", "login");
+      appUrl.searchParams.set("oauth_error", "1");
+      response.redirect(302, appUrl.toString());
+    }
   }
 
   @Post("password-reset/request")

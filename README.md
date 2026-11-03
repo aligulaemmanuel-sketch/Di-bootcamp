@@ -70,6 +70,8 @@ Bank, MMF, and investment provider details are group-level setup metadata, visib
 
    Password recovery and email verification use the same SMTP settings and `APP_URL`. Reset and verification links expire after one hour, are stored as hashes, and can be used once; changing the password revokes existing sessions. For privacy, email resend screens always confirm generically whether or not an account needs verification.
 
+   To enable social sign-in, register OAuth applications with Google, Apple, Microsoft Entra ID, Facebook, and GitHub, then set each provider's client ID and secret in `api/.env` (Apple uses a signed client secret instead). Add the exact callback URL `http://localhost:3000/api/auth/oauth/<provider>/callback` to each provider app during local development; in deployment, use the same path on your HTTPS web origin. The callback is proxied to the API through the existing `/api` rewrite, so keep `WEB_ORIGIN` set to the exact browser origin. Apple also requires `APPLE_TEAM_ID`, `APPLE_KEY_ID`, and `APPLE_PRIVATE_KEY` (store the private key securely; newlines may be represented as `\n`). Microsoft can be restricted to a tenant with `MICROSOFT_TENANT_ID`; its default is `common`. Social sign-in requires the provider to return a verified email address. OAuth identities are stored separately and verified-email matches are connected to the existing account.
+
 3. Install dependencies and prepare the database:
 
    ```powershell

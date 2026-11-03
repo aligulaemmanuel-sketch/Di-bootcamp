@@ -10,6 +10,7 @@ import { MailService } from "./mail.service";
 import { DarajaController } from "./daraja.controller";
 import { DarajaService } from "./daraja.service";
 import { ReminderService } from "./reminder.service";
+import { OAuthService } from "./oauth.service";
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { ReminderService } from "./reminder.service";
     }),
   ],
   controllers: [AuthController, WorkspaceController, DarajaController],
-  providers: [AuthService, DarajaService, MailService, PrismaService, ReminderService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  providers: [AuthService, DarajaService, MailService, OAuthService, PrismaService, ReminderService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

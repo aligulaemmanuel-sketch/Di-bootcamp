@@ -116,6 +116,19 @@ model User {
   notifications       UserNotification[]
   saccoEntries        SaccoEntry[]         @relation("RecordedSaccoEntries")
   saccoLoanProducts   SaccoLoanProduct[]   @relation("CreatedSaccoLoanProducts")
+  oauthAccounts       OAuthAccount[]
+}
+
+model OAuthAccount {
+  id                String   @id @default(uuid())
+  provider          String
+  providerAccountId String
+  userId            String
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Group {

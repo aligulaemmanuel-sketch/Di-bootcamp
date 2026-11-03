@@ -271,11 +271,13 @@ export default function Home({
   initialData,
   initialAuthMode,
   initialLoadError,
+  initialOAuthError,
   initialShowLanding,
 }: {
   initialData: HomeInitialData;
   initialAuthMode: "login" | "register";
   initialLoadError: string | null;
+  initialOAuthError: boolean;
   initialShowLanding: boolean;
 }) {
   const [account, setAccount] = useState<Account | null>(initialData.user);
@@ -309,7 +311,9 @@ export default function Home({
   const [modal, setModal] = useState<ModalKind>(null);
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
-  const [error, setError] = useState(initialLoadError ?? "");
+  const [error, setError] = useState(initialOAuthError
+    ? "Social sign-in could not be completed. Check the provider setup and try again."
+    : initialLoadError ?? "");
   const [authMessage, setAuthMessage] = useState("");
   const [canResendVerification, setCanResendVerification] = useState(false);
   const [passwordResetToken, setPasswordResetToken] = useState("");
@@ -1262,6 +1266,20 @@ export default function Home({
                 <div className="auth-password-field"><label>Password<div className="password-input-wrap"><input autoComplete="current-password" name="password" placeholder="Your password" required type={passwordVisible ? "text" : "password"} /><button aria-label={passwordVisible ? "Hide password" : "Show password"} aria-pressed={passwordVisible} className="password-visibility-toggle" onClick={() => setPasswordVisible(!passwordVisible)} type="button">{passwordVisible ? <EyeOff aria-hidden="true" size={16} /> : <Eye aria-hidden="true" size={16} />}</button></div></label><button className="auth-recovery-link" onClick={() => flipAuthCard("reset")} type="button">Forgot password?</button></div>
                 <button className="button button-primary auth-submit" disabled={busy} type="submit">{busy ? "Please wait…" : "Sign in"} <ArrowRight size={16} /></button>
               </form>
+              <div aria-hidden="true" className="auth-divider"><span>or continue with</span></div>
+              <div aria-label="Sign in with another provider" className="oauth-options">
+                {[
+                  ["google", "Google", "G"],
+                  ["apple", "Apple", "A"],
+                  ["microsoft", "Microsoft", "M"],
+                  ["facebook", "Facebook", "f"],
+                  ["github", "GitHub", "⌘"],
+                ].map(([provider, label, mark]) => (
+                  <a className="oauth-button" href={`/api/auth/oauth/${provider}`} key={provider}>
+                    <span aria-hidden="true">{mark}</span> Continue with {label}
+                  </a>
+                ))}
+              </div>
               {canResendVerification && <button className="auth-recovery-link" disabled={busy} onClick={() => void resendEmailVerification()} type="button">Resend verification email</button>}
               <p className="auth-switch">New to Wealth Sketch? <button onClick={() => flipAuthCard("register")} type="button">Create an account</button></p>
             </section>

@@ -108,7 +108,7 @@ async function getInitialData(resetRequested: boolean): Promise<HomeInitialData>
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ auth?: string | string[]; invite?: string | string[]; reset?: string | string[]; verifyEmail?: string | string[] }>;
+  searchParams: Promise<{ auth?: string | string[]; invite?: string | string[]; reset?: string | string[]; verifyEmail?: string | string[]; oauth_error?: string | string[] }>;
 }) {
   const params = await searchParams;
   let initialData: HomeInitialData;
@@ -123,12 +123,14 @@ export default async function Page({
   }
   const requestedAuth = Array.isArray(params.auth) ? params.auth[0] : params.auth;
   const initialAuthMode = requestedAuth === "register" || requestedAuth === "signup" ? "register" : "login";
-  const hasAuthIntent = Boolean(params.reset || params.invite || params.verifyEmail || requestedAuth);
+  const initialOAuthError = Boolean(params.oauth_error);
+  const hasAuthIntent = Boolean(params.reset || params.invite || params.verifyEmail || requestedAuth || initialOAuthError);
   return (
     <Home
       initialAuthMode={initialAuthMode}
       initialData={initialData}
       initialLoadError={initialLoadError}
+      initialOAuthError={initialOAuthError}
       initialShowLanding={!initialData.user && !hasAuthIntent}
     />
   );
