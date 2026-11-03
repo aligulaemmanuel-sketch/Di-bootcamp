@@ -6,6 +6,7 @@
     "dev": "tsx watch src/main.ts",
     "build": "nest build",
     "start": "node dist/main.js",
+    "start:worker": "node dist/worker.js",
     "test": "node --import tsx --test src/*.spec.ts",
     "db:generate": "node -e \"const fs=require('fs');const path=require('path');const dir=path.join(process.cwd(),'node_modules','.prisma','client');if (fs.existsSync(dir)) { for (const entry of fs.readdirSync(dir)) { if (entry.includes('.tmp')) fs.rmSync(path.join(dir, entry), { recursive: true, force: true }); } }\" && prisma generate",
     "db:migrate": "prisma migrate dev",

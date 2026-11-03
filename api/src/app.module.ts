@@ -11,6 +11,7 @@ import { DarajaController } from "./daraja.controller";
 import { DarajaService } from "./daraja.service";
 import { ReminderService } from "./reminder.service";
 import { OAuthService } from "./oauth.service";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { OAuthService } from "./oauth.service";
       signOptions: { expiresIn: "7d" },
     }),
   ],
-  controllers: [AuthController, WorkspaceController, DarajaController],
-  providers: [AuthService, DarajaService, MailService, OAuthService, PrismaService, ReminderService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
+  controllers: [AuthController, WorkspaceController, DarajaController, HealthController],
+  providers: [AuthService, DarajaService, MailService, OAuthService, PrismaService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

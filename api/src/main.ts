@@ -26,7 +26,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bodyParser: false });
   app.setGlobalPrefix("");
   app.getHttpAdapter().getInstance().set("trust proxy", trustProxyHops);
-  app.enableCors({ origin: webOrigin, credentials: true });
+  app.enableCors({
+    origin: webOrigin,
+    credentials: true,
+    methods: ["GET", "HEAD", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Idempotency-Key", "X-Maliwise-Workspace"],
+  });
   app.use(cookieParser());
   app.use(express.json({ limit: "2mb" }));
   app.useGlobalPipes(new ValidationPipe({
@@ -35,7 +40,11 @@ async function bootstrap() {
     transform: true,
   }));
   app.enableShutdownHooks();
-  await app.listen(Number(process.env.API_PORT ?? 4000), "0.0.0.0");
+  const port = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error("PORT must be a valid TCP port.");
+  }
+  await app.listen(port, "0.0.0.0");
 }
 
 void bootstrap();

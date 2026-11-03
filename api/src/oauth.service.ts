@@ -171,7 +171,7 @@ export class OAuthService {
       url.username ||
       url.password
     ) {
-      throw new ServiceUnavailableException("WEB_ORIGIN must use HTTPS in production.");
+      throw new ServiceUnavailableException("API_PUBLIC_URL must use HTTPS in production.");
     }
     return url.toString();
   }

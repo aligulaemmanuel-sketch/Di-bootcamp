@@ -19,7 +19,6 @@ export class ReminderService implements OnModuleInit, OnModuleDestroy {
         this.logger.error("Scheduled reminder processing failed.", error instanceof Error ? error.stack : undefined);
       });
     }, 30_000);
-    this.interval.unref();
     void this.processDueReminders().catch((error: unknown) => {
       this.logger.error("Initial reminder processing failed.", error instanceof Error ? error.stack : undefined);
     });
