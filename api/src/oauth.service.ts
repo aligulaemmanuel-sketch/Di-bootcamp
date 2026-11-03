@@ -158,12 +158,12 @@ export class OAuthService {
   }
 
   private getCallbackUrl(provider: OAuthProvider) {
-    const baseUrl = process.env.WEB_ORIGIN ?? process.env.APP_URL ?? "http://localhost:3000";
+    const baseUrl = process.env.API_PUBLIC_URL ?? "http://localhost:4000";
     let url: URL;
     try {
       url = new URL(`/api/auth/oauth/${provider}/callback`, baseUrl);
     } catch {
-      throw new ServiceUnavailableException("WEB_ORIGIN must be a valid absolute URL for sign-in callbacks.");
+      throw new ServiceUnavailableException("API_PUBLIC_URL must be a valid absolute URL for sign-in callbacks.");
     }
     if (
       (process.env.NODE_ENV === "production" && url.protocol !== "https:") ||

@@ -10,10 +10,10 @@ import { OAuthProvider, OAuthService } from "./oauth.service";
 
 const oauthStateCookieName = (provider: OAuthProvider) => `maliwise_oauth_${provider}`;
 
-const cookieOptions = (secure: boolean) => ({
+const sessionCookieOptions = () => ({
   httpOnly: true,
-  secure,
-  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: (process.env.COOKIE_SAME_SITE === "none" ? "none" : "lax") as "lax" | "none",
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
@@ -38,7 +38,7 @@ export class AuthController {
   @Throttle({ default: { limit: 8, ttl: 60_000 } })
   async login(@Body() input: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { token, user } = await this.auth.login(input);
-    response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
+    response.cookie("maliwise_session", token, sessionCookieOptions());
     return { user };
   }
 
@@ -85,7 +85,7 @@ export class AuthController {
 
     try {
       const { token, user } = await this.oauth.complete(provider, { code, state, stateCookie });
-      response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
+      response.cookie("maliwise_session", token, sessionCookieOptions());
       appUrl.searchParams.delete("auth");
       appUrl.searchParams.delete("oauth_error");
       response.redirect(302, appUrl.toString());
@@ -160,7 +160,7 @@ export class AuthController {
     response.clearCookie("maliwise_session", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.COOKIE_SAME_SITE === "none" ? "none" : "lax",
       path: "/",
     });
     return { ok: true };

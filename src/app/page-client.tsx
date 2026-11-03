@@ -156,6 +156,8 @@ class ApiError extends Error {
   }
 }
 
+const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000").replace(/\/+$/, "");
+
 const navItems: { label: Section; icon: typeof LayoutDashboard }[] = [
   { label: "Overview", icon: LayoutDashboard },
   { label: "Personal", icon: Wallet },
@@ -200,9 +202,9 @@ function inputDateTime(date: Date) {
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(`/api/${path}`, {
+    response = await fetch(`${apiBaseUrl}/api/${path}`, {
       ...options,
-      credentials: "same-origin",
+      credentials: "include",
       headers: {
         ...(typeof window !== "undefined" && window.localStorage.getItem("maliwise-active-workspace")
           ? { "X-Maliwise-Workspace": window.localStorage.getItem("maliwise-active-workspace")! }
@@ -426,11 +428,11 @@ export default function Home({
       setSection("Overview");
       const selected = await refreshWorkspace();
       await Promise.all([
-        ...(selected.group.type === "SACCO" ? [] : [refreshAnalytics(analyticsRange)]),
+        ...(selected.group.type === "SACCO" ? [] : [refreshAnalytics("30d")]),
         refreshReminders(),
       ]);
     }
-  }, [analyticsRange, persistWorkspace, refreshAnalytics, refreshPersonalWorkspace, refreshReminders, refreshWorkspace]);
+  }, [persistWorkspace, refreshAnalytics, refreshPersonalWorkspace, refreshReminders, refreshWorkspace]);
 
   const selectWorkspace = useCallback(async (workspaceId: string) => {
     persistWorkspace(workspaceId);
@@ -536,36 +538,39 @@ export default function Home({
   useEffect(() => {
     let mounted = true;
     if (new URLSearchParams(window.location.search).has("reset")) {
-      setAuthState("signed-out");
       return () => { mounted = false; };
     }
-    if (initialData.user) {
-      const saved = window.localStorage.getItem("maliwise-active-workspace");
-      const chosen = saved === "personal"
-        ? "personal"
-        : groupWorkspaces.some((group) => group.id === saved)
-          ? saved!
-          : initialData.activeWorkspace;
-      if (chosen === initialData.activeWorkspace) {
-        persistWorkspace(chosen);
-      } else {
-        void selectWorkspace(chosen).catch((reason: unknown) => {
-          if (mounted) setError(reason instanceof Error ? reason.message : "Unable to load the selected workspace.");
-        });
-      }
-      return () => { mounted = false; };
-    }
+    loadAccountWorkspaces()
+      .then(() => {
+        if (mounted) setAuthState("signed-in");
+      })
+      .catch((reason: unknown) => {
+        if (!mounted || (reason instanceof ApiError && reason.status === 401)) return;
+        setError(reason instanceof Error ? reason.message : "Unable to load your account.");
+      });
     return () => { mounted = false; };
-  }, [groupWorkspaces, initialData.activeWorkspace, initialData.user, persistWorkspace, selectWorkspace]);
+  }, [loadAccountWorkspaces]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const requestedAuth = params.get("auth");
     const invite = params.get("invite");
     const reset = params.get("reset");
     const verifyEmail = params.get("verifyEmail");
+    if (requestedAuth === "register" || requestedAuth === "signup") {
+      setAuthMode("register");
+      setShowLanding(false);
+    } else if (requestedAuth || params.has("oauth_error")) {
+      setAuthMode("login");
+      setShowLanding(false);
+    }
+    if (params.has("oauth_error")) {
+      setError("Social sign-in could not be completed. Check the provider setup and try again.");
+    }
     if (invite) {
       setInvitationToken(invite);
       setAuthMode("register");
+      setShowLanding(false);
       window.history.replaceState({}, "", window.location.pathname);
       api<{ email: string; name: string; groupName: string }>(`auth/invitation/${encodeURIComponent(invite)}`)
         .then(setInvitation)
@@ -581,6 +586,7 @@ export default function Home({
         .then((result) => setAuthMessage(result.message))
         .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "This email verification link could not be verified."));
     } else if (reset) {
+      setShowLanding(false);
       setPasswordResetToken(reset);
       setAuthMode("reset");
       window.history.replaceState({}, "", window.location.pathname);
@@ -1275,7 +1281,7 @@ export default function Home({
                   ["facebook", "Facebook", "f"],
                   ["github", "GitHub", "⌘"],
                 ].map(([provider, label, mark]) => (
-                  <a className="oauth-button" href={`/api/auth/oauth/${provider}`} key={provider}>
+                  <a className="oauth-button" href={`${apiBaseUrl}/api/auth/oauth/${provider}`} key={provider}>
                     <span aria-hidden="true">{mark}</span> Continue with {label}
                   </a>
                 ))}

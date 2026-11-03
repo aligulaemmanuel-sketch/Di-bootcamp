@@ -8,6 +8,7 @@ import { PrismaService } from "./prisma.service";
 const envKeys = [
   "JWT_SECRET",
   "WEB_ORIGIN",
+  "API_PUBLIC_URL",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
 ] as const;
@@ -25,6 +26,7 @@ describe("OAuthService", () => {
   it("builds a Google authorization request with signed state, nonce, and PKCE", async () => {
     process.env.JWT_SECRET = "test-secret-that-is-long-enough-for-oauth-state";
     process.env.WEB_ORIGIN = "http://localhost:3000";
+    process.env.API_PUBLIC_URL = "http://localhost:4000";
     process.env.GOOGLE_CLIENT_ID = "google-client-id";
     process.env.GOOGLE_CLIENT_SECRET = "google-client-secret";
     const service = new OAuthService({} as PrismaService, {} as JwtService);
@@ -34,7 +36,7 @@ describe("OAuthService", () => {
 
     assert.equal(url.origin + url.pathname, "https://accounts.google.com/o/oauth2/v2/auth");
     assert.equal(url.searchParams.get("client_id"), "google-client-id");
-    assert.equal(url.searchParams.get("redirect_uri"), "http://localhost:3000/api/auth/oauth/google/callback");
+    assert.equal(url.searchParams.get("redirect_uri"), "http://localhost:4000/api/auth/oauth/google/callback");
     assert.equal(url.searchParams.get("code_challenge_method"), "S256");
     assert.ok(url.searchParams.get("code_challenge"));
     assert.ok(url.searchParams.get("nonce"));
