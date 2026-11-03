@@ -10,6 +10,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import type { Request } from "express";
 import { PrismaService } from "./prisma.service";
+import { getWebOrigin } from "./config";
 
 export type SessionUser = {
   sub: string;
@@ -31,7 +32,7 @@ export class SessionGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest & CookieRequest>();
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method)) {
-      const expectedOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+      const expectedOrigin = getWebOrigin();
       if (request.get("origin") !== expectedOrigin) {
         throw new UnauthorizedException("The request origin could not be verified.");
       }

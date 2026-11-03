@@ -13,6 +13,7 @@ import { PrismaService } from "./prisma.service";
 import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { createOpaqueToken, hashInvitationToken } from "./invitation-token";
 import { MailService } from "./mail.service";
+import { getAppUrl } from "./config";
 
 @Injectable()
 export class AuthService {
@@ -229,7 +230,7 @@ export class AuthService {
   private async sendVerificationEmail(user: { id: string; name: string; email: string }) {
     let verificationUrl: URL;
     try {
-      verificationUrl = new URL("/", process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000");
+      verificationUrl = new URL("/", getAppUrl());
     } catch {
       throw new Error("APP_URL must be a valid absolute URL for email verification links.");
     }
@@ -262,7 +263,7 @@ export class AuthService {
   }
 
   async requestPasswordReset(input: RequestPasswordResetDto) {
-    const appUrl = process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000";
+    const appUrl = getAppUrl();
     let resetUrl: URL;
     try {
       resetUrl = new URL("/", appUrl);

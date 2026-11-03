@@ -21,6 +21,7 @@ import { randomUUID } from "node:crypto";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
 import { CreateContributionDto, CreateGroupDto, CreateInvitationDto, CreateLoanDto, CreateMemberDto, CreatePersonalActivityDto, CreatePersonalGoalDto, CreateReminderDto, CreateSaccoEntryDto, CreateSaccoLoanProductDto, CreateSavingsGoalDto, DecideLoanDto, DecideMembershipDto, GroupFinancialProviderDto, UpdateProfileDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
+import { getAppUrl } from "./config";
 import { GroupRole, Prisma } from "@prisma/client";
 import { calculateGoalDiscipline } from "./savings-goals";
 import { createInvitationToken } from "./invitation-token";
@@ -1003,7 +1004,7 @@ export class WorkspaceController {
       });
       return created;
     });
-    const appUrl = (process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000").replace(/\/+$/, "");
+    const appUrl = getAppUrl();
     try {
       await this.mail.sendMemberInvitation({
         email,

@@ -10,6 +10,7 @@ import { randomUUID } from "node:crypto";
 import { DarajaConfigurationDto, StartDarajaPaymentDto } from "./auth.dto";
 import { decryptDarajaSecret, encryptDarajaSecret } from "./daraja-crypto";
 import { PrismaService } from "./prisma.service";
+import { getApiPublicUrl } from "./config";
 
 type DarajaCredentials = {
   groupId: string;
@@ -39,7 +40,10 @@ function stringValue(value: unknown, maximumLength = 128) {
   return typeof value === "string" && value.length > 0 && value.length <= maximumLength ? value : null;
 }
 
-export function darajaCallbackBaseUrl(configured = process.env.DARAJA_CALLBACK_URL) {
+export function darajaCallbackBaseUrl(
+  configured = process.env.DARAJA_CALLBACK_URL
+    ?? `${getApiPublicUrl()}/api/payments/daraja/callback`,
+) {
   const message = "Set DARAJA_CALLBACK_URL to a publicly reachable HTTPS URL ending in /api/payments/daraja/callback.";
   if (!configured) throw new ServiceUnavailableException(message);
   let url: URL;

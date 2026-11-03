@@ -5,6 +5,7 @@ import express from "express";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
+import { getWebOrigin } from "./config";
 
 async function bootstrap() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL must be configured.");
@@ -22,7 +23,7 @@ async function bootstrap() {
   if (cookieSameSite === "none" && process.env.NODE_ENV !== "production") {
     throw new Error("COOKIE_SAME_SITE=none requires production HTTPS.");
   }
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+  const webOrigin = getWebOrigin();
   const app = await NestFactory.create(AppModule, { bodyParser: false });
   app.setGlobalPrefix("");
   app.getHttpAdapter().getInstance().set("trust proxy", trustProxyHops);

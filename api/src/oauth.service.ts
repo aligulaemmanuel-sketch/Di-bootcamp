@@ -20,6 +20,7 @@ import {
   type JsonWebKey,
 } from "node:crypto";
 import { PrismaService } from "./prisma.service";
+import { getApiPublicUrl, getAppUrl as getConfiguredAppUrl } from "./config";
 
 export const oauthProviders = ["google", "apple", "microsoft", "facebook", "github"] as const;
 export type OAuthProvider = (typeof oauthProviders)[number];
@@ -127,22 +128,7 @@ export class OAuthService {
   }
 
   getAppUrl() {
-    const appUrl = process.env.APP_URL ?? process.env.WEB_ORIGIN ?? "http://localhost:3000";
-    let url: URL;
-    try {
-      url = new URL(appUrl);
-    } catch {
-      throw new ServiceUnavailableException("APP_URL must be a valid absolute URL for sign-in.");
-    }
-    if (
-      (process.env.NODE_ENV === "production" && url.protocol !== "https:") ||
-      !["http:", "https:"].includes(url.protocol) ||
-      url.username ||
-      url.password
-    ) {
-      throw new ServiceUnavailableException("APP_URL must use HTTPS in production.");
-    }
-    return url;
+    return new URL(getConfiguredAppUrl());
   }
 
   private getConfig(provider: OAuthProvider) {
@@ -158,21 +144,7 @@ export class OAuthService {
   }
 
   private getCallbackUrl(provider: OAuthProvider) {
-    const baseUrl = process.env.API_PUBLIC_URL ?? "http://localhost:4000";
-    let url: URL;
-    try {
-      url = new URL(`/api/auth/oauth/${provider}/callback`, baseUrl);
-    } catch {
-      throw new ServiceUnavailableException("API_PUBLIC_URL must be a valid absolute URL for sign-in callbacks.");
-    }
-    if (
-      (process.env.NODE_ENV === "production" && url.protocol !== "https:") ||
-      !["http:", "https:"].includes(url.protocol) ||
-      url.username ||
-      url.password
-    ) {
-      throw new ServiceUnavailableException("API_PUBLIC_URL must use HTTPS in production.");
-    }
+    const url = new URL(`/api/auth/oauth/${provider}/callback`, getApiPublicUrl());
     return url.toString();
   }
 
