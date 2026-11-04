@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: virginia
-    buildCommand: npm ci && npm run db:generate && npm run build:api
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build:api
     startCommand: npm run db:deploy && npm run start:api
     healthCheckPath: /health
     envVars:
@@ -32,7 +32,7 @@ services:
   - type: web
     name: maliwise-web
     runtime: static
-    buildCommand: npm ci && npm run db:generate && npx next build
+    buildCommand: npm ci --include=dev && npm run db:generate && npx next build
     staticPublishPath: ./out
     envVars:
       - key: NEXT_PUBLIC_API_URL
