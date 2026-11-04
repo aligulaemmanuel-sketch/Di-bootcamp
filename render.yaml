@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: maliwise-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run db:generate && npm run build:api
+    startCommand: npm run db:deploy && npm run start:api
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY_HOPS
+        value: "1"
+      - key: COOKIE_SAME_SITE
+        value: lax
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEB_ORIGIN
+        fromService:
+          type: web
+          name: maliwise-web
+          property: host
+      - key: APP_URL
+        fromService:
+          type: web
+          name: maliwise-web
+          property: host
+
+  - type: web
+    name: maliwise-web
+    runtime: static
+    buildCommand: npm ci && npm run db:generate && npx next build
+    staticPublishPath: ./out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: maliwise-api
+          property: host

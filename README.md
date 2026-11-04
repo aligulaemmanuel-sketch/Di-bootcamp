@@ -70,7 +70,7 @@ Bank, MMF, and investment provider details are group-level setup metadata, visib
 
    Password recovery and email verification use the same SMTP settings and `APP_URL`. Reset and verification links expire after one hour, are stored as hashes, and can be used once; changing the password revokes existing sessions. For privacy, email resend screens always confirm generically whether or not an account needs verification.
 
-   To enable social sign-in, register OAuth applications with Google, Apple, Microsoft Entra ID, Facebook, and GitHub, then set each provider's client ID and secret in `api/.env` (Apple uses a signed client secret instead). Add the exact callback URL `http://localhost:3000/api/auth/oauth/<provider>/callback` to each provider app during local development; in deployment, use the same path on your HTTPS web origin. The callback is proxied to the API through the existing `/api` rewrite, so keep `WEB_ORIGIN` set to the exact browser origin. Apple also requires `APPLE_TEAM_ID`, `APPLE_KEY_ID`, and `APPLE_PRIVATE_KEY` (store the private key securely; newlines may be represented as `\n`). Microsoft can be restricted to a tenant with `MICROSOFT_TENANT_ID`; its default is `common`. Social sign-in requires the provider to return a verified email address. OAuth identities are stored separately and verified-email matches are connected to the existing account.
+   To enable social sign-in, register OAuth applications with Google, Apple, Microsoft Entra ID, Facebook, and GitHub, then set each provider's client ID and secret in `api/.env` (Apple uses a signed client secret instead). Add `http://localhost:4000/api/auth/oauth/<provider>/callback` to each provider app during local development; in deployment, use the API service's HTTPS origin with the same path. Apple also requires `APPLE_TEAM_ID`, `APPLE_KEY_ID`, and `APPLE_PRIVATE_KEY` (store the private key securely; newlines may be represented as `\n`). Microsoft can be restricted to a tenant with `MICROSOFT_TENANT_ID`; its default is `common`. Social sign-in requires the provider to return a verified email address. OAuth identities are stored separately and verified-email matches are connected to the existing account.
 
 3. Install dependencies and prepare the database:
 
@@ -92,15 +92,18 @@ Bank, MMF, and investment provider details are group-level setup metadata, visib
 
 Run the API unit tests with `npm --prefix api run test`.
 
-## Production configuration
+## Render deployment
 
-- Provision managed PostgreSQL and set `DATABASE_URL` and a unique high-entropy `JWT_SECRET` in the API's secret manager. Never deploy the development password from `api/.env.example`.
-- Preserve the generated `DARAJA_ENCRYPTION_KEY` in the API secret manager and use a publicly reachable HTTPS `DARAJA_CALLBACK_URL`. The integration remains sandbox-only.
-- Configure authenticated SMTP credentials and `APP_URL` for member invitations; keep mail credentials in the API secret manager.
-- Build and deploy the API and Next.js web application as separate services. Set `API_URL` for the Next.js service to its private API origin. Terminate HTTPS at the trusted ingress and configure `TRUST_PROXY_HOPS` to match the real proxy chain.
-- Apply schema changes with `npm run db:deploy`; use `npm run db:migrate` only for local development.
-- Configure TLS, database encryption and backups, restore tests, alerting, access review, and incident response before production use.
-- Review Kenyan data protection and financial-service obligations with qualified advisers before handling real member data or connecting regulated services.
+The root `render.yaml` defines two independent services: `maliwise-web` is the exported Next.js static site, and `maliwise-api` is the NestJS API. The web service calls the API directly from the browser, so `NEXT_PUBLIC_API_URL` must be the API's **public HTTPS URL**, not its private network address. The blueprint connects these service URLs and runs `npm run db:deploy` before starting the API.
+
+1. Create a managed PostgreSQL database on Render, then create a Blueprint from this repository and select `render.yaml`. The blueprint prompts for the API's `DATABASE_URL`; use the database's **internal** connection URL when it is in the same Render region. Keep the database and application in the same region.
+2. Deploy, and confirm the API health check at `/health` succeeds. The API start command applies pending Prisma migrations before serving requests.
+3. If enabling social sign-in, add `https://<maliwise-api-host>/api/auth/oauth/<provider>/callback` to each provider application. OAuth callbacks terminate at the API, while `APP_URL` and `WEB_ORIGIN` refer to the frontend. Add provider credentials as API environment variables in Render.
+4. For email, add the SMTP settings to the API service and set `APP_URL` to the frontend origin. For sandbox Daraja, preserve `DARAJA_ENCRYPTION_KEY` as an API secret and set `DARAJA_CALLBACK_URL` to a publicly reachable API URL ending in `/api/payments/daraja/callback`. The integration remains sandbox-only.
+
+The blueprint sets `COOKIE_SAME_SITE=lax`, which is suitable for the Render `*.onrender.com` service URLs. If using custom domains, put the frontend and API on the same site (for example, `app.example.com` and `api.example.com`). For unrelated frontend and API domains, cookies require `COOKIE_SAME_SITE=none` and HTTPS, and browser third-party-cookie restrictions may still prevent sessions from working. `NEXT_PUBLIC_API_URL` is embedded during the static build; redeploy the frontend after changing the API URL.
+
+Keep database credentials, SMTP/provider credentials, and other secrets in Render's environment settings, not in source control. Configure database backups and restore tests, alerting, access review, and incident response before production use. Review Kenyan data protection and financial-service obligations with qualified advisers before handling real member data or connecting regulated services.
 
 ## Payment integration boundary
 

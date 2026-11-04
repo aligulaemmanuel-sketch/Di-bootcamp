@@ -129,7 +129,7 @@ export class AuthController {
   @Throttle({ default: { limit: 8, ttl: 60_000 } })
   async acceptInvitation(@Body() input: AcceptInvitationDto, @Res({ passthrough: true }) response: Response) {
     const { token, user } = await this.auth.acceptInvitation(input);
-    response.cookie("maliwise_session", token, cookieOptions(process.env.NODE_ENV === "production"));
+    response.cookie("maliwise_session", token, sessionCookieOptions());
     return { user };
   }
 
