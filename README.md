@@ -98,7 +98,13 @@ The root `render.yaml` defines two independent services: `maliwise-web` is the e
 
 1. Create a managed PostgreSQL database on Render, then create a Blueprint from this repository and select `render.yaml`. The blueprint prompts for the API's `DATABASE_URL`; use the database's **internal** connection URL when it is in the same Render region. Keep the database and application in the same region.
 2. Deploy, and confirm the API health check at `/health` succeeds. The API start command applies pending Prisma migrations before serving requests.
-3. If enabling social sign-in, add `https://<maliwise-api-host>/api/auth/oauth/<provider>/callback` to each provider application. OAuth callbacks terminate at the API, while `APP_URL` and `WEB_ORIGIN` refer to the frontend. Add provider credentials as API environment variables in Render.
+3. To enable Google sign-in:
+   - In Google Cloud Console, configure the OAuth consent screen (use **External** for public users; while in testing, add each test user's Google account).
+   - Create an OAuth client ID with application type **Web application**. Add this exact authorized redirect URI: `https://maliwise-api.onrender.com/api/auth/oauth/google/callback`.
+   - In the Render `maliwise-api` service environment, set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to the values from that OAuth client. Keep the client secret in Render; do not commit it or put it in the frontend.
+   - Redeploy `maliwise-api`, then test **Continue with Google** at `https://maliwise-web.onrender.com`. For local development, also register `http://localhost:4000/api/auth/oauth/google/callback` and set the same variables in `api/.env`.
+
+   The API already implements Google's authorization-code flow and validates the returned identity. Its callback is handled by the API; `APP_URL` and `WEB_ORIGIN` must remain set to the frontend origin. Other social providers also require their own provider credentials and callback registration before they can be used.
 4. For email, add the SMTP settings to the API service and set `APP_URL` to the frontend origin. For sandbox Daraja, preserve `DARAJA_ENCRYPTION_KEY` as an API secret and set `DARAJA_CALLBACK_URL` to a publicly reachable API URL ending in `/api/payments/daraja/callback`. The integration remains sandbox-only.
 
 The blueprint sets `COOKIE_SAME_SITE=lax`, which is suitable for the Render `*.onrender.com` service URLs. If using custom domains, put the frontend and API on the same site (for example, `app.example.com` and `api.example.com`). For unrelated frontend and API domains, cookies require `COOKIE_SAME_SITE=none` and HTTPS, and browser third-party-cookie restrictions may still prevent sessions from working. `NEXT_PUBLIC_API_URL` is embedded during the static build; redeploy the frontend after changing the API URL.

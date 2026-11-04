@@ -159,6 +159,40 @@ class ApiError extends Error {
 const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const apiBaseUrl = (/^https?:\/\//i.test(configuredApiUrl) ? configuredApiUrl : `https://${configuredApiUrl}`).replace(/\/+$/, "");
 
+type OAuthProvider = "google" | "apple" | "microsoft" | "facebook" | "github";
+
+function OAuthProviderIcon({ provider }: { provider: OAuthProvider }) {
+  if (provider === "google") {
+    return <svg aria-hidden="true" className="oauth-provider-icon" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.55-.2-2.27H12v4.3h6.44a5.5 5.5 0 0 1-2.39 3.61v2.94h3.76c2.2-2.03 3.68-5.02 3.68-8.58Z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.95-2.93l-3.76-2.94c-1.04.7-2.37 1.12-4.19 1.12-3.22 0-5.95-2.17-6.93-5.09H1.19v3.02A12 12 0 0 0 12 24Z" />
+      <path fill="#FBBC05" d="M5.07 14.16a7.2 7.2 0 0 1 0-4.32V6.82H1.19a12 12 0 0 0 0 10.36l3.88-3.02Z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.81l3.44-3.44C17.96 1.15 15.24 0 12 0A12 12 0 0 0 1.19 6.82l3.88 3.02C6.05 6.92 8.78 4.75 12 4.75Z" />
+    </svg>;
+  }
+  if (provider === "apple") {
+    return <svg aria-hidden="true" className="oauth-provider-icon oauth-provider-icon-dark" viewBox="0 0 24 24">
+      <path d="M16.6 1.9c0 1.3-.5 2.6-1.4 3.6-.9 1-2.3 1.8-3.7 1.7-.2-1.3.5-2.7 1.3-3.6.9-1 2.4-1.7 3.8-1.7ZM20.9 17.6c-.6 1.3-.9 1.9-1.6 3.1-1 1.5-2.4 3.5-4.2 3.5-1.6 0-2.1-1-4.4-1-2.2 0-2.8 1-4.4 1-1.8 0-3.1-1.8-4.1-3.3-2.9-4.4-3.2-9.6-1.4-12.4 1.3-2 3.4-3.2 5.3-3.2 1.7 0 2.8 1 4.3 1 1.4 0 2.3-1 4.4-1 1.6 0 3.4.9 4.7 2.4-4.1 2.2-3.5 8.1 1.4 9.9Z" transform="translate(1 0) scale(.92)" />
+    </svg>;
+  }
+  if (provider === "microsoft") {
+    return <svg aria-hidden="true" className="oauth-provider-icon" viewBox="0 0 24 24">
+      <path fill="#F25022" d="M1 1h10v10H1z" />
+      <path fill="#7FBA00" d="M13 1h10v10H13z" />
+      <path fill="#00A4EF" d="M1 13h10v10H1z" />
+      <path fill="#FFB900" d="M13 13h10v10H13z" />
+    </svg>;
+  }
+  if (provider === "facebook") {
+    return <svg aria-hidden="true" className="oauth-provider-icon" viewBox="0 0 24 24">
+      <path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07c0 6.02 4.39 11.02 10.13 11.91v-8.42H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.54-4.69 1.31 0 2.68.23 2.68.23v2.96h-1.51c-1.49 0-1.95.93-1.95 1.89v2.27h3.32l-.53 3.49h-2.79v8.42C19.61 23.09 24 18.09 24 12.07Z" />
+    </svg>;
+  }
+  return <svg aria-hidden="true" className="oauth-provider-icon oauth-provider-icon-dark" viewBox="0 0 24 24">
+    <path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.75.08-.74.08-.74 1.2.09 1.83 1.23 1.83 1.23 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.62-2.8 5.64-5.48 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12.01 12.01 0 0 0 12 .5Z" />
+  </svg>;
+}
+
 const navItems: { label: Section; icon: typeof LayoutDashboard }[] = [
   { label: "Overview", icon: LayoutDashboard },
   { label: "Personal", icon: Wallet },
@@ -1275,15 +1309,15 @@ export default function Home({
               </form>
               <div aria-hidden="true" className="auth-divider"><span>or continue with</span></div>
               <div aria-label="Sign in with another provider" className="oauth-options">
-                {[
-                  ["google", "Google", "G"],
-                  ["apple", "Apple", "A"],
-                  ["microsoft", "Microsoft", "M"],
-                  ["facebook", "Facebook", "f"],
-                  ["github", "GitHub", "⌘"],
-                ].map(([provider, label, mark]) => (
+                {([
+                  ["google", "Google"],
+                  ["apple", "Apple"],
+                  ["microsoft", "Microsoft"],
+                  ["facebook", "Facebook"],
+                  ["github", "GitHub"],
+                ] as const).map(([provider, label]) => (
                   <a className="oauth-button" href={`${apiBaseUrl}/api/auth/oauth/${provider}`} key={provider}>
-                    <span aria-hidden="true">{mark}</span> Continue with {label}
+                    <OAuthProviderIcon provider={provider} /> Continue with {label}
                   </a>
                 ))}
               </div>

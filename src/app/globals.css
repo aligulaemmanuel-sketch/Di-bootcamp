@@ -375,7 +375,8 @@ tbody tr:last-child td { border-bottom: 0; }
 .oauth-options { display: grid; gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .oauth-button { align-items: center; background: #fff; border: 1px solid #e3e9e4; border-radius: 7px; color: #34443a; display: flex; font-size: 10px; font-weight: 600; gap: 8px; justify-content: center; min-height: 37px; text-decoration: none; }
 .oauth-button:hover { background: #f7faf7; border-color: #b8c9bc; }
-.oauth-button span { align-items: center; color: #314b3a; display: inline-flex; font-size: 13px; font-weight: 700; justify-content: center; width: 14px; }
+.oauth-provider-icon { display: block; flex: 0 0 16px; height: 16px; width: 16px; }
+.oauth-provider-icon-dark { fill: #202124; }
 .auth-switch { color: #89948d; font-size: 10px; margin: 17px 0 0; text-align: center; }
 .auth-switch button { background: transparent; border: 0; color: #047857; cursor: pointer; font-size: inherit; font-weight: 700; padding: 0 0 0 3px; }
 .auth-footer { align-items: center; color: #8a968e; display: flex; font-size: 9px; gap: 6px; margin-top: 15px; }
