@@ -19,15 +19,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: WEB_ORIGIN
-        fromService:
-          type: web
-          name: maliwise-web
-          property: host
+        value: https://maliwise-web.onrender.com
       - key: APP_URL
-        fromService:
-          type: web
-          name: maliwise-web
-          property: host
+        value: https://maliwise-web.onrender.com
 
   - type: web
     name: maliwise-web
@@ -36,7 +30,4 @@ services:
     staticPublishPath: ./out
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: maliwise-api
-          property: host
+        value: https://maliwise-api.onrender.com
