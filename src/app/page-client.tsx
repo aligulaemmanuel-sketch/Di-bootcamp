@@ -352,7 +352,6 @@ export default function Home({
     ? "Social sign-in could not be completed. Check the provider setup and try again."
     : initialLoadError ?? "");
   const [authMessage, setAuthMessage] = useState("");
-  const [canResendVerification, setCanResendVerification] = useState(false);
   const [passwordResetToken, setPasswordResetToken] = useState("");
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -883,18 +882,8 @@ export default function Home({
         method: "POST",
         body: JSON.stringify(body),
       });
-      if (authMode === "register" && !invitationToken) {
-        const email = String(body.email ?? "").trim();
-        if (loginEmailInput.current && email) loginEmailInput.current.value = email;
-        setAuthMode("login");
-        setAuthMessage(`Account created for ${email}. Check your inbox for a verification link. You can resend it below if it does not arrive.`);
-        setCanResendVerification(true);
-        setPasswordVisible(false);
-        return;
-      }
       await loadAccountWorkspaces();
       setAuthState("signed-in");
-      setCanResendVerification(false);
       if (invitationToken) {
         const url = new URL(window.location.href);
         url.searchParams.delete("invite");
@@ -903,33 +892,7 @@ export default function Home({
         setInvitation(null);
       }
     } catch (reason) {
-      if (authMode === "login" && reason instanceof ApiError && reason.status === 401 && reason.message.toLowerCase().includes("verify your email")) {
-        setCanResendVerification(true);
-      }
       setError(reason instanceof Error ? reason.message : "Unable to sign in.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function resendEmailVerification() {
-    setError("");
-    setAuthMessage("");
-    const email = loginEmailInput.current?.value.trim();
-    if (!email) {
-      setError("Enter your email address first.");
-      loginEmailInput.current?.focus();
-      return;
-    }
-    setBusy(true);
-    try {
-      const result = await api<{ message: string }>("auth/email-verification/request", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-      });
-      setAuthMessage(result.message);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to resend the verification email.");
     } finally {
       setBusy(false);
     }
@@ -1321,7 +1284,6 @@ export default function Home({
                   </a>
                 ))}
               </div>
-              {canResendVerification && <button className="auth-recovery-link" disabled={busy} onClick={() => void resendEmailVerification()} type="button">Resend verification email</button>}
               <p className="auth-switch">New to Wealth Sketch? <button onClick={() => flipAuthCard("register")} type="button">Create an account</button></p>
             </section>
             <section aria-hidden={authMode === "login"} className={`auth-card-face auth-card-face-back ${authMode === "login" ? "auth-card-face-inactive" : ""}`} inert={authMode === "login"}>

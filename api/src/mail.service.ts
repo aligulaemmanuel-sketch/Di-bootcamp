@@ -1,4 +1,5 @@
-import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
+       import { randomBytes } from "node:crypto";
+       import { Injectable, Logger, ServiceUnavailableException } from "@nestjs/common";
 
 type EmailMessage = {
   to: string;
@@ -34,15 +35,6 @@ export class MailService {
     }, "Password reset email could not be delivered.");
   }
 
-  async sendEmailVerification(input: { email: string; name: string; verificationUrl: string }) {
-    await this.sendEmail({
-      to: input.email,
-      subject: "Verify your Wealth Sketch email",
-      text: `Hello ${input.name},\n\nVerify your email address to activate your Wealth Sketch account:\n\n${input.verificationUrl}\n\nThis link expires in one hour. If you did not create this account, you can ignore this email.`,
-      html: `<p>Hello ${escapeHtml(input.name)},</p><p>Verify your email address to activate your Wealth Sketch account:</p><p><a href="${escapeHtml(input.verificationUrl)}">Verify your email</a></p><p>This link expires in one hour. If you did not create this account, you can ignore this email.</p>`,
-    }, "The verification email could not be delivered. Check the email provider configuration and try again.");
-  }
-
   async sendReminder(input: { email: string; name: string; title: string; message: string; dueAt: Date }) {
     const dueAt = input.dueAt.toLocaleString("en-KE", { timeZone: "Africa/Nairobi" });
     await this.sendEmail({
@@ -54,35 +46,130 @@ export class MailService {
   }
 
   private async sendEmail(message: EmailMessage, failureMessage: string) {
-    const apiKey = process.env.RESEND_API_KEY?.trim();
-    const from = process.env.RESEND_FROM?.trim();
-    if (!apiKey || !from) {
-      throw new ServiceUnavailableException("Email delivery is not configured. Set RESEND_API_KEY and RESEND_FROM.");
+    const clientId = process.env.GMAIL_CLIENT_ID?.trim();
+    const clientSecret = process.env.GMAIL_CLIENT_SECRET?.trim();
+    const refreshToken = process.env.GMAIL_REFRESH_TOKEN?.trim();
+    const from = process.env.GMAIL_FROM?.trim();
+    if (!clientId || !clientSecret || !refreshToken || !from || /[\r\n]/.test(from)) {
+      throw new ServiceUnavailableException(
+        "Email delivery is not configured. Set the Gmail API credentials and sender address.",
+      );
     }
 
-    let response: Response;
+    const accessToken = await this.getAccessToken(clientId, clientSecret, refreshToken, failureMessage);
+    const boundary = `wealthsketch-${randomBytes(16).toString("hex")}`;
+    const mimeMessage = [
+      `From: ${from}`,
+      `To: ${message.to}`,
+      `Subject: ${encodeMimeHeader(message.subject)}`,
+      "MIME-Version: 1.0",
+      `Content-Type: multipart/alternative; boundary="${boundary}"`,
+      "",
+      `--${boundary}`,
+      "Content-Type: text/plain; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      wrapBase64(Buffer.from(message.text, "utf8").toString("base64")),
+      `--${boundary}`,
+      "Content-Type: text/html; charset=UTF-8",
+      "Content-Transfer-Encoding: base64",
+      "",
+      wrapBase64(Buffer.from(message.html, "utf8").toString("base64")),
+      `--${boundary}--`,
+      "",
+    ].join("\r\n");
+    const raw = Buffer.from(mimeMessage, "utf8")
+      .toString("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
     try {
-      response = await fetch("https://api.resend.com/emails", {
+      const response = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...message, from }),
+        body: JSON.stringify({ raw }),
+      });
+      if (!response.ok) {
+        this.logger.error(`Gmail API email request failed with HTTP ${response.status}.`);
+        throw new ServiceUnavailableException(failureMessage);
+      }
+    } catch (error) {
+      if (error instanceof ServiceUnavailableException) throw error;
+      this.logger.error(
+        "Gmail API email request failed.",
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw new ServiceUnavailableException(failureMessage);
+    }
+  }
+
+  private async getAccessToken(
+    clientId: string,
+    clientSecret: string,
+    refreshToken: string,
+    failureMessage: string,
+  ) {
+    let response: Response;
+    try {
+      response = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refreshToken,
+          grant_type: "refresh_token",
+        }),
       });
     } catch (error) {
       this.logger.error(
-        "Resend email request failed.",
+        "Google OAuth token refresh request failed.",
         error instanceof Error ? error.stack : undefined,
       );
       throw new ServiceUnavailableException(failureMessage);
     }
 
     if (!response.ok) {
-      this.logger.error(`Resend email request failed with HTTP ${response.status}.`);
+      this.logger.error(`Google OAuth token refresh failed with HTTP ${response.status}.`);
       throw new ServiceUnavailableException(failureMessage);
     }
+
+    let tokenResponse: unknown;
+    try {
+      tokenResponse = await response.json();
+    } catch (error) {
+      this.logger.error(
+        "Google OAuth token refresh returned an invalid response.",
+        error instanceof Error ? error.stack : undefined,
+      );
+      throw new ServiceUnavailableException(failureMessage);
+    }
+
+    if (
+      typeof tokenResponse !== "object" ||
+      tokenResponse === null ||
+      !("access_token" in tokenResponse) ||
+      typeof tokenResponse.access_token !== "string" ||
+      !tokenResponse.access_token
+    ) {
+      this.logger.error("Google OAuth token refresh response did not contain an access token.");
+      throw new ServiceUnavailableException(failureMessage);
+    }
+    return tokenResponse.access_token;
   }
+}
+
+function encodeMimeHeader(value: string) {
+  if (/^[\x20-\x7e]*$/.test(value)) return value.replace(/[\r\n]/g, " ");
+  return `=?UTF-8?B?${Buffer.from(value, "utf8").toString("base64")}?=`;
+}
+
+function wrapBase64(value: string) {
+  return value.match(/.{1,76}/g)?.join("\r\n") ?? "";
 }
 
 function escapeHtml(value: string) {

@@ -10,7 +10,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { compare, hash } from "bcryptjs";
 import { PrismaService } from "./prisma.service";
-import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
+import { AcceptInvitationDto, LoginDto, RegisterDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { createOpaqueToken, hashInvitationToken } from "./invitation-token";
 import { MailService } from "./mail.service";
 import { getAppUrl } from "./config";
@@ -43,7 +43,13 @@ export class AuthService {
     try {
       const user = await this.prisma.$transaction(async (tx) => {
         const createdUser = await tx.user.create({
-          data: { email, name: input.name.trim(), passwordHash, phone },
+          data: {
+            email,
+            name: input.name.trim(),
+            passwordHash,
+            phone,
+            emailVerifiedAt: new Date(),
+          },
         });
         if (input.groupName && phone) {
           const groupType = input.groupType ?? "CHAMA";
@@ -73,8 +79,16 @@ export class AuthService {
         }
         return createdUser;
       });
-      await this.sendVerificationEmail(user);
-      return { message: "Account created. Check your email for a verification link before signing in." };
+      return {
+        token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          profilePhotoData: user.profilePhotoData,
+        },
+      };
     } catch (error) {
       if (this.isUniqueError(error)) throw new ConflictException("An account with that email or phone already exists.");
       throw error;
@@ -87,21 +101,19 @@ export class AuthService {
       throw new UnauthorizedException("Email or password is incorrect.");
     }
     if (!user.emailVerifiedAt) {
-      throw new UnauthorizedException("Verify your email address before signing in. Use the resend verification email option if needed.");
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          emailVerifiedAt: new Date(),
+          emailVerificationTokenHash: null,
+          emailVerificationExpiresAt: null,
+        },
+      });
     }
     return {
       token: await this.jwt.signAsync({ sub: user.id, email: user.email, ver: user.tokenVersion }),
       user: { id: user.id, name: user.name, email: user.email, phone: user.phone, profilePhotoData: user.profilePhotoData },
     };
-  }
-
-  async requestEmailVerification(input: RequestEmailVerificationDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: input.email.trim().toLowerCase() },
-      select: { id: true, name: true, email: true, emailVerifiedAt: true },
-    });
-    if (!user || user.emailVerifiedAt) return;
-    await this.sendVerificationEmail(user);
   }
 
   async verifyEmail(input: VerifyEmailDto) {
@@ -223,41 +235,6 @@ export class AuthService {
       if (this.isUniqueError(error)) {
         throw new ConflictException("This account could not be added. Contact your group administrator.");
       }
-      throw error;
-    }
-  }
-
-  private async sendVerificationEmail(user: { id: string; name: string; email: string }) {
-    let verificationUrl: URL;
-    try {
-      verificationUrl = new URL("/", getAppUrl());
-    } catch {
-      throw new Error("APP_URL must be a valid absolute URL for email verification links.");
-    }
-    if (
-      (verificationUrl.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && verificationUrl.protocol === "http:")) ||
-      verificationUrl.username ||
-      verificationUrl.password
-    ) {
-      throw new Error("APP_URL must use HTTPS in production.");
-    }
-    const { token, tokenHash } = createOpaqueToken();
-    const now = new Date();
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        emailVerificationTokenHash: tokenHash,
-        emailVerificationExpiresAt: new Date(now.getTime() + 60 * 60 * 1000),
-      },
-    });
-    verificationUrl.searchParams.set("verifyEmail", token);
-    try {
-      await this.mail.sendEmailVerification({ email: user.email, name: user.name, verificationUrl: verificationUrl.toString() });
-    } catch (error) {
-      await this.prisma.user.updateMany({
-        where: { id: user.id, emailVerificationTokenHash: tokenHash },
-        data: { emailVerificationTokenHash: null, emailVerificationExpiresAt: null },
-      });
       throw error;
     }
   }

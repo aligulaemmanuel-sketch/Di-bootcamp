@@ -255,6 +255,88 @@ describe("AuthService.acceptInvitation", () => {
   });
 });
 
+describe("AuthService.register and login", () => {
+  it("creates an immediately verified account and returns a session without sending email", async () => {
+    let createdData: Record<string, unknown> | undefined;
+    const user = {
+      id: "new-user",
+      email: "member@example.com",
+      name: "New member",
+      passwordHash: "hashed-password",
+      phone: null,
+      profilePhotoData: null,
+      emailVerifiedAt: null as Date | null,
+      tokenVersion: 0,
+    };
+    const prisma = {
+      $transaction: async <T>(callback: (transaction: {
+        user: { create: (args: { data: Record<string, unknown> }) => Promise<typeof user> };
+      }) => Promise<T>) => callback({
+        user: {
+          create: async ({ data }: { data: Record<string, unknown> }) => {
+            createdData = data;
+            Object.assign(user, data);
+            return user;
+          },
+        },
+      }),
+    } as unknown as PrismaService;
+    const jwt = { signAsync: async () => "signed-session" } as unknown as JwtService;
+    const mail = {};
+    const auth = new AuthService(prisma, jwt, mail as never);
+
+    const result = await auth.register({
+      name: " New member ",
+      email: " MEMBER@example.com ",
+      password: "a-unique-strong-password",
+    });
+
+    assert.ok(createdData?.emailVerifiedAt instanceof Date);
+    assert.equal(result.token, "signed-session");
+    assert.deepEqual(result.user, {
+      id: "new-user",
+      name: "New member",
+      email: "member@example.com",
+      phone: null,
+      profilePhotoData: null,
+    });
+  });
+
+  it("allows an existing unverified account to sign in and clears legacy verification tokens", async () => {
+    const passwordHash = await hash("a-unique-strong-password", 4);
+    let updatedData: Record<string, unknown> | undefined;
+    const user = {
+      id: "legacy-user",
+      email: "member@example.com",
+      name: "Existing member",
+      passwordHash,
+      phone: null,
+      profilePhotoData: null,
+      emailVerifiedAt: null,
+      tokenVersion: 2,
+    };
+    const prisma = {
+      user: {
+        findUnique: async () => user,
+        update: async ({ data }: { data: Record<string, unknown> }) => {
+          updatedData = data;
+          Object.assign(user, data);
+          return user;
+        },
+      },
+    } as unknown as PrismaService;
+    const jwt = { signAsync: async () => "signed-session" } as unknown as JwtService;
+    const auth = new AuthService(prisma, jwt, {} as never);
+
+    const result = await auth.login({ email: user.email, password: "a-unique-strong-password" });
+
+    assert.ok(updatedData?.emailVerifiedAt instanceof Date);
+    assert.equal(updatedData?.emailVerificationTokenHash, null);
+    assert.equal(updatedData?.emailVerificationExpiresAt, null);
+    assert.equal(result.token, "signed-session");
+  });
+});
+
 describe("AuthService email verification", () => {
   it("verifies the matching unexpired token once and stores only its hash", async () => {
     const { token, tokenHash } = createInvitationToken();

@@ -3,7 +3,7 @@ import { Throttle } from "@nestjs/throttler";
 import type { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { CurrentUser, SessionGuard, SessionUser } from "./auth";
-import { AcceptInvitationDto, LoginDto, RegisterDto, RequestEmailVerificationDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
+import { AcceptInvitationDto, LoginDto, RegisterDto, RequestPasswordResetDto, ResetPasswordDto, VerifyEmailDto } from "./auth.dto";
 import { PrismaService } from "./prisma.service";
 import { hashInvitationToken } from "./invitation-token";
 import { OAuthProvider, OAuthService } from "./oauth.service";
@@ -30,8 +30,10 @@ export class AuthController {
 
   @Post("register")
   @Throttle({ default: { limit: 8, ttl: 60_000 } })
-  async register(@Body() input: RegisterDto) {
-    return this.auth.register(input);
+  async register(@Body() input: RegisterDto, @Res({ passthrough: true }) response: Response) {
+    const { token, user } = await this.auth.register(input);
+    response.cookie("maliwise_session", token, sessionCookieOptions());
+    return { user };
   }
 
   @Post("login")
@@ -103,13 +105,6 @@ export class AuthController {
   async requestPasswordReset(@Body() input: RequestPasswordResetDto) {
     await this.auth.requestPasswordReset(input);
     return { message: "If an account exists for that email, a password reset link will be sent shortly." };
-  }
-
-  @Post("email-verification/request")
-  @Throttle({ default: { limit: 3, ttl: 60_000 } })
-  async requestEmailVerification(@Body() input: RequestEmailVerificationDto) {
-    await this.auth.requestEmailVerification(input);
-    return { message: "If an account needs email verification, a verification link will be sent shortly." };
   }
 
   @Post("email-verification/confirm")
