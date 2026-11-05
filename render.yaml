@@ -22,6 +22,10 @@ services:
         value: https://maliwise-web.onrender.com
       - key: APP_URL
         value: https://maliwise-web.onrender.com
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
 
   - type: web
     name: maliwise-web
