@@ -13,7 +13,7 @@ services:
       - key: TRUST_PROXY_HOPS
         value: "1"
       - key: COOKIE_SAME_SITE
-        value: lax
+        value: none
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
